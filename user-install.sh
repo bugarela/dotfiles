@@ -2,12 +2,12 @@ sudo mkdir -p /mnt/etc/nixos
 sudo rm /etc/nixos/configuration.nix
 sudo rm /etc/nixos/cachix.nix
 sudo rm /etc/nixos/hardware-configuration.nix
-sudo ln -s /home/rafael/nix-configs/nixos/configuration.nix /etc/nixos/
+sudo ln -s /home/gabriela/nix-configs/nixos/configuration.nix /etc/nixos/
 sudo nixos-rebuild switch
 
-mkdir -p /home/rafael/.config/nixpkgs
+mkdir -p /home/gabriela/.config/nixpkgs
 sudo nix-channel --add https://channels.nixos.org/nixpkgs-unstable/ nixpkgs-unstable
 sudo nix-channel --update
-ln -s /home/rafael/nix-configs/home-manager/home.nix /home/rafael/.config/nixpkgs
-ln -s /home/rafael/nix-configs/home-manager/config.nix /home/rafael/.config/nixpkgs
+ln -s /home/gabriela/nix-configs/home-manager/home.nix /home/gabriela/.config/nixpkgs
+ln -s /home/gabriela/nix-configs/home-manager/config.nix /home/gabriela/.config/nixpkgs
 home-manager switch

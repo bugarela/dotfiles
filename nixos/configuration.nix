@@ -30,7 +30,7 @@
   # Define on which hard drive you want to install Grub.
   # boot.loader.grub.device = "/dev/sda"; # or "nodev" for efi only
 
-  networking.hostName = "rafael-nixos"; # Define your hostname.
+  networking.hostName = "gabriela-nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   networking.networkmanager.enable = true;
 
@@ -103,14 +103,14 @@
   services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.rafael = {
+  users.users.gabriela = {
     isNormalUser = true;
-    home = "/home/rafael";
+    home = "/home/gabriela";
     extraGroups = [ "wheel" "networkmanager" "docker" "video" ];
   };
-  nix.trustedUsers = [ "root" "rafael" ];
+  nix.trustedUsers = [ "root" "gabriela" ];
 
-  users.extraUsers.rafael = {
+  users.extraUsers.gabriela = {
     shell = pkgs.zsh;
   };
 
