@@ -34,8 +34,8 @@ in {
     ./programs/xmonad/default.nix
   ];
 
-  home.username = "rafael";
-  home.homeDirectory = "/home/rafael";
+  home.username = "gabriela";
+  home.homeDirectory = "/home/gabriela";
 
   home.sessionVariables = {
     PAGER = "less";
@@ -60,12 +60,13 @@ in {
   };
 
   home.file.".doom.d" = {
-    source = builtins.toPath "/home/rafael/nix-configs/doom.d";
+    source = builtins.toPath "/home/gabriela/nix-configs/doom.d";
     onChange = "${pkgs.writeShellScript "doom-change" ''
-      EMACSDIR=/home/rafael/.emacs.d
+      EMACSDIR=/home/gabriela/.emacs.d
       DOOMBIN="$EMACSDIR"/bin/doom
-      DOOMLOCALDIR=/home/rafael/.doom_local
+      DOOMLOCALDIR=/home/gabriela/.doom_local
       mkdir -p "$DOOMLOCALDIR"
+      mkdir -p /home/gabriela/org/roam
       if [ ! -f "$DOOMBIN" ]; then
         echo "-------------> Installing DOOM EMACS"
         mv "$EMACSDIR" "$EMACSDIR".bk
@@ -85,7 +86,6 @@ in {
     pkgs.jq
     pkgs.autorandr
     pkgs.tree
-    pkgs.zsh
     pkgs.rnix-lsp
     pkgs.lazydocker
     pkgs.libgccjit
@@ -121,81 +121,37 @@ in {
 
     # emacsPkgs.emacsGcc
     pkgs.emacs
+
+    pkgs.megasync
+    pkgs.tlaplus
+    pkgs.sqlite
+    pkgs.texlive.combined.scheme-full
   ];
 
   programs.git = {
     enable = true;
-    userName = "rafaelcgs10";
-    userEmail = "rafaelcgs10@gmail.com";
+    userName = "gabrielamafra";
+    userEmail = "gabrielamoreiramafra@gmail.com";
   };
 
-  programs.zsh = {
+  programs.fish = {
     enable = true;
-    enableCompletion = true;
-    enableAutosuggestions = true;
+    shellInit = builtins.readFile ./programs/fish/config.fish;
 
-    oh-my-zsh = {
-      enable = true;
-      plugins = [ "git" "sudo" "git-auto-fetch" "git-extras" "dirhistory" ];
-    };
+    # sessionVariables = rec {
+    #   EDITOR = "vim";
+    #   VISUAL = EDITOR;
+    #   GIT_EDITOR = EDITOR;
+    #   DOOMLOCALDIR = "$HOME/.doom_local";
+    #   DOOMDIR = "$HOME/nix-configs/doom.d";
+    #   DIRENV_ALLOW_NIX = 1;
+    # };
+  };
 
-    plugins = [
-      {
-        name = "zsh-nix-shell";
-        file = "nix-shell.plugin.zsh";
-        src = pkgs.fetchFromGitHub {
-          owner = "chisui";
-          repo = "zsh-nix-shell";
-          rev = "v0.1.0";
-          sha256 = "0snhch9hfy83d4amkyxx33izvkhbwmindy0zjjk28hih1a9l2jmx";
-        };
-      }
-      {
-        name = "zsh-git";
-        src = pkgs.fetchFromGitHub {
-          owner = "zsh-users";
-          repo = "zsh-git";
-          rev = "v0.6.3";
-          sha256 = "1h8h2mz9wpjpymgl2p7pc146c1jgb3dggpvzwm9ln3in336wl95c";
-        };
-      }
-      {
-        name = "zsh-autosuggestions";
-        src = pkgs.fetchFromGitHub {
-          owner = "zsh-users";
-          repo = "zsh-autosuggestions";
-          rev = "v0.6.3";
-          sha256 = "1h8h2mz9wpjpymgl2p7pc146c1jgb3dggpvzwm9ln3in336wl95c";
-        };
-      }
-      {
-        name = "zsh-syntax-highlighting";
-        src = pkgs.fetchFromGitHub {
-          owner = "zsh-users";
-          repo = "zsh-syntax-highlighting";
-          rev = "be3882aeb054d01f6667facc31522e82f00b5e94";
-          sha256 = "0w8x5ilpwx90s2s2y56vbzq92ircmrf0l5x8hz4g1nx3qzawv6af";
-        };
-      }
-      {
-        name = "powerlevel10k";
-        src = pkgs.zsh-powerlevel10k;
-        file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
-      }
-      {
-        name = "powerlevel10k-config";
-        src = pkgs.lib.cleanSource ./programs/zsh/p10k;
-        file = "p10k.zsh";
-      }
-    ];
-
-    sessionVariables = rec {
-      EDITOR = "vim";
-      VISUAL = EDITOR;
-      GIT_EDITOR = EDITOR;
-      DOOMLOCALDIR = "$HOME/.doom_local";
-      DOOMDIR = "$HOME/nix-configs/doom.d";
-      DIRENV_ALLOW_NIX = 1;
+  programs.bash = {
+    enable = true;
+    shellAliases = {
+      ls = "ls --color=auto";
     };
   };
 
@@ -271,13 +227,13 @@ in {
 
       draw_bold_text_with_bright_colors = true;
       font = {
-        normal.family = "Mononoki Nerd Font";
+        normal.family = "Iosevka";
         normal.style = "Regular";
-        bold.family = "Mononoki Nerd Font";
+        bold.family = "Iosevka";
         bold.style = "Regular";
-        italic.family = "Mononoki Nerd Font";
+        italic.family = "Iosevka";
         italic.style = "Regular";
-        blod_italic.family = "Mononoki Nerd Font";
+        blod_italic.family = "Iosevka";
         blod_italic.style = "Regular";
         size = 10.0;
       };
