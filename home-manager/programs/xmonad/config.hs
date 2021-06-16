@@ -100,8 +100,8 @@ myEditor = "emacsclient -c -a emacs "  -- Sets emacs as editor for tree select
 myBorderWidth :: Dimension
 myBorderWidth = 0          -- Sets border width for windows
 
-myGaps :: Int
-myGaps = 10
+myGaps :: Integer
+myGaps = 5
 
 myNormColor :: String
 myNormColor   = "#967fc9"  -- Border color of normal windows
@@ -133,6 +133,7 @@ myStartupHook = do
           spawnOnce "gromit-mpx &"
           spawnOnce "xset r rate 200 30"
           spawnOnce "polybar mybar"
+          spawnOnce "nm-applet"
 
 myColorizer :: Window -> Bool -> X (String, String)
 myColorizer = colorRangeFromClassName
@@ -298,12 +299,12 @@ mySpacing' i = spacingRaw True (Border i i i i) True (Border i i i i) True
 -- Defining a bunch of layouts, many that I don't use.
 tall     = renamed [Replace "tall"]
            $ limitWindows 12
-           $ mySpacing 8
+           $ mySpacing myGaps
            $ ResizableTall 1 (3/100) (1/2) []
 magnify  = renamed [Replace "magnify"]
            $ magnifier
            $ limitWindows 12
-           $ mySpacing 8
+           $ mySpacing myGaps
            $ ResizableTall 1 (3/100) (1/2) []
 monocle  = renamed [Replace "monocle"]
            $ limitWindows 20 Full
@@ -311,19 +312,19 @@ floats   = renamed [Replace "floats"]
            $ limitWindows 20 simplestFloat
 grid     = renamed [Replace "grid"]
            $ limitWindows 12
-           $ mySpacing 16
+           $ mySpacing myGaps
            $ mkToggle (single MIRROR)
            $ Grid (16/10)
 spirals  = renamed [Replace "spirals"]
-           $ mySpacing' 8
+           $ mySpacing' myGaps
            $ spiral (6/7)
 threeCol = renamed [Replace "threeCol"]
            $ limitWindows 7
-           $ mySpacing' 4
+           $ mySpacing' myGaps
            $ ThreeCol 1 (3/100) (1/2)
 threeRow = renamed [Replace "threeRow"]
            $ limitWindows 7
-           $ mySpacing' 4
+           $ mySpacing' myGaps
            -- Mirror takes a layout and rotates it by 90 degrees.
            -- So we are applying Mirror to the ThreeCol layout.
            $ Mirror
@@ -353,16 +354,9 @@ myShowWNameTheme = def
 
 myManageHook :: XMonad.Query (Data.Monoid.Endo WindowSet)
 myManageHook = composeAll
-     -- using 'doShift ( myWorkspaces !! 7)' sends program to workspace 8!
-     -- I'm doing it this way because otherwise I would have to write out
-     -- the full name of my workspaces.
-     [ className =? "TelegramDesktop"     --> doShift ( myWorkspaces !! 2 )
-     , className =? "Slack"     --> doShift ( myWorkspaces !! 4 )
-     -- , className =? "vlc"     --> doShift ( myWorkspaces !! 7 )
-     , className =? "Gimp"    --> doShift ( myWorkspaces !! 8 )
-     , className =? "Gimp"    --> doFloat
+     [ className =? "Slack"     --> doShift ( myWorkspaces !! 4 )
+     , className =? "Emacs"     --> doShift ( myWorkspaces !! 7 )
      , title =? "Oracle VM VirtualBox Manager"     --> doFloat
-     , className =? "VirtualBox Manager" --> doShift  ( myWorkspaces !! 4 )
      , (className =? "firefox" <&&> resource =? "Dialog") --> doFloat  -- Float Firefox Dialog
      ] <+> namedScratchpadManageHook myScratchPads
 
@@ -478,22 +472,6 @@ myKeysP =
         , ("C-e v", spawn "emacsclient -c -a 'emacs' --eval '(+vterm/here nil)'") -- vterm within emacs
         -- emms is an emacs audio player. I set it to auto start playing in a specific directory.
         , ("C-e a", spawn "emacsclient -c -a 'emacs' --eval '(emms)' --eval '(emms-play-directory-tree \"~/Music/Non-Classical/70s-80s/\")'")
-
-    --- My Applications (Super+Alt+Key)
-        , ("M-M1-a", spawn (myTerminal ++ " -e ncpamixer"))
-        , ("M-M1-b", spawn "surf www.youtube.com/c/DistroTube/")
-        , ("M-M1-e", spawn (myTerminal ++ " -e neomutt"))
-        , ("M-M1-f", spawn (myTerminal ++ " -e sh ./.config/vifm/scripts/vifmrun | bash"))
-        , ("M-M1-i", spawn (myTerminal ++ " -e irssi"))
-        , ("M-M1-j", spawn (myTerminal ++ " -e joplin"))
-        , ("M-M1-l", spawn (myTerminal ++ " -e lynx https://distrotube.com"))
-        , ("M-M1-m", spawn (myTerminal ++ " -e spotify"))
-        , ("M-M1-n", spawn (myTerminal ++ " -e newsboat"))
-        , ("M-M1-p", spawn (myTerminal ++ " -e pianobar"))
-        , ("M-M1-r", spawn (myTerminal ++ " -e rtv"))
-        , ("M-M1-t", spawn (myTerminal ++ " -e toot curses"))
-        , ("M-M1-w", spawn (myTerminal ++ " -e wopr report.xml"))
-        , ("M-M1-y", spawn (myTerminal ++ " -e youtube-viewer"))
 
     -- Multimedia Keys
         , ("<XF86AudioPlay>", spawn "cmus toggle")

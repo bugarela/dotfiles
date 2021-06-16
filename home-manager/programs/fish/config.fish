@@ -1,5 +1,6 @@
 set -U fish_greeting
 set -g theme_short_path yes
+__git.init
 
 set DOTFILES "$HOME/Util/dotfiles"
 set CLUSTERING "$HOME/projects/rdother/clustering-engine"

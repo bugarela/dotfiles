@@ -24,7 +24,7 @@
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 (setq doom-theme 'doom-bugs-nightly)
-(setq doom-font (font-spec :family "Iosevka" :size 22))
+(setq doom-font (font-spec :family "Iosevka" :size 16))
 
 
 ;; If you use `org' and don't want your org files in the default location below,

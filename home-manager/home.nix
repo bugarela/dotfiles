@@ -1,8 +1,19 @@
 { config, pkgs, lib, ... }:
 
 let
+  picom-fork = pkgs.picom.overrideAttrs (old: {
+    src = pkgs.fetchFromGitHub {
+      owner = "ibhagwan";
+      repo = "picom";
+      rev    = "44b4970f70d6b23759a61a2b94d9bfb4351b41b1";
+      sha256 = "0iff4bwpc00xbjad0m000midslgx12aihs33mdvfckr75r114ylh";
+    };
+  });
   unstable = import <nixpkgs-unstable> { config.allowUnfree = true; overlays = [(self: super: { discord = super.discord.overrideAttrs (_: { src = builtins.fetchTarball "https://discord.com/api/download?platform=linux&format=tar.gz"; });})];};
   emacs-overlay = builtins.fetchTarball "https://github.com/nix-community/emacs-overlay/archive/15ed1f372a83ec748ac824bdc5b573039c18b82f.tar.gz";
+  omf =  builtins.fetchTarball {
+    url = "https://github.com/oh-my-fish/oh-my-fish/archive/refs/tags/v7.tar.gz";
+  };
   emacsPkgs = import <nixpkgs> { overlays = [ (import emacs-overlay) ]; };
   mypolybar = (pkgs.polybar.overrideAttrs (old: {
     nativeBuildInputs = old.nativeBuildInputs ++ [
@@ -128,6 +139,9 @@ in {
     pkgs.texlive.combined.scheme-full
     pkgs.nitrogen
     pkgs.killall
+    omf
+    pkgs.fzf
+    pkgs.nix-prefetch-git
   ];
 
   programs.git = {
@@ -139,49 +153,106 @@ in {
   programs.fish = {
     enable = true;
     shellInit = builtins.readFile ./programs/fish/config.fish;
+    plugins = [
+      {
+        name = "fasd";
+        src = pkgs.fetchFromGitHub {
+          owner = "fishgretel";
+          repo = "fasd";
+          rev = "a0a3c3503961b8cd36e6bec8a7ae0edbca19d105";
+          sha256 = "03axk4fdlm0jvlk937ykzqrgbjbgddh871jh8rbxnxmicxq6im3y";
+        };
+      }
+      {
+        name = "fish-prompt-mono";
+        src = pkgs.fetchFromGitHub {
+          owner = "fishpkg";
+          repo = "fish-prompt-mono";
+          rev = "8ac13592d47b746a4549bcecf21549f97ad66edb";
+          sha256 = "03axk4fdlm0jvlk937ykzqrgbjbgddh871jh8rbxnxmicxq6im3y";
+        };
+      }
+      {
+        name = "fzf";
+        src = pkgs.fetchFromGitHub {
+          owner = "jethrokuan";
+          repo = "fzf";
+          rev = "ac01d96fc6344ebeb48c03f2c9c0be5bf3b20f1c";
+          sha256 = "1h97zh3ghcvvn2x9rj51frhhi85nf7wa072g9mm2pc6sg71ijw4k";
+        };
+      }
+      {
+        name = "plugin-bang-bang";
+        src = pkgs.fetchFromGitHub {
+          owner = "oh-my-fish";
+          repo = "plugin-bang-bang";
+          rev = "4ac4ddee91d593f7a5ffb50de60ebd85566f5a15";
+          sha256 = "03axk4fdlm0jvlk937ykzqrgbjbgddh871jh8rbxnxmicxq6im3y";
+        };
+      }
+      {
+        name = "fish-ssh-agent";
+        src = pkgs.fetchFromGitHub {
+          owner = "danhper";
+          repo = "fish-ssh-agent";
+          rev = "df0de37a6cd039e27433a20195d36d156d363e40";
+          sha256 = "03axk4fdlm0jvlk937ykzqrgbjbgddh871jh8rbxnxmicxq6im3y";
+        };
+      }
+      {
+        name = "plugin-git";
+        src = pkgs.fetchFromGitHub {
+          owner = "jhillyerd";
+          repo = "plugin-git";
+          rev = "e8da507732c8e2aa0bd6487cea800f7e3ab4bb3b";
+          sha256 = "0z36z1chiyv2m0iwa90brz6bf7wlvsibq1y3ldmsiqb8gqh80nrj";
+        };
+      }
 
-    # sessionVariables = rec {
-    #   EDITOR = "vim";
-    #   VISUAL = EDITOR;
-    #   GIT_EDITOR = EDITOR;
-    #   DOOMLOCALDIR = "$HOME/.doom_local";
-    #   DOOMDIR = "$HOME/nix-configs/doom.d";
-    #   DIRENV_ALLOW_NIX = 1;
-    # };
-  };
+    ];
 
-  programs.bash = {
-    enable = true;
-    shellAliases = {
-      ls = "ls --color=auto";
+      # sessionVariables = rec {
+      #   EDITOR = "vim";
+      #   VISUAL = EDITOR;
+      #   GIT_EDITOR = EDITOR;
+      #   DOOMLOCALDIR = "$HOME/.doom_local";
+      #   DOOMDIR = "$HOME/nix-configs/doom.d";
+      #   DIRENV_ALLOW_NIX = 1;
+      # };
     };
-  };
 
-  programs.neovim = {
-    enable = true;
-    vimAlias = true;
-    extraConfig = builtins.readFile ./programs/vim/extraConfig.vim;
+    programs.bash = {
+      enable = true;
+      shellAliases = {
+        ls = "ls --color=auto";
+      };
+    };
 
-    plugins = with pkgs.vimPlugins; [
-      # Syntax / Language Support ##########################
-      vim-nix
-      vim-ruby # ruby
-      vim-go # go
-      # vim-fish # fish
-      # vim-toml           # toml
-      # vim-gvpr           # gvpr
-      # rust-vim # rust
-      zig-vim
-      vim-pandoc # pandoc (1/2)
-      vim-pandoc-syntax # pandoc (2/2)
-      # yajs.vim           # JS syntax
-      # es.next.syntax.vim # ES7 syntax
+    programs.neovim = {
+      enable = true;
+      vimAlias = true;
+      extraConfig = builtins.readFile ./programs/vim/extraConfig.vim;
 
-      # UI #################################################
-      nord-vim # colorscheme
-      vim-gitgutter # status in gutter
-      # vim-devicons
-      vim-airline
+      plugins = with pkgs.vimPlugins; [
+        # Syntax / Language Support ##########################
+        vim-nix
+        vim-ruby # ruby
+        vim-go # go
+        # vim-fish # fish
+        # vim-toml           # toml
+        # vim-gvpr           # gvpr
+        # rust-vim # rust
+        zig-vim
+        vim-pandoc # pandoc (1/2)
+        vim-pandoc-syntax # pandoc (2/2)
+        # yajs.vim           # JS syntax
+        # es.next.syntax.vim # ES7 syntax
+
+        # UI #################################################
+        nord-vim # colorscheme
+        vim-gitgutter # status in gutter
+        # vim-devicons
+        vim-airline
 
       # Editor Features ####################################
       vim-surround # cs"'
@@ -242,7 +313,7 @@ in {
 
       colors = {
         primary = {
-          background = "0x282c34";
+          background = "0x1d071f";
           foreground = "0xbbc2cf";
         };
 
@@ -294,6 +365,25 @@ in {
     terminal = "${pkgs.alacritty}/bin/alacritty";
     theme = ./programs/rofi/theme.slate;
     cycle = true;
+  };
+
+  services.picom = {
+    enable = true;
+    # experimentalBackends = true;
+    # backend = "glx";
+    package = picom-fork;
+    blur = false;
+    shadow = true;
+    shadowOpacity = "0.65";
+    extraOptions = ''
+      corner-radius = 10;
+      use-ewmh-active-win = true;
+      rounded-corners-exclude = [
+        #"window_type = 'normal'",
+        "class_g = 'Polybar'",
+        #"class_g = 'TelegramDesktop'",
+      ];
+    '';
   };
 
   gtk = {
