@@ -126,6 +126,8 @@ in {
     pkgs.tlaplus
     pkgs.sqlite
     pkgs.texlive.combined.scheme-full
+    pkgs.nitrogen
+    pkgs.killall
   ];
 
   programs.git = {
