@@ -27,5 +27,19 @@
     [ { device = "/dev/disk/by-uuid/5b9c3162-fea2-4e87-8d9b-c27ac55949da"; }
     ];
 
+  # Backlight control
+  programs.light.enable = true;
+  services.acpid.enable = true;
+  services.acpid.handlers = {
+    brightness-up = {
+      action = "/run/current-system/sw/bin/light -A 30";
+      event = "video/brightnessup.*";
+    };
+    brightness-down = {
+      action = "/run/current-system/sw/bin/light -U 30";
+      event = "video/brightnessdown.*";
+    };
+  };
+
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
 }

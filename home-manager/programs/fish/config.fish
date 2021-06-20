@@ -2,8 +2,7 @@ set -U fish_greeting
 set -g theme_short_path yes
 __git.init
 
-set DOTFILES "$HOME/Util/dotfiles"
-set CLUSTERING "$HOME/projects/rdother/clustering-engine"
+set CLUSTERING "$HOME/projects/clustering-engine"
 set STATION "$HOME/projects/rdstation"
 
 set GOPATH "$HOME/.gvm/pkgsets/go1.13/global"
@@ -26,6 +25,7 @@ alias ggpush='git push origin (current_branch)'
 
 alias dr='docker-compose run web /bin/bash'
 alias de='docker-compose exec web /bin/bash'
+alias rd-docker='~/.rd-docker/rd-docker-cli'
 
 function gvm
     bass source ~/.gvm/scripts/gvm ';' gvm $argv

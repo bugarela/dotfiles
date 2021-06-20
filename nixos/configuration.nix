@@ -59,12 +59,10 @@
   # services.xserver.desktopManager.plasma5.enable = true;
 
   services = {
-    gnome3.gnome-keyring.enable = true;
     upower.enable = true;
 
     dbus = {
       enable = true;
-      socketActivated = true;
       packages = [ pkgs.gnome3.dconf ];
     };
   };
@@ -76,15 +74,18 @@
     resolutions = [ { x = 1920; y = 1080; } { x = 1440; y = 900; } { x = 1336; y = 768; } { x = 1024; y = 768; }];
 
     desktopManager = {
-      xfce.enable = true;
+      pantheon.enable = true;
+      xfce.enable = false;
       xterm.enable = false;
     };
 
     displayManager = {
         lightdm.enable = true;
-        defaultSession = "xfce";
+        defaultSession = "pantheon";
     };
   };
+
+  services.pantheon.apps.enable = false;
 
   # Bluetooth service
   services.blueman.enable = true;
