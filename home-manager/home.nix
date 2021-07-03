@@ -115,7 +115,8 @@ in {
     pkgs.pciutils
     pkgs.glxinfo
     pkgs.lm_sensors
-    (pkgs.aspellWithDicts (d: [d.en]))
+    (pkgs.aspellWithDicts (d: [d.en d.pt_BR]))
+    pkgs.languagetool
 
     pkgs.networkmanagerapplet
 
@@ -133,8 +134,10 @@ in {
     # emacsPkgs.emacsGcc
     pkgs.emacs
 
-    pkgs.megasync
     pkgs.tlaplus
+    pkgs.tlaplusToolbox
+
+    pkgs.megasync
     pkgs.sqlite
     pkgs.texlive.combined.scheme-full
     pkgs.nitrogen
@@ -142,12 +145,43 @@ in {
     omf
     pkgs.fzf
     pkgs.nix-prefetch-git
+    pkgs.arandr
+    pkgs.pass
+    pkgs.openfortivpn
+    pkgs.pinentry
+    pkgs.libnotify
+
+    pkgs.valgrind
+    pkgs.irony-server
+    pkgs.stdenv
+    pkgs.zip
+    pkgs.steam-tui
+    pkgs.lutris
+    pkgs.obs-studio
+    pkgs.okular
+    pkgs.vlc
+    pkgs.mpv
+
+    pkgs.xf86_input_wacom
+
+    pkgs.kubectl
+    pkgs.google-cloud-sdk
+
+    pkgs.mu
+    pkgs.isync
+
+    pkgs.graphviz
   ];
 
   programs.git = {
     enable = true;
     userName = "gabrielamafra";
     userEmail = "gabrielamoreiramafra@gmail.com";
+    signing = {
+      key = "19A375EC9AEB17EA";
+      signByDefault = true;
+    };
+    delta.enable = true;
   };
 
   programs.fish = {
@@ -155,48 +189,12 @@ in {
     shellInit = builtins.readFile ./programs/fish/config.fish;
     plugins = [
       {
-        name = "fasd";
-        src = pkgs.fetchFromGitHub {
-          owner = "fishgretel";
-          repo = "fasd";
-          rev = "a0a3c3503961b8cd36e6bec8a7ae0edbca19d105";
-          sha256 = "03axk4fdlm0jvlk937ykzqrgbjbgddh871jh8rbxnxmicxq6im3y";
-        };
-      }
-      {
-        name = "fish-prompt-mono";
-        src = pkgs.fetchFromGitHub {
-          owner = "fishpkg";
-          repo = "fish-prompt-mono";
-          rev = "8ac13592d47b746a4549bcecf21549f97ad66edb";
-          sha256 = "03axk4fdlm0jvlk937ykzqrgbjbgddh871jh8rbxnxmicxq6im3y";
-        };
-      }
-      {
         name = "fzf";
         src = pkgs.fetchFromGitHub {
           owner = "jethrokuan";
           repo = "fzf";
           rev = "ac01d96fc6344ebeb48c03f2c9c0be5bf3b20f1c";
           sha256 = "1h97zh3ghcvvn2x9rj51frhhi85nf7wa072g9mm2pc6sg71ijw4k";
-        };
-      }
-      {
-        name = "plugin-bang-bang";
-        src = pkgs.fetchFromGitHub {
-          owner = "oh-my-fish";
-          repo = "plugin-bang-bang";
-          rev = "4ac4ddee91d593f7a5ffb50de60ebd85566f5a15";
-          sha256 = "03axk4fdlm0jvlk937ykzqrgbjbgddh871jh8rbxnxmicxq6im3y";
-        };
-      }
-      {
-        name = "fish-ssh-agent";
-        src = pkgs.fetchFromGitHub {
-          owner = "danhper";
-          repo = "fish-ssh-agent";
-          rev = "df0de37a6cd039e27433a20195d36d156d363e40";
-          sha256 = "03axk4fdlm0jvlk937ykzqrgbjbgddh871jh8rbxnxmicxq6im3y";
         };
       }
       {
@@ -225,6 +223,7 @@ in {
       enable = true;
       shellAliases = {
         ls = "ls --color=auto";
+        rd-docker= "~/.rd-docker/rd-docker-cli";
       };
     };
 
@@ -308,7 +307,7 @@ in {
         italic.style = "Regular";
         blod_italic.family = "Iosevka";
         blod_italic.style = "Regular";
-        size = 10.0;
+        size = 14.0;
       };
 
       colors = {
@@ -359,7 +358,6 @@ in {
 
   programs.autorandr.enable = true;
 
-  # Interface stuff
   programs.rofi = {
     enable = true;
     terminal = "${pkgs.alacritty}/bin/alacritty";
@@ -367,8 +365,12 @@ in {
     cycle = true;
   };
 
-  services.picom = {
+  programs.rofi.pass = {
     enable = true;
+  };
+
+  services.picom = {
+    enable = false;
     # experimentalBackends = true;
     # backend = "glx";
     package = picom-fork;
@@ -377,12 +379,6 @@ in {
     shadowOpacity = "0.65";
     extraOptions = ''
       corner-radius = 10;
-      use-ewmh-active-win = true;
-      rounded-corners-exclude = [
-        #"window_type = 'normal'",
-        "class_g = 'Polybar'",
-        #"class_g = 'TelegramDesktop'",
-      ];
     '';
   };
 
@@ -419,6 +415,35 @@ in {
     tray = "always";
   };
 
-  programs.direnv.enable = true;
-  programs.direnv.enableNixDirenvIntegration = true;
+  services.dunst = {
+    enable = true;
+    settings = {
+      global = {
+        font = "Iosevka Fixed SS12 10";
+        geometry = "300x5-25+25";
+        padding = 15;
+        horizontal_padding = 15;
+        monitor = 1;
+        word_wrap = true;
+      };
+      frame = {
+        background = "#111111";
+        foreground = "#EEEEEE";
+      };
+      urgency_low = {
+        background = "#111111";
+        foreground = "#EEEEEE";
+      };
+      urgency_normal = {
+        background = "#111111";
+        foreground = "#EEEEEE";
+      };
+      urgency_critical = {
+        background = "#111111";
+        foreground = "#EEEEEE";
+      };
+    };
+  };
+
+  programs.direnv.nix-direnv.enable = true;
 }

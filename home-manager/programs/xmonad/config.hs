@@ -124,7 +124,7 @@ myStartupHook = do
           spawnOnce "trayer --edge bottom --align right --widthtype request --padding 6 --SetDockType true --SetPartialStrut true --expand true --monitor 0 --transparent true --alpha 0 --tint 0x0c0c0c  --height 16 &"
           -- spawnOnce "/usr/sbin/emacs --daemon &"
           spawnOnce "dunst &"
-          spawnOnce "setxkbmap -layout us -variant altgr-intl -option caps:swapescape &"
+          -- spawnOnce "setxkbmap -layout us -variant altgr-intl -option caps:swapescape &"
           setWMName "LG3D"
           spawnOnce "emacs"
           spawnOnce "slack"
@@ -132,7 +132,7 @@ myStartupHook = do
           spawnOnce "xsetroot -cursor_name left_ptr"
           spawnOnce "gromit-mpx &"
           spawnOnce "xset r rate 200 30"
-          spawnOnce "polybar mybar"
+          spawnOnce "fish -c 'for m in (xrandr --query | grep \' connected\' | cut -d\' \' -f1); MONITOR=$m polybar --reload mybar &; end'"
           spawnOnce "nm-applet"
 
 myColorizer :: Window -> Bool -> X (String, String)
@@ -459,6 +459,7 @@ myKeysP =
         , ("Print", spawn "flameshot full")
         , ("C-Print", spawn "scrot -e 'mv $f /tmp/ && gimp /tmp/$f")
         , ("M-S-s", spawn "flameshot gui")
+        , ("M-S-p", spawn "killall picom")
 
     -- Emacs (CTRL-e followed by a key)
         , ("C-e e", spawn "emacsclient -c -a 'emacs'")                            -- start emacs

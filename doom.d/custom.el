@@ -3,6 +3,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(LaTeX-command "xelatex")
  '(ansi-color-names-vector
    ["#1d1f21" "#EDD26C" "#4F2E6E" "#71539F" "#AB7793" "#6F5494" "#D351AE" "#A3C6DA"])
  '(bibtex-completion-bibliography
@@ -10,22 +11,44 @@
  '(bibtex-completion-library-path '("~/udesc/mestrado/MEP/pbs/pdfs"))
  '(bibtex-completion-notes-global-mode t)
  '(bibtex-completion-notes-path "~/org/roam")
+ '(bibtex-completion-notes-template-multiple-files
+   "#+TITLE: ${=key=}: ${title}
+#+ROAM_KEY: ${ref}
+#+ROAM_TAGS:
+Time-stamp: <>
+- tags :: ${keywords}
+
+* ${title}
+  :PROPERTIES:
+  :Custom_ID: ${=key=}
+  :URL: ${url}
+  :AUTHOR: ${author-or-editor}
+  :NOTER_DOCUMENT: ~/udesc/mestrado/MEP/pbs/pdfs/${=key=}.pdf
+  :NOTER_PAGE:
+  :END:
+
+
+")
  '(custom-safe-themes
    '("76b4632612953d1a8976d983c4fdf5c3af92d216e2f87ce2b0726a1f37606158" "e7ba99d0f4c93b9c5ca0a3f795c155fa29361927cadb99cfce301caf96055dfd" "f4876796ef5ee9c82b125a096a590c9891cec31320569fc6ff602ff99ed73dca" default))
  '(fci-rule-color "#427FA3")
+ '(ispell-local-dictionary-alist '(("pt_BR" "" "" "" nil nil "~tex" iso-8859-10)))
  '(jdee-db-active-breakpoint-face-colors (cons "#0e000f" "#AB7793"))
  '(jdee-db-requested-breakpoint-face-colors (cons "#0e000f" "#4F2E6E"))
  '(jdee-db-spec-breakpoint-face-colors (cons "#0e000f" "#376A88"))
+ '(langtool-bin "languagetool-commandline")
  '(objed-cursor-color "#EDD26C")
+ '(org-latex-compiler "xelatex")
  '(org-latex-hyperref-template nil)
  '(org-roam-capture-immediate-template
    '("d" "default" plain #'org-roam-capture--get-point "%?" :file-name "${slug}" :head "#+title: ${title}
 " :unnarrowed t :immediate-finish t))
  '(package-selected-packages
-   '(helm-bibtex org-roam-bibtex twilight-bright-theme twilight-theme ox-hugo zoom-window zoom undo-tree sqlformat smooth-scrolling popup-kill-ring org-special-block-extras org-re-reveal-ref org-download languagetool jazz-theme ivy-spotify ivy-posframe ivy-bibtex imenu-list ibuffer-sidebar goto-last-change git-link flymake-shellcheck dired-sidebar counsel-spotify badger-theme avk-emacs-themes abyss-theme))
+   '(polymode helm-bibtex org-roam-bibtex twilight-bright-theme twilight-theme ox-hugo zoom-window zoom undo-tree sqlformat smooth-scrolling popup-kill-ring org-special-block-extras org-re-reveal-ref org-download languagetool jazz-theme ivy-spotify ivy-posframe ivy-bibtex imenu-list ibuffer-sidebar goto-last-change git-link flymake-shellcheck dired-sidebar counsel-spotify badger-theme avk-emacs-themes abyss-theme))
  '(pdf-view-midnight-colors (cons "#A3C6DA" "#130416"))
  '(rustic-ansi-faces
    ["#130416" "#EDD26C" "#4F2E6E" "#71539F" "#AB7793" "#6F5494" "#D351AE" "#A3C6DA"])
+ '(tla+-tlatools-path "/home/gabriela/tla2tools.jar")
  '(vc-annotate-background "#130416")
  '(vc-annotate-color-map
    (list

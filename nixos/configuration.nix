@@ -7,7 +7,7 @@
 {
   imports =
     [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
+      /etc/nixos/hardware-configuration.nix
       <home-manager/nixos>
     ];
 
@@ -28,7 +28,19 @@
   boot.loader.grub.efiInstallAsRemovable = true;
   boot.loader.efi.efiSysMountPoint = "/boot";
   # Define on which hard drive you want to install Grub.
-  boot.loader.grub.device = "nodev"; # or "nodev" for efi only
+  boot.loader.grub = {
+    device = "nodev"; # or "nodev" for efi only
+    useOSProber = true;
+    extraEntries = ''
+        menuentry "Windows" {
+          insmod part_gpt
+          insmod fat
+          insmod search_fs_uuid
+          insmod chain
+          search --fs-uuid --set=root $FS_UUID
+          chainloader /efi/Microsoft/Boot/bootmgfw.efi
+        }'';
+  };
 
   networking.hostName = "gabriela-nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -41,6 +53,9 @@
   # Per-interface useDHCP will be mandatory in the future, so this generated config
   # replicates the default behaviour.
   networking.useDHCP = false;
+
+  boot.kernel.sysctl."net.ipv6.conf.all.disable_ipv6" = true;
+  boot.kernel.sysctl."net.ipv6.conf.default.disable_ipv6" = true;
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -70,19 +85,46 @@
   # Xserver basic
   services.xserver = {
     enable = true;
-    layout = "br";
-    resolutions = [ { x = 1920; y = 1080; } { x = 1440; y = 900; } { x = 1336; y = 768; } { x = 1024; y = 768; }];
+    exportConfiguration = true;
+    layout = "us";
+    xkbVariant = "altgr-intl";
+    xkbOptions = "caps:swapescape";
+    dpi = 141;
+    videoDrivers = [ "nvidia" ];
+    modules = [ pkgs.xf86_input_wacom ];
 
     desktopManager = {
-      pantheon.enable = true;
-      xfce.enable = false;
+      xfce.enable = true;
       xterm.enable = false;
     };
 
     displayManager = {
-        lightdm.enable = true;
-        defaultSession = "pantheon";
+      lightdm.enable = true;
+      defaultSession = "xfce";
     };
+
+    deviceSection = ''
+      Identifier     "Device0"
+      Driver         "nvidia"
+      VendorName     "NVIDIA Corporation"
+      BoardName      "GeForce GTX 1660 Ti"
+    '';
+
+    screenSection = ''
+      Identifier     "Screen0"
+      Device         "Device0"
+      Monitor        "Monitor0"
+      DefaultDepth    24
+      Option         "Stereo" "0"
+      Option         "nvidiaXineramaInfoOrder" "DFP-6"
+      Option         "metamodes" "DP-5: nvidia-auto-select +0+220 {viewportin=2880x1620, ForceCompositionPipeline=On, ForceFullCompositionPipeline=On}, HDMI-0: nvidia-auto-select +2880+0 {ForceCompositionPipeline=On, ForceFullCompositionPipeline=On}"
+      Option         "SLI" "Off"
+      Option         "MultiGPU" "Off"
+      Option         "BaseMosaic" "off"
+      SubSection     "Display"
+          Depth       24
+      EndSubSection
+    '';
   };
 
   services.pantheon.apps.enable = false;
@@ -103,6 +145,17 @@
   # Enable touchpad support (enabled default in most desktopManager).
   services.xserver.libinput.enable = true;
 
+
+  # Disables mouse acceleration
+  services.xserver.config = ''
+    Section "InputClass"
+      Identifier "mouse accel"
+      Driver "libinput"
+      MatchIsPointer "on"
+      Option "AccelProfile" "flat"
+      Option "AccelSpeed" "0"
+    EndSection
+  '';
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.gabriela = {
     isNormalUser = true;
@@ -131,6 +184,9 @@
     fish
     vim
     home-manager
+    gnupg
+    gcc
+    binutils
 
     ecryptfs
     ecryptfs-helper
@@ -144,6 +200,7 @@
     cachix
     gnutar gzip gnumake
 
+    jre
     # libnotify
     # libdbusmenu
   ];
@@ -166,6 +223,14 @@
     emacs-all-the-icons-fonts
     (nerdfonts.override { fonts = [ "FiraCode" "DroidSansMono" "Mononoki" ]; })
   ];
+
+  programs.gnupg.agent = {
+    enable = true;
+    enableSSHSupport = true;
+    pinentryFlavor = "curses";
+  };
+
+  programs.steam.enable = true;
 
   # nixpkgs.overlays = [
   #   (import (builtins.fetchTarball https://github.com/nix-community/emacs-overlay/archive/master.tar.gz))

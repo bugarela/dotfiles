@@ -1,6 +1,5 @@
 set -U fish_greeting
 set -g theme_short_path yes
-__git.init
 
 set CLUSTERING "$HOME/projects/clustering-engine"
 set STATION "$HOME/projects/rdstation"
@@ -27,6 +26,8 @@ alias dr='docker-compose run web /bin/bash'
 alias de='docker-compose exec web /bin/bash'
 alias rd-docker='~/.rd-docker/rd-docker-cli'
 
+alias kc="kubectl --context production"
+
 function gvm
     bass source ~/.gvm/scripts/gvm ';' gvm $argv
 end
@@ -42,9 +43,9 @@ function workers
 end
 
 function clustering
-    alacritty -e /bin/bash -c 'sleep 20 && de' &
-    alacritty -e /bin/bash -c 'sleep 20 && docker-compose exec web bundle exec sidekiq -q clusters -q predicates' &
-    alacritty -e /bin/bash -c 'docker-compose up' &
+    alacritty -e fish -c 'sleep 20 && de' &
+    alacritty -e fish -c 'sleep 20 && docker-compose exec web bundle exec sidekiq -q clusters -q predicates' &
+    alacritty -e fish -c 'docker-compose up' &
     sleep 12 && workers
 end
 
@@ -68,3 +69,5 @@ end
 function migration-dashboard
     curl -u cdp:agoravai -XGET https://cdp.rd.services/cdp-launcher/api/v1/dashboard_data/ | jq
 end
+
+__git.init

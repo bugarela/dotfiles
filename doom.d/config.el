@@ -24,7 +24,7 @@
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 (setq doom-theme 'doom-bugs-nightly)
-(setq doom-font (font-spec :family "Iosevka" :size 16))
+(setq doom-font (font-spec :family "Iosevka" :size 26))
 
 
 ;; If you use `org' and don't want your org files in the default location below,
@@ -111,6 +111,14 @@
   (add-to-list 'org-latex-classes
                '("acm"
                  "\\documentclass[sigconf]{acmart}"
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+  (add-to-list 'org-latex-classes
+               '("einfart"
+                 "\\documentclass{einfart}"
                  ("\\section{%s}" . "\\section*{%s}")
                  ("\\subsection{%s}" . "\\subsection*{%s}")
                  ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
@@ -407,7 +415,8 @@ Time-stamp: <>
   :NOTER_DOCUMENT: ~/udesc/mestrado/MEP/pbs/pdfs/${=key=}.pdf
   :NOTER_PAGE:
   :END:
-" :unnarrowed t))))
+" :unnarrowed t)))
+  (setq bibtex-completion-notes-template-multiple-files orb-templates))
 
 (use-package org-noter
   :after (:any org pdf-view)
@@ -426,3 +435,10 @@ Time-stamp: <>
 
 (add-to-list 'ispell-skip-region-alist '("#\\+begin_src". "#\\+end_src"))
 (add-to-list 'ispell-skip-region-alist '("\\begin{algorithm}". "\\end{algorithm}"))
+
+;; Translate *bold* to \textbf in beamer
+(defun my-beamer-bold (contents backend info)
+  (when (eq backend 'beamer)
+    (replace-regexp-in-string "\\`\\\\[A-Za-z0-9]+" "\\\\textbf" contents)))
+
+(add-to-list 'org-export-filter-bold-functions 'my-beamer-bold)
