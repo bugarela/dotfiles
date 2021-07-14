@@ -395,6 +395,7 @@ myKeysP =
 
     -- Run Prompt
         , ("M-d", spawn "rofi -show drun -font \"Iosevka Fixed SS12 12\"")
+        , ("M-p", spawn "rofi-pass -font \"Iosevka Fixed SS12 12\"")
         -- , ("M-d", spawn "dmenu_run -i -nf '#BBBBBB' -nb '#0c0c0c' -sb '#2f1e2e' -sf '#EEEEEE' -fn 'monospace-10' -p 'run:'")
         -- , ("M-d", shellPrompt dtXPConfig)   -- Shell Prompt
 
@@ -494,8 +495,6 @@ myKeysP =
         ++ [("M-C-s " ++ k, S.selectSearch f) | (k,f) <- searchList ]
         -- Appending some extra xprompts to keybindings list.
         -- Look at "xprompt settings" section this of config for values for "k".
-        ++ [("M-p " ++ k, f dtXPConfig') | (k,f) <- promptList ]
-        ++ [("M-p " ++ k, f dtXPConfig' g) | (k,f,g) <- promptList' ]
         -- The following lines are needed for named scratchpads.
           where nonNSP          = WSIs (return (\ws -> W.tag ws /= "nsp"))
                 nonEmptyNonNSP  = WSIs (return (\ws -> isJust (W.stack ws) && W.tag ws /= "nsp"))

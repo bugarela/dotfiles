@@ -155,12 +155,15 @@ in {
     pkgs.irony-server
     pkgs.stdenv
     pkgs.zip
+    pkgs.unzip
+    pkgs.steam
     pkgs.steam-tui
     pkgs.lutris
     pkgs.obs-studio
     pkgs.okular
     pkgs.vlc
     pkgs.mpv
+    pkgs.zoom-us
 
     pkgs.xf86_input_wacom
 
@@ -171,6 +174,8 @@ in {
     pkgs.isync
 
     pkgs.graphviz
+    pkgs.tuxguitar
+    pkgs.gtk3
   ];
 
   programs.git = {
