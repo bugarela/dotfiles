@@ -164,10 +164,12 @@ in {
     pkgs.vlc
     pkgs.mpv
     pkgs.zoom-us
+    pkgs.teams
 
     pkgs.xf86_input_wacom
 
     pkgs.kubectl
+    pkgs.k9s
     pkgs.google-cloud-sdk
 
     pkgs.mu
@@ -176,6 +178,11 @@ in {
     pkgs.graphviz
     pkgs.tuxguitar
     pkgs.gtk3
+    pkgs.direnv
+
+    pkgs.insomnia
+    pkgs.pandoc
+    pkgs.pgformatter
   ];
 
   programs.git = {

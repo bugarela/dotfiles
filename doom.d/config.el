@@ -25,6 +25,8 @@
 ;; `load-theme' function. This is the default:
 (setq doom-theme 'doom-bugs-nightly)
 (setq doom-font (font-spec :family "Iosevka" :size 26))
+(setq doom-big-font (font-spec :family "Iosevka" :size 42))
+(setq doom-variable-pitch-font (font-spec :family "Iosevka" :size 14))
 
 
 ;; If you use `org' and don't want your org files in the default location below,
@@ -111,6 +113,14 @@
   (add-to-list 'org-latex-classes
                '("acm"
                  "\\documentclass[sigconf]{acmart}"
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+  (add-to-list 'org-latex-classes
+               '("springer"
+                 "\\documentclass[runningheads]{llncs}"
                  ("\\section{%s}" . "\\section*{%s}")
                  ("\\subsection{%s}" . "\\subsection*{%s}")
                  ("\\subsubsection{%s}" . "\\subsubsection*{%s}")

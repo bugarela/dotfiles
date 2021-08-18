@@ -27,6 +27,10 @@ alias de='docker-compose exec web /bin/bash'
 alias rd-docker='~/.rd-docker/rd-docker-cli'
 
 alias kc="kubectl --context production"
+function kc-bash
+         kubectl --context production -n core exec (kubectl --context production get pods -n core | grep $argv | head -n1 | cut -f1 -d ' ') -it bash
+end
+alias ks="kubectl --context staging -n contact-mgmt"
 
 function gvm
     bass source ~/.gvm/scripts/gvm ';' gvm $argv
@@ -38,13 +42,12 @@ function workers
         bundle exec simple_consumer -m MutationEventsWorker#perform -s cdp-development/clustering_engine_mutation_events/clustering_engine_mutation_events &\
         bundle exec simple_consumer -m RelationEventsWorker#perform -s cdp-development/clustering_engine_relation_events/clustering_engine_relation_events &\
         bundle exec simple_consumer -m ClusterTestRequestWorker#perform -s cdp-development/clustering_engine_test_request/clustering_engine_test_request &\
-        bundle exec simple_consumer -m External::EsIndexingWorker#perform -b 100 -s cdp-development/tmp_entity_cluster_notifications/clustering_engine_es_indexing &\
-        bundle exec simple_consumer -m External::RdbMutationWorker#perform -s cdp-development/tmp_entity_cluster_notifications/clustering_engine_rdb_mutation'
+        bundle exec simple_consumer -m External::EsIndexingWorker#perform -b 100 -s cdp-development/entity_cluster_notifications/clustering_engine_es_indexing'
 end
 
 function clustering
     alacritty -e fish -c 'sleep 20 && de' &
-    alacritty -e fish -c 'sleep 20 && docker-compose exec web bundle exec sidekiq -q clusters -q predicates' &
+    alacritty -e fish -c 'sleep 20 && docker-compose exec web bundle exec sidekiq -q clusters -q predicates -q refresh' &
     alacritty -e fish -c 'docker-compose up' &
     sleep 12 && workers
 end
