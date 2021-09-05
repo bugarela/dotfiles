@@ -47,7 +47,7 @@ Time-stamp: <>
 " :unnarrowed t :immediate-finish t))
  '(org-startup-folded 'content)
  '(package-selected-packages
-   '(web-mode modus-themes php-mode polymode helm-bibtex org-roam-bibtex twilight-bright-theme twilight-theme ox-hugo zoom-window zoom undo-tree sqlformat smooth-scrolling popup-kill-ring org-special-block-extras org-re-reveal-ref org-download languagetool jazz-theme ivy-spotify ivy-posframe ivy-bibtex imenu-list ibuffer-sidebar goto-last-change git-link flymake-shellcheck dired-sidebar counsel-spotify badger-theme avk-emacs-themes abyss-theme))
+   '(fish-mode web-mode modus-themes php-mode polymode helm-bibtex org-roam-bibtex twilight-bright-theme twilight-theme ox-hugo zoom-window zoom undo-tree sqlformat smooth-scrolling popup-kill-ring org-special-block-extras org-re-reveal-ref org-download languagetool jazz-theme ivy-spotify ivy-posframe ivy-bibtex imenu-list ibuffer-sidebar goto-last-change git-link flymake-shellcheck dired-sidebar counsel-spotify badger-theme avk-emacs-themes abyss-theme))
  '(pdf-view-midnight-colors (cons "#A3C6DA" "#130416"))
  '(rustic-ansi-faces
    ["#130416" "#EDD26C" "#4F2E6E" "#71539F" "#AB7793" "#6F5494" "#D351AE" "#A3C6DA"])
@@ -91,7 +91,8 @@ Time-stamp: <>
  '(flycheck-error ((t (:underline '(:style line)))))
  '(flycheck-incorrect ((t (:underline '(:style line)))))
  '(flycheck-info ((t (:background nil :foreground nil :underline '(:style line)))))
- '(flycheck-warning ((t (:underline '(:style line))))))
+ '(flycheck-warning ((t (:underline '(:style line)))))
+ '(markdown-code-face ((t (:background "#000000")))))
 (put 'customize-variable 'disabled nil)
 (put 'customize-group 'disabled nil)
 (put 'customize-face 'disabled nil)

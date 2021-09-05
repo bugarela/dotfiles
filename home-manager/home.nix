@@ -36,6 +36,8 @@ let
     nlSupport = true;
     pulseSupport = false;
   };
+  gh-md-toc = pkgs.writeScriptBin "gh-md-toc" "curl https://raw.githubusercontent.com/ekalinin/github-markdown-toc/master/gh-md-toc -o gh-md-toc && chmod a+x gh-md-toc"
+;
 in {
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
@@ -87,6 +89,17 @@ in {
         echo "-------------> Syncing DOOM EMACS"
         "$DOOMBIN" -y sync
       fi
+    ''}";
+  };
+
+  home.file.".google-cloud-sdk-installer.tar.gz" = {
+    source =  pkgs.fetchurl {
+      url = "https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-350.0.0-linux-x86_64.tar.gz";
+      sha256 =  "1vlcwab68d8rpzkjcwj83qn35bq0awsl15p35x5qpsymmvf046l6";
+    };
+    onChange =  "${pkgs.writeShellScript "google-cloud-sdk-change" ''
+      tar xf ~/.google-cloud-sdk-installer.tar.gz
+      ~/google-cloud-sdk/bin/gcloud components install cbt
     ''}";
   };
 
@@ -170,7 +183,6 @@ in {
 
     pkgs.kubectl
     pkgs.k9s
-    pkgs.google-cloud-sdk
 
     pkgs.mu
     pkgs.isync
@@ -183,6 +195,8 @@ in {
     pkgs.insomnia
     pkgs.pandoc
     pkgs.pgformatter
+
+    pkgs.python3
   ];
 
   programs.git = {
@@ -458,4 +472,6 @@ in {
   };
 
   programs.direnv.nix-direnv.enable = true;
+
+
 }

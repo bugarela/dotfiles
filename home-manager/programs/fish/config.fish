@@ -10,6 +10,7 @@ set PATH "$PATH:$HOME/.gvm/gos/go1.13/bin"
 set PATH "$PATH:$HOME/.gvm/pkgsets/go1.13/global/bin"
 set PATH "$PATH:/opt/texlive/2020/bin/x86_64-linux"
 set PATH "$PATH:$HOME/.emacs.d/bin"
+set PATH "$PATH:$HOME/google-cloud-sdk/bin"
 set -x GPG_TTY (tty)
 
 function fish_user_key_bindings
@@ -37,12 +38,12 @@ function gvm
 end
 
 function workers
-     docker-compose exec web /bin/bash -c 'bundle exec simple_consumer -m MutationConsumerWorker#perform -s cdp-development/mutation_notification/my_subscription &\
-        bundle exec simple_consumer -m ImpactEvaluationWorker#perform -b 100 -s cdp-development/clustering_engine_events_topic/clustering_engine_events_subscription &\
-        bundle exec simple_consumer -m MutationEventsWorker#perform -s cdp-development/clustering_engine_mutation_events/clustering_engine_mutation_events &\
-        bundle exec simple_consumer -m RelationEventsWorker#perform -s cdp-development/clustering_engine_relation_events/clustering_engine_relation_events &\
-        bundle exec simple_consumer -m ClusterTestRequestWorker#perform -s cdp-development/clustering_engine_test_request/clustering_engine_test_request &\
-        bundle exec simple_consumer -m External::EsIndexingWorker#perform -b 100 -s cdp-development/entity_cluster_notifications/clustering_engine_es_indexing'
+     docker-compose exec web /bin/bash -c 'bundle exec paddy -m MutationConsumerWorker#perform -s cdp-development/mutation_notification/my_subscription &\
+        bundle exec paddy -m ImpactEvaluationWorker#perform -b 100 -s cdp-development/clustering_engine_events_topic/clustering_engine_events_subscription &\
+        bundle exec paddy -m MutationEventsWorker#perform -s cdp-development/clustering_engine_mutation_events/clustering_engine_mutation_events &\
+        bundle exec paddy -m RelationEventsWorker#perform -s cdp-development/clustering_engine_relation_events/clustering_engine_relation_events &\
+        bundle exec paddy -m ClusterTestRequestWorker#perform -s cdp-development/clustering_engine_test_request/clustering_engine_test_request &\
+        bundle exec paddy -m External::EsIndexingWorker#perform -b 100 -s cdp-development/entity_cluster_notifications/clustering_engine_es_indexing'
 end
 
 function clustering
@@ -71,6 +72,14 @@ end
 
 function migration-dashboard
     curl -u cdp:agoravai -XGET https://cdp.rd.services/cdp-launcher/api/v1/dashboard_data/ | jq
+end
+
+function init-polybar
+    MONITOR=DP-5 polybar --reload mybar &
+    sleep 1
+    MONITOR=HDMI-0 polybar --reload mybar &
+    sleep 1
+    for m in (xrandr --query | grep ' connected' | cut -d' ' -f1 | sort); MONITOR=$m polybar --reload mybar &; end
 end
 
 __git.init

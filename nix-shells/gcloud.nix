@@ -18,24 +18,17 @@ let
       vendorSha256 = lib.fakeSha256;
 
       buildInputs = [
-        pkgs.python
+        pkgs.python3
       ];
 
       subPackages = [ "." ];
 
       runVend = false;
 
-      unpackPhase = ''
-        tar -xf $src
-      '';
-
       installPhase = ''
-        mkdir $out/bin -p
-        mv gcloud $out/bin/
-      '';
-
-      shellHook = ''
-        gcloud components install cbt
+        mkdir $out
+        mv * $out
+        mkdir $out/.install
       '';
 
       meta = with lib; {
@@ -47,4 +40,14 @@ let
       };
     };
 in
-gcloud
+mkShell {
+  name = "gcloud";
+  buildInputs = [
+    gcloud
+    python3
+  ];
+
+  shellHook = ''
+    gcloud components install cbt
+  '';
+}

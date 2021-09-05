@@ -111,7 +111,6 @@
     '';
 
     screenSection = ''
-      Identifier     "Screen0"
       Device         "Device0"
       Monitor        "Monitor0"
       DefaultDepth    24

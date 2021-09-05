@@ -132,7 +132,7 @@ myStartupHook = do
           spawnOnce "xsetroot -cursor_name left_ptr"
           spawnOnce "gromit-mpx &"
           spawnOnce "xset r rate 200 30"
-          spawnOnce "fish -c \"for m in (xrandr --query | grep ' connected' | cut -d' ' -f1 | sort); MONITOR=$m polybar --reload mybar &; end\""
+          spawnOnce "fish -c init-polybar"
           spawnOnce "nm-applet"
 
 myColorizer :: Window -> Bool -> X (String, String)

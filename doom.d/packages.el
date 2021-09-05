@@ -25,6 +25,7 @@
 (package! flymake-shellcheck)
 (package! polymode)
 (package! web-mode)
+(package! fish-mode)
 
 (package! scroll-on-jump :recipe (:host gitlab :repo "ideasman42/emacs-scroll-on-jump"))
 (package! sidebar :recipe (:host github :repo "sebastiencs/sidebar.el"))
