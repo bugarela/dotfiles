@@ -33,6 +33,7 @@ Time-stamp: <>
  '(custom-safe-themes
    '("76b4632612953d1a8976d983c4fdf5c3af92d216e2f87ce2b0726a1f37606158" "e7ba99d0f4c93b9c5ca0a3f795c155fa29361927cadb99cfce301caf96055dfd" "f4876796ef5ee9c82b125a096a590c9891cec31320569fc6ff602ff99ed73dca" default))
  '(fci-rule-color "#427FA3")
+ '(flyspell-persistent-highlight nil)
  '(ispell-local-dictionary-alist '(("pt_BR" "" "" "" nil nil "~tex" iso-8859-10)))
  '(jdee-db-active-breakpoint-face-colors (cons "#0e000f" "#AB7793"))
  '(jdee-db-requested-breakpoint-face-colors (cons "#0e000f" "#4F2E6E"))
@@ -47,7 +48,8 @@ Time-stamp: <>
 " :unnarrowed t :immediate-finish t))
  '(org-startup-folded 'content)
  '(package-selected-packages
-   '(fish-mode web-mode modus-themes php-mode polymode helm-bibtex org-roam-bibtex twilight-bright-theme twilight-theme ox-hugo zoom-window zoom undo-tree sqlformat smooth-scrolling popup-kill-ring org-special-block-extras org-re-reveal-ref org-download languagetool jazz-theme ivy-spotify ivy-posframe ivy-bibtex imenu-list ibuffer-sidebar goto-last-change git-link flymake-shellcheck dired-sidebar counsel-spotify badger-theme avk-emacs-themes abyss-theme))
+   '(org-caldav org-gcal protobuf-mode fish-mode web-mode modus-themes php-mode polymode helm-bibtex org-roam-bibtex twilight-bright-theme twilight-theme ox-hugo zoom-window zoom undo-tree sqlformat smooth-scrolling popup-kill-ring org-special-block-extras org-re-reveal-ref org-download languagetool jazz-theme ivy-spotify ivy-posframe ivy-bibtex imenu-list ibuffer-sidebar goto-last-change git-link flymake-shellcheck dired-sidebar counsel-spotify badger-theme avk-emacs-themes abyss-theme))
+ '(pdf-latex-command "xelatex")
  '(pdf-view-midnight-colors (cons "#A3C6DA" "#130416"))
  '(rustic-ansi-faces
    ["#130416" "#EDD26C" "#4F2E6E" "#71539F" "#AB7793" "#6F5494" "#D351AE" "#A3C6DA"])
@@ -87,12 +89,19 @@ Time-stamp: <>
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(elixir-atom-face ((t (:foreground "blue"))))
  '(flycheck-duplicate ((t (:underline '(:style line)))))
  '(flycheck-error ((t (:underline '(:style line)))))
  '(flycheck-incorrect ((t (:underline '(:style line)))))
  '(flycheck-info ((t (:background nil :foreground nil :underline '(:style line)))))
  '(flycheck-warning ((t (:underline '(:style line)))))
- '(markdown-code-face ((t (:background "#000000")))))
+ '(flyspell-duplicate ((t (:underline nil))))
+ '(fringe ((t (:background "#323334"))))
+ '(markdown-code-face ((t (:background "#000000"))))
+ '(org-level-1 ((t (:inherit org-tree-slide-heading-level-1))))
+ '(org-level-2 ((t (:inherit org-tree-slide-heading-level-2))))
+ '(org-level-3 ((t (:inherit org-tree-slide-heading-level-3))))
+ '(org-level-4 ((t (:inherit org-tree-slide-heading-level-4)))))
 (put 'customize-variable 'disabled nil)
 (put 'customize-group 'disabled nil)
 (put 'customize-face 'disabled nil)
