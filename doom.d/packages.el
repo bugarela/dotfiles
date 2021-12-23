@@ -26,6 +26,9 @@
 (package! polymode)
 (package! web-mode)
 (package! fish-mode)
+(package! go-projectile)
+(package! mvn)
+(package! maven-test-mode)
 
 (package! scroll-on-jump :recipe (:host gitlab :repo "ideasman42/emacs-scroll-on-jump"))
 (package! sidebar :recipe (:host github :repo "sebastiencs/sidebar.el"))
@@ -34,6 +37,13 @@
 ;; (package! tla-tools :recipe (:host github :repo "mrc/tla-tools"))
 (package! tla+-mode :recipe (:host nil :type git :repo "https://git.sdf.org/bch/tlamode"))
 
+;; Workaround from https://github.com/hlissner/doom-emacs/issues/5667
+(package! gitconfig-mode
+  :recipe (:host github :repo "magit/git-modes"
+           :files ("gitconfig-mode.el")))
+(package! gitignore-mode
+  :recipe (:host github :repo "magit/git-modes"
+           :files ("gitignore-mode.el")))
 ;; (package! pymupdf-mode :recipe (:host github :repo "dalanicolai/pymupdf-mode.el"))
 
 ;; To install a package directly from a remote git repo, you must specify a

@@ -227,6 +227,33 @@
 
 (setq doom-unreal-buffer-functions '(minibufferp))
 
+(setq go-projectile-tools
+  '((gocode    . "github.com/mdempsky/gocode")
+    (golint    . "golang.org/x/lint/golint")
+    (godef     . "github.com/rogpeppe/godef")
+    (errcheck  . "github.com/kisielk/errcheck")
+    (godoc     . "golang.org/x/tools/cmd/godoc")
+    (gogetdoc  . "github.com/zmb3/gogetdoc")
+    (goimports . "golang.org/x/tools/cmd/goimports")
+    (gorename  . "golang.org/x/tools/cmd/gorename")
+    (gomvpkg   . "golang.org/x/tools/cmd/gomvpkg")
+    (guru      . "golang.org/x/tools/cmd/guru")))
+
+(defun my-go-mode-hook ()
+  ; Use goimports instead of go-fmt
+  (setq gofmt-command "goimports")
+  ; Call Gofmt before saving
+  (add-hook 'before-save-hook 'gofmt-before-save)
+  ; Customize compile command to run go build
+  (if (not (string-match "go" compile-command))
+      (set (make-local-variable 'compile-command)
+           "go build -v && go test -v && go vet"))
+  ; Godef jump key binding
+  (local-set-key (kbd "M-.") 'godef-jump)
+  (local-set-key (kbd "M-*") 'pop-tag-mark)
+)
+(add-hook 'go-mode-hook 'my-go-mode-hook)
+
 ;; (require 'tla-mode)
 ;; (use-package tla-mode :mode "\.tla$")
 ;; (use-package tla-tools :mode "\.tla$")

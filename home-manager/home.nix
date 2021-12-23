@@ -36,9 +36,9 @@ let
     nlSupport = true;
     pulseSupport = false;
   };
-  gh-md-toc = pkgs.writeScriptBin "gh-md-toc" "curl https://raw.githubusercontent.com/ekalinin/github-markdown-toc/master/gh-md-toc -o gh-md-toc && chmod a+x gh-md-toc"
-;
-in {
+  gh-md-toc = pkgs.writeScriptBin "gh-md-toc" "curl https://raw.githubusercontent.com/ekalinin/github-markdown-toc/master/gh-md-toc -o gh-md-toc && chmod a+x gh-md-toc";
+in
+ {
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
   home.stateVersion = "21.03";
@@ -57,19 +57,6 @@ in {
     EMACSDIR = "$HOME/.emacs.d";
     DOOMLOCALDIR = "$HOME/.doom_local";
     DIRENV_ALLOW_NIX = 1;
-  };
-
-  home.file.".rd-docker-installer" = {
-    source =  builtins.fetchGit {
-      url = "ssh://git@github.com/ResultadosDigitais/rd-docker.git";
-      rev = "cf1aeca3e9a5588d26360f3bb2618977cdceb247";
-    };
-    onChange =  "${pkgs.writeShellScript "rd-docker-change" ''
-      cd ~/.rd-docker-installer
-      cp rd-docker-install /tmp/rd-docker-install
-      sed 's/sudo ln/# sudo ln/' -i /tmp/rd-docker-install
-      cat /tmp/rd-docker-install | bash
-    ''}";
   };
 
   home.file.".doom.d" = {
@@ -173,6 +160,7 @@ in {
     pkgs.steam-tui
     pkgs.lutris
     pkgs.obs-studio
+    pkgs.openshot-qt
     pkgs.okular
     pkgs.vlc
     pkgs.mpv
@@ -191,12 +179,27 @@ in {
     pkgs.tuxguitar
     pkgs.gtk3
     pkgs.direnv
+    pkgs.p7zip
+    pkgs.krita
 
     pkgs.insomnia
+    pkgs.postman
+    pkgs.nginx
+
     pkgs.pandoc
     pkgs.pgformatter
 
     pkgs.python3
+    pkgs.dotnet-sdk_5
+    pkgs.protobuf
+    pkgs.grpc
+
+    pkgs.libsecret
+
+    pkgs.peek
+    pkgs.mongodb-compass
+
+    pkgs.metals
   ];
 
   programs.git = {
@@ -235,49 +238,54 @@ in {
 
     ];
 
-      # sessionVariables = rec {
-      #   EDITOR = "vim";
-      #   VISUAL = EDITOR;
-      #   GIT_EDITOR = EDITOR;
-      #   DOOMLOCALDIR = "$HOME/.doom_local";
-      #   DOOMDIR = "$HOME/nix-configs/doom.d";
-      #   DIRENV_ALLOW_NIX = 1;
-      # };
+    # sessionVariables = rec {
+    #   EDITOR = "vim";
+    #   VISUAL = EDITOR;
+    #   GIT_EDITOR = EDITOR;
+    #   DOOMLOCALDIR = "$HOME/.doom_local";
+    #   DOOMDIR = "$HOME/nix-configs/doom.d";
+    #   DIRENV_ALLOW_NIX = 1;
+    # };
+  };
+
+  programs.bash = {
+    enable = true;
+    shellAliases = {
+      ls = "ls --color=auto";
     };
+  };
 
-    programs.bash = {
-      enable = true;
-      shellAliases = {
-        ls = "ls --color=auto";
-        rd-docker= "~/.rd-docker/rd-docker-cli";
-      };
-    };
+  programs.vscode = {
+    enable = true;
+    # package = pkgs.vscode-with-extensions.override { vscodeExtensions = with pkgs.vscode-extensions; [ ms-vsliveshare.vsliveshare ]; };
+    package = pkgs.vscode-fhs;
+  };
 
-    programs.neovim = {
-      enable = true;
-      vimAlias = true;
-      extraConfig = builtins.readFile ./programs/vim/extraConfig.vim;
+  programs.neovim = {
+    enable = true;
+    vimAlias = true;
+    extraConfig = builtins.readFile ./programs/vim/extraConfig.vim;
 
-      plugins = with pkgs.vimPlugins; [
-        # Syntax / Language Support ##########################
-        vim-nix
-        vim-ruby # ruby
-        vim-go # go
-        # vim-fish # fish
-        # vim-toml           # toml
-        # vim-gvpr           # gvpr
-        # rust-vim # rust
-        zig-vim
-        vim-pandoc # pandoc (1/2)
-        vim-pandoc-syntax # pandoc (2/2)
-        # yajs.vim           # JS syntax
-        # es.next.syntax.vim # ES7 syntax
+    plugins = with pkgs.vimPlugins; [
+      # Syntax / Language Support ##########################
+      vim-nix
+      vim-ruby # ruby
+      vim-go # go
+      # vim-fish # fish
+      # vim-toml           # toml
+      # vim-gvpr           # gvpr
+      # rust-vim # rust
+      zig-vim
+      vim-pandoc # pandoc (1/2)
+      vim-pandoc-syntax # pandoc (2/2)
+      # yajs.vim           # JS syntax
+      # es.next.syntax.vim # ES7 syntax
 
-        # UI #################################################
-        nord-vim # colorscheme
-        vim-gitgutter # status in gutter
-        # vim-devicons
-        vim-airline
+      # UI #################################################
+      nord-vim # colorscheme
+      vim-gitgutter # status in gutter
+      # vim-devicons
+      vim-airline
 
       # Editor Features ####################################
       vim-surround # cs"'
@@ -472,6 +480,4 @@ in {
   };
 
   programs.direnv.nix-direnv.enable = true;
-
-
-}
+ }

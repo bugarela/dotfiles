@@ -68,6 +68,12 @@
   #   keyMap = "us";
   # };
 
+  nix = {
+    package = pkgs.nixFlakes;
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
+   };
 
   # Enable the Plasma 5 Desktop Environment.
   # services.xserver.displayManager.lightdm.enable = true;
@@ -80,6 +86,9 @@
       enable = true;
       packages = [ pkgs.gnome3.dconf ];
     };
+
+    gnome3.gnome-keyring.enable = true;
+    bloop.install = true;
   };
 
   # Xserver basic
@@ -200,6 +209,10 @@
     gnutar gzip gnumake
 
     jre
+
+    gnome.cheese
+    mlt
+    mlt-qt5
     # libnotify
     # libdbusmenu
   ];
@@ -268,4 +281,26 @@
 
   # Docker config
   virtualisation.docker.enable = true;
+
+  # Binary Cache for Haskell.nix
+  nix.binaryCachePublicKeys = [
+    "hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ="
+  ];
+  nix.binaryCaches = [
+    "https://hydra.iohk.io"
+  ];
+
+  services.nginx = {
+    enable = true;
+    virtualHosts."test.bla" = {
+      forceSSL = false;
+      root = "/home/gabriela/projects/Scooby/src/Scooby.WebApi/bin";
+      locations."/$".extraConfig = ''
+        fastcgi_index Default.aspx;
+        fastcgi_pass 127.0.0.1:9000
+        fastcgi_param  PATH_INFO          "";
+        fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;
+    '';
+    };
+  };
 }

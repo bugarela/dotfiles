@@ -11,6 +11,7 @@ set PATH "$PATH:$HOME/.gvm/pkgsets/go1.13/global/bin"
 set PATH "$PATH:/opt/texlive/2020/bin/x86_64-linux"
 set PATH "$PATH:$HOME/.emacs.d/bin"
 set PATH "$PATH:$HOME/google-cloud-sdk/bin"
+set PATH "$PATH:$HOME/.dotnet/tools"
 set -x GPG_TTY (tty)
 
 function fish_user_key_bindings
