@@ -141,7 +141,6 @@ in
     pkgs.libqalculate
 
     pkgs.emacs
-    unstable.vscode
 
     pkgs.tlaplus
     pkgs.tlaplusToolbox
