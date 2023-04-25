@@ -1,20 +1,7 @@
 { config, pkgs, lib, ... }:
 
 let
-  picom-fork = pkgs.picom.overrideAttrs (old: {
-    src = pkgs.fetchFromGitHub {
-      owner = "ibhagwan";
-      repo = "picom";
-      rev    = "44b4970f70d6b23759a61a2b94d9bfb4351b41b1";
-      sha256 = "0iff4bwpc00xbjad0m000midslgx12aihs33mdvfckr75r114ylh";
-    };
-  });
   unstable = import <nixpkgs-unstable> { config.allowUnfree = true; overlays = [(self: super: { discord = super.discord.overrideAttrs (_: { src = builtins.fetchTarball "https://discord.com/api/download?platform=linux&format=tar.gz"; });})];};
-  emacs-overlay = builtins.fetchTarball "https://github.com/nix-community/emacs-overlay/archive/15ed1f372a83ec748ac824bdc5b573039c18b82f.tar.gz";
-  omf =  builtins.fetchTarball {
-    url = "https://github.com/oh-my-fish/oh-my-fish/archive/refs/tags/v7.tar.gz";
-  };
-  emacsPkgs = import <nixpkgs> { overlays = [ (import emacs-overlay) ]; };
   mypolybar = (pkgs.polybar.overrideAttrs (old: {
     nativeBuildInputs = old.nativeBuildInputs ++ [
       pkgs.python38Packages.sphinx
@@ -41,10 +28,12 @@ in
  {
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
-  home.stateVersion = "21.03";
+  home.stateVersion = "22.05";
 
   imports = [
+    "${fetchTarball "https://github.com/msteen/nixos-vscode-server/tarball/master"}/modules/vscode-server/home.nix"
     ./programs/xmonad/default.nix
+    ./programs/vscode/vscode.nix
   ];
 
   home.username = "gabriela";
@@ -94,11 +83,11 @@ in
 
   home.packages = [
     pkgs.ripgrep
+    pkgs.bat
     pkgs.jq
     pkgs.autorandr
     pkgs.tree
     pkgs.rnix-lsp
-    pkgs.lazydocker
     pkgs.libgccjit
     pkgs.xorg.xwininfo
     pkgs.xmobar
@@ -106,15 +95,28 @@ in
     pkgs.lxrandr
     pkgs.pscircle
     pkgs.gpicview
-    pkgs.feh
     pkgs.neofetch
     pkgs.lxappearance
     pkgs.evince
     pkgs.gimp
+    pkgs.killall
+    pkgs.fzf
+    pkgs.arandr
+    pkgs.stdenv
+    pkgs.zip
+    pkgs.unzip
+    pkgs.p7zip
+    pkgs.libnotify
+    pkgs.direnv
+
+    pkgs.graphviz
+    pkgs.gtk3
+
     pkgs.inxi
     pkgs.pciutils
     pkgs.glxinfo
     pkgs.lm_sensors
+
     (pkgs.aspellWithDicts (d: [d.en d.pt_BR]))
     pkgs.languagetool
 
@@ -122,92 +124,91 @@ in
 
     pkgs.qbittorrent
     pkgs.spotify
-    pkgs.pcmanfm
+
     unstable.vivaldi
-    pkgs.synergy
-    pkgs.tdesktop
+    unstable.vivaldi-ffmpeg-codecs
+    pkgs.google-chrome
+
+    unstable.tdesktop
     unstable.discord
     pkgs.slack
-    pkgs.flameshot
-    pkgs.copyq
+    pkgs.zulip
 
-    # emacsPkgs.emacsGcc
+    pkgs.flameshot
+    pkgs.peek
+
+    pkgs.copyq
+    pkgs.libqalculate
+
     pkgs.emacs
+    unstable.vscode
 
     pkgs.tlaplus
     pkgs.tlaplusToolbox
 
-    pkgs.megasync
     pkgs.sqlite
     pkgs.texlive.combined.scheme-full
     pkgs.nitrogen
-    pkgs.killall
-    omf
-    pkgs.fzf
     pkgs.nix-prefetch-git
-    pkgs.arandr
+
     pkgs.pass
     pkgs.openfortivpn
     pkgs.pinentry
-    pkgs.libnotify
+    pkgs.gh
 
-    pkgs.valgrind
-    pkgs.irony-server
-    pkgs.stdenv
-    pkgs.zip
-    pkgs.unzip
     pkgs.steam
-    pkgs.steam-tui
     pkgs.lutris
+    pkgs.tuxguitar
+
+    pkgs.megasync
     pkgs.obs-studio
-    pkgs.openshot-qt
     pkgs.okular
     pkgs.vlc
     pkgs.mpv
+    pkgs.ffmpeg
+    # video editor
+    pkgs.openshot-qt
+
     pkgs.zoom-us
     pkgs.teams
 
     pkgs.xf86_input_wacom
 
-    pkgs.kubectl
-    pkgs.k9s
-
-    pkgs.mu
-    pkgs.isync
-
-    pkgs.graphviz
-    pkgs.tuxguitar
-    pkgs.gtk3
-    pkgs.direnv
-    pkgs.p7zip
-    pkgs.krita
-
-    pkgs.insomnia
-    pkgs.postman
-    pkgs.nginx
-
     pkgs.pandoc
     pkgs.pgformatter
-
-    pkgs.python3
-    pkgs.dotnet-sdk_5
-    pkgs.protobuf
-    pkgs.grpc
+    pkgs.nixfmt
+    pkgs.nixpkgs-fmt
 
     pkgs.libsecret
 
-    pkgs.peek
-    pkgs.mongodb-compass
+    pkgs.ledger-live-desktop
 
-    pkgs.metals
+    pkgs.pulseeffects-legacy
   ];
+
+  xdg.mimeApps = {
+    enable = true;
+
+    associations.added = {};
+    defaultApplications = {
+      "text/html" = ["vivaldi-stable.desktop"];
+      "x-scheme-handler/http" = ["vivaldi-stable.desktop"];
+      "x-scheme-handler/https" = ["vivaldi-stable.desktop"];
+      "x-scheme-handler/about" = ["vivaldi-stable.desktop"];
+      "x-scheme-handler/unknown" = ["vivaldi-stable.desktop"];
+      "video/mp4" = ["mpv.desktop" "userapp-vlc-HA5N50.desktop"];
+      "x-scheme-handler/tg" = ["userapp-Telegram Desktop-E8SX01.desktop"];
+      "image/png" = ["vivaldi-stable.desktop"];
+      "application/pdf" = ["okularApplication_pdf.desktop"];
+    };
+  };
 
   programs.git = {
     enable = true;
-    userName = "gabrielamafra";
-    userEmail = "gabrielamoreiramafra@gmail.com";
+    userName = "bugarela";
+    userEmail = "gabrielamoreira05@gmail.com";
     signing = {
-      key = "19A375EC9AEB17EA";
+      key = "62E3DAEC882BA3873608D1CA4E9DBD7E8EB52FF9";
       signByDefault = true;
     };
     delta.enable = true;
@@ -255,67 +256,61 @@ in
     };
   };
 
-  programs.vscode = {
-    enable = true;
-    # package = pkgs.vscode-with-extensions.override { vscodeExtensions = with pkgs.vscode-extensions; [ ms-vsliveshare.vsliveshare ]; };
-    package = pkgs.vscode-fhs;
-  };
+  # programs.neovim = {
+  #   enable = true;
+  #   vimAlias = true;
+  #   extraConfig = builtins.readFile ./programs/vim/extraConfig.vim;
 
-  programs.neovim = {
-    enable = true;
-    vimAlias = true;
-    extraConfig = builtins.readFile ./programs/vim/extraConfig.vim;
+  #   plugins = with pkgs.vimPlugins; [
+  #     # Syntax / Language Support ##########################
+  #     vim-nix
+  #     vim-ruby # ruby
+  #     vim-go # go
+  #     # vim-fish # fish
+  #     # vim-toml           # toml
+  #     # vim-gvpr           # gvpr
+  #     # rust-vim # rust
+  #     zig-vim
+  #     vim-pandoc # pandoc (1/2)
+  #     vim-pandoc-syntax # pandoc (2/2)
+  #     # yajs.vim           # JS syntax
+  #     # es.next.syntax.vim # ES7 syntax
 
-    plugins = with pkgs.vimPlugins; [
-      # Syntax / Language Support ##########################
-      vim-nix
-      vim-ruby # ruby
-      vim-go # go
-      # vim-fish # fish
-      # vim-toml           # toml
-      # vim-gvpr           # gvpr
-      # rust-vim # rust
-      zig-vim
-      vim-pandoc # pandoc (1/2)
-      vim-pandoc-syntax # pandoc (2/2)
-      # yajs.vim           # JS syntax
-      # es.next.syntax.vim # ES7 syntax
+  #     # UI #################################################
+  #     nord-vim # colorscheme
+  #     vim-gitgutter # status in gutter
+  #     # vim-devicons
+  #     vim-airline
 
-      # UI #################################################
-      nord-vim # colorscheme
-      vim-gitgutter # status in gutter
-      # vim-devicons
-      vim-airline
+  #     # Editor Features ####################################
+  #     vim-surround # cs"'
+  #     vim-repeat # cs"'...
+  #     vim-commentary # gcap
+  #     # vim-ripgrep
+  #     vim-indent-object # >aI
+  #     vim-easy-align # vipga
+  #     vim-eunuch # :Rename foo.rb
+  #     vim-sneak
+  #     supertab
+  #     # vim-endwise        # add end, } after opening block
+  #     # gitv
+  #     # tabnine-vim
+  #     ale # linting
+  #     nerdtree
+  #     # vim-toggle-quickfix
+  #     # neosnippet.vim
+  #     neosnippet-snippets
+  #     # splitjoin.vim
+  #     nerdtree
 
-      # Editor Features ####################################
-      vim-surround # cs"'
-      vim-repeat # cs"'...
-      vim-commentary # gcap
-      # vim-ripgrep
-      vim-indent-object # >aI
-      vim-easy-align # vipga
-      vim-eunuch # :Rename foo.rb
-      vim-sneak
-      supertab
-      # vim-endwise        # add end, } after opening block
-      # gitv
-      # tabnine-vim
-      ale # linting
-      nerdtree
-      # vim-toggle-quickfix
-      # neosnippet.vim
-      neosnippet-snippets
-      # splitjoin.vim
-      nerdtree
+  #     # Buffer / Pane / File Management ####################
+  #     fzf-vim # all the things
 
-      # Buffer / Pane / File Management ####################
-      fzf-vim # all the things
-
-      # Panes / Larger features ############################
-      tagbar # <leader>5
-      vim-fugitive # Gblame
-    ];
-  };
+  #     # Panes / Larger features ############################
+  #     tagbar # <leader>5
+  #     vim-fugitive # Gblame
+  #   ];
+  # };
 
   programs.alacritty = {
     enable = true;
@@ -326,10 +321,12 @@ in
 
       window = {
         padding = {
-          x = 5;
-          y = 5;
+          x = 20;
+          y = 20;
         };
+        # opacity = 0.9;
       };
+
 
       draw_bold_text_with_bright_colors = true;
       font = {
@@ -344,10 +341,42 @@ in
         size = 14.0;
       };
 
+      # colors = {
+      #   # Default colors
+      #   primary = {
+      #     background = "0xdbd6d1";
+      #     foreground = "0x433b32";
+      #   };
+
+      #   # Normal colors
+      #   normal = {
+      #     black =   "0x16130f";
+      #     red =     "0x826d57";
+      #     green =   "0x57826d";
+      #     yellow =  "0x6d8257";
+      #     blue =    "0x6d5782";
+      #     magenta = "0x82576d";
+      #     cyan =    "0x576d82";
+      #     white =   "0xa39a90";
+      #   };
+
+      #   # Bright colors
+      #   bright = {
+      #     black =   "0x5a5047";
+      #     red =     "0x826d57";
+      #     green =   "0x57826d";
+      #     yellow =  "0x6d8257";
+      #     blue =    "0x6d5782";
+      #     magenta = "0x82576d";
+      #     cyan =    "0x576d82";
+      #     white =   "0xdbd6d1";
+      #   };
+      # };
+
       colors = {
         primary = {
-          background = "0x1d071f";
-          foreground = "0xbbc2cf";
+          background = "0x000000";
+          foreground = "0xffffff";
         };
 
         cursor = {
@@ -366,25 +395,25 @@ in
         };
 
         normal = {
-          black   = "0x000000";
-          red     = "0xff6c6b";
-          green   = "0x98be65";
-          yellow  = "0xecbe7b";
-          blue    = "0x596889";
-          magenta = "0xc678dd";
-          cyan    = "0x46d9ff";
-          white   = "0xdfdfdf";
+          black   = "0x757575";
+          red     = "0xff5f5f";
+          green   = "0xde8a36";
+          yellow  = "0xd78787";
+          blue    = "0xaf5fd7";
+          magenta = "0xff87d7";
+          cyan    = "0xdea3e5";
+          white   = "0xb8b8b8";
         };
 
         bright = {
-          black   = "0x3f444a";
-          red     = "0xff6c6b";
-          green   = "0x98be65";
-          yellow  = "0xecbe7b";
-          blue    = "0x51afef";
-          magenta = "0xc678dd";
-          cyan    = "0x46d9ff";
-          white   = "0x9ca0a4";
+          black   = "0xb8b8b8";
+          red     = "0xd78787";
+          green   = "0xff9f6f";
+          yellow  = "0xff5f5f";
+          blue    = "0xdea3e5";
+          magenta = "0xd7afaf";
+          cyan    = "0xaf5fd7";
+          white   = "0x757575";
         };
       };
     };
@@ -403,34 +432,42 @@ in
     enable = true;
   };
 
-  services.picom = {
-    enable = false;
-    # experimentalBackends = true;
-    # backend = "glx";
-    package = picom-fork;
-    blur = false;
-    shadow = true;
-    shadowOpacity = "0.65";
-    extraOptions = ''
-      corner-radius = 10;
-    '';
-  };
+  # services.picom = {
+  #   # package = picom-fork;
+  #   enable = false;
+  #   experimentalBackends = true;
+  #   backend = "glx";
+  #   # blur = true;
+  #   shadow = true;
+  #   # activeOpacity = 0.95;
+  #   # inactiveOpacity = "0.95";
+  #   shadowOpacity = "0.65";
+  #   extraOptions = ''
+  #     corner-radius = 10;
+  #     blur:
+  #     {
+  #       method = "dual_kawase";
+  #     };
+  #   '';
+  # };
 
   gtk = {
     enable = true;
-    theme.package = pkgs.qogir-theme;
-    # theme.name = "Adwaita-dark";
-    theme.name = "Qogir-dark";
+    theme = {
+      name = "Sweet-Dark";
+      package = pkgs.sweet;
+    };
     iconTheme = {
-      name = "Zafiro-icons";
-      package = pkgs.zafiro-icons;
+      name = "Qogir-ubuntu-dark";
+      package = pkgs.qogir-icon-theme;
     };
   };
 
-  xsession.pointerCursor = {
+  home.pointerCursor = {
     package = pkgs.qogir-icon-theme;
     name = "Qogir-dark";
     size = 28;
+    x11.enable = true;
   };
 
   # Autoload nix shells
@@ -438,7 +475,6 @@ in
 
   services.polybar = {
     enable = true;
-    package = mypolybar;
     config = ./programs/polybar/config.ini;
     script = ''
     '';
@@ -480,4 +516,4 @@ in
   };
 
   programs.direnv.nix-direnv.enable = true;
- }
+}

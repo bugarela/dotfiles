@@ -9,7 +9,7 @@
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;(package! some-package)
 (package! pinentry)
-(package! ivy-posframe)
+;; (package! ivy-posframe)
 (package! company-org-roam)
 (package! org-roam-bibtex)
 (package! org-present)
@@ -29,6 +29,10 @@
 (package! go-projectile)
 (package! mvn)
 (package! maven-test-mode)
+(package! org-d20)
+(package! flx)
+(package! hlint-refactor)
+(package! hindent)
 
 (package! scroll-on-jump :recipe (:host gitlab :repo "ideasman42/emacs-scroll-on-jump"))
 (package! sidebar :recipe (:host github :repo "sebastiencs/sidebar.el"))

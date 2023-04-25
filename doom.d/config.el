@@ -23,7 +23,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-bugs-nightly)
+(setq doom-theme 'doom-laserwave)
 (setq doom-font (font-spec :family "Iosevka" :size 26))
 (setq doom-big-font (font-spec :family "Iosevka" :size 42))
 (setq doom-variable-pitch-font (font-spec :family "Iosevka" :size 14))
@@ -310,7 +310,7 @@
   (let* ((base-name (concat (file-name-sans-extension buffer-file-name) "-tla-tex"))
          (tla-file (concat base-name ".tla"))
          (tex-file (concat base-name ".tex"))
-         (command (concat "tla2tex" " " (org-babel-process-file-name tla-file)))
+         (command (concat "tlatex" " " (org-babel-process-file-name tla-file)))
          (module (string= "yes" (cdr (assq :module params))))
          (figure (not (string= "no" (cdr (assq :figure params)))))
          (caption (cdr (assq :caption params)))
@@ -531,3 +531,42 @@ Time-stamp: <>
          ("C-c C-k" . dw/org-present-prev))
   :hook ((org-present-mode . dw/org-present-hook)
          (org-present-mode-quit . dw/org-present-quit-hook)))
+
+(load-file "~/projects/quint/editor-plugins/emacs/quint-mode.el")
+(require 'quint-mode)
+(add-to-list 'auto-mode-alist '("\\.quint" . quint-mode))
+
+;; (defun my-ts-mode-hook ()
+;;   (interactive)
+;;   (tide-setup)
+;;   (eldoc-mode)
+;;   (tide-hl-identifier-mode +1)
+;;   (add-hook 'before-save-hook 'tide-format-before-save))
+
+;; (add-hook 'typescript-mode-hook #'my-ts-mode-hook)
+
+(require 'tide)
+
+(defun setup-tide-mode ()
+  "Set up tide mode."
+  (interactive)
+  (tide-mode +1)
+  (tide-restart-server)
+  (flycheck-mode +1)
+  (setq flycheck-check-syntax-automatically '(save mode-enabled))
+  ;; https://github.com/Microsoft/TypeScript/blob/v3.3.1/src/server/protocol.ts#L2858-L2890
+  (setq tide-format-options '(:insertSpaceBeforeFunctionParenthesis t :identSize 2))
+  (eldoc-mode +1))
+
+;; formats the buffer before saving
+(add-hook 'before-save-hook 'tide-format-before-save)
+
+(add-hook 'typescript-mode-hook #'setup-tide-mode)
+;;; end tide setup
+
+(defun my-haskell-mode-hook ()
+  (hindent-mode)
+  ;; (add-hook 'before-save-hook 'hindent-reformat-buffer)
+  ;; (lsp)
+)
+(add-hook 'haskell-mode-hook 'my-haskell-mode-hook)

@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   imports =
@@ -15,32 +15,9 @@
 
   hardware.bluetooth.enable = true;
 
-  nix.autoOptimiseStore = true;
-
   # Use the systemd-boot EFI boot loader.
-  boot.loader.systemd-boot.enable = false;
-  boot.loader.efi.canTouchEfiVariables = false;
-
-  # Use the GRUB 2 boot loader.
-  boot.loader.grub.enable = true;
-  boot.loader.grub.version = 2;
-  boot.loader.grub.efiSupport = true;
-  boot.loader.grub.efiInstallAsRemovable = true;
-  boot.loader.efi.efiSysMountPoint = "/boot";
-  # Define on which hard drive you want to install Grub.
-  boot.loader.grub = {
-    device = "nodev"; # or "nodev" for efi only
-    useOSProber = true;
-    extraEntries = ''
-        menuentry "Windows" {
-          insmod part_gpt
-          insmod fat
-          insmod search_fs_uuid
-          insmod chain
-          search --fs-uuid --set=root $FS_UUID
-          chainloader /efi/Microsoft/Boot/bootmgfw.efi
-        }'';
-  };
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
 
   networking.hostName = "gabriela-nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -73,6 +50,20 @@
     extraOptions = ''
       experimental-features = nix-command flakes
     '';
+
+    settings = {
+      trusted-users = [ "root" "gabriela" ];
+
+      # Binary Cache for Haskell.nix
+      trusted-public-keys = [
+        "hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ="
+      ];
+      substituters = [
+        "https://hydra.iohk.io"
+      ];
+
+      auto-optimise-store = true;
+    };
    };
 
   # Enable the Plasma 5 Desktop Environment.
@@ -84,10 +75,10 @@
 
     dbus = {
       enable = true;
-      packages = [ pkgs.gnome3.dconf ];
+      packages = [ pkgs.dconf ];
     };
 
-    gnome3.gnome-keyring.enable = true;
+    gnome.gnome-keyring.enable = true;
     bloop.install = true;
   };
 
@@ -112,27 +103,28 @@
       defaultSession = "xfce";
     };
 
-    deviceSection = ''
-      Identifier     "Device0"
-      Driver         "nvidia"
-      VendorName     "NVIDIA Corporation"
-      BoardName      "GeForce GTX 1660 Ti"
-    '';
+#    deviceSection = ''
+#      Identifier     "Device0"
+#      Driver         "nvidia"
+#      VendorName     "NVIDIA Corporation"
+#      BoardName      "NVIDIA GeForce RTX 3080"
+#    '';
 
-    screenSection = ''
-      Device         "Device0"
-      Monitor        "Monitor0"
-      DefaultDepth    24
-      Option         "Stereo" "0"
-      Option         "nvidiaXineramaInfoOrder" "DFP-6"
-      Option         "metamodes" "DP-5: nvidia-auto-select +0+220 {viewportin=2880x1620, ForceCompositionPipeline=On, ForceFullCompositionPipeline=On}, HDMI-0: nvidia-auto-select +2880+0 {ForceCompositionPipeline=On, ForceFullCompositionPipeline=On}"
-      Option         "SLI" "Off"
-      Option         "MultiGPU" "Off"
-      Option         "BaseMosaic" "off"
-      SubSection     "Display"
-          Depth       24
-      EndSubSection
-    '';
+#    screenSection = ''
+#      Identifier     "Screen0"
+#      Device         "Device0"
+#      Monitor        "Monitor0"
+#      DefaultDepth    24
+#      Option         "Stereo" "0"
+#      Option         "nvidiaXineramaInfoOrder" "DFP-0"
+#      Option         "metamodes" "HDMI-0: nvidia-auto-select +3840+0 {ForceCompositionPipeline=On, ForceFullCompositionPipeline=On}, DP-3: 1920x1080 +7680+0 {rotation=right, ForceCompositionPipeline=On, ForceFullCompositionPipeline=On}, DP-0: 3840x2160 +0+0 {ForceCompositionPipeline=On, ForceFullCompositionPipeline=On}"
+#      Option         "SLI" "Off"
+#      Option         "MultiGPU" "Off"
+#      Option         "BaseMosaic" "off"
+#      SubSection     "Display"
+#          Depth       24
+#      EndSubSection
+#    '';
   };
 
   services.pantheon.apps.enable = false;
@@ -144,7 +136,7 @@
   # services.xserver.xkbOptions = "eurosign:e";
 
   # Enable CUPS to print documents.
-  services.printing.enable = true;
+  services.printing.enable = false;
 
   # Enable sound.
   sound.enable = true;
@@ -170,7 +162,7 @@
     home = "/home/gabriela";
     extraGroups = [ "wheel" "networkmanager" "docker" "video" ];
   };
-  nix.trustedUsers = [ "root" "gabriela" ];
+
 
   users.extraUsers.gabriela = {
     shell = pkgs.fish;
@@ -212,7 +204,7 @@
 
     gnome.cheese
     mlt
-    mlt-qt5
+    libsForQt5.mlt
     # libnotify
     # libdbusmenu
   ];
@@ -244,21 +236,9 @@
 
   programs.steam.enable = true;
 
-  # nixpkgs.overlays = [
-  #   (import (builtins.fetchTarball https://github.com/nix-community/emacs-overlay/archive/master.tar.gz))
-  # ];
-
-  # To Flatpak
-  # services.flatpak.enable = true;
-  # xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
-
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
+  # Some programs need SUID wrappers, can be configured further or are started
+  # in user sessions. programs.mtr.enable = true; programs.gnupg.agent = {
+  # enable = true; enableSSHSupport = true; };
 
   # List services that you want to enable:
 
@@ -266,7 +246,7 @@
   services.openssh.enable = true;
 
   # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
+  networking.firewall.allowedTCPPorts = [ 443 ];
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
@@ -282,25 +262,12 @@
   # Docker config
   virtualisation.docker.enable = true;
 
-  # Binary Cache for Haskell.nix
-  nix.binaryCachePublicKeys = [
-    "hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ="
-  ];
-  nix.binaryCaches = [
-    "https://hydra.iohk.io"
-  ];
-
-  services.nginx = {
-    enable = true;
-    virtualHosts."test.bla" = {
-      forceSSL = false;
-      root = "/home/gabriela/projects/Scooby/src/Scooby.WebApi/bin";
-      locations."/$".extraConfig = ''
-        fastcgi_index Default.aspx;
-        fastcgi_pass 127.0.0.1:9000
-        fastcgi_param  PATH_INFO          "";
-        fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;
-    '';
-    };
-  };
+  # # Solution to VSCode server from https://nixos.wiki/wiki/Visual_Studio_Code
+  # programs.nix-ld.enable = true;
+  # environment.variables = {
+  #   NIX_LD_LIBRARY_PATH = lib.makeLibraryPath [
+  #     pkgs.stdenv.cc.cc
+  #   ];
+  #   NIX_LD = lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker";
+  # };
 }

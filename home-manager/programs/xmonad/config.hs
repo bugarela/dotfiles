@@ -126,7 +126,8 @@ myStartupHook = do
           spawnOnce "dunst &"
           spawnOnce "setxkbmap -layout us -variant altgr-intl -option caps:swapescape &"
           setWMName "LG3D"
-          spawnOnce "emacs"
+          spawnOnce "vivaldi"
+          spawnOnce "code"
           spawnOnce "slack"
           spawnOnce "flameshot"
           spawnOnce "xsetroot -cursor_name left_ptr"
@@ -301,11 +302,6 @@ tall     = renamed [Replace "tall"]
            $ limitWindows 12
            $ mySpacing myGaps
            $ ResizableTall 1 (3/100) (1/2) []
-magnify  = renamed [Replace "magnify"]
-           $ magnifier
-           $ limitWindows 12
-           $ mySpacing myGaps
-           $ ResizableTall 1 (3/100) (1/2) []
 monocle  = renamed [Replace "monocle"]
            $ limitWindows 20 Full
 floats   = renamed [Replace "floats"]
@@ -329,19 +325,6 @@ threeRow = renamed [Replace "threeRow"]
            -- So we are applying Mirror to the ThreeCol layout.
            $ Mirror
            $ ThreeCol 1 (3/100) (1/2)
-tabs     = renamed [Replace "tabs"]
-           -- I cannot add spacing to this layout because it will
-           -- add spacing between window and tabs which looks bad.
-           $ tabbed shrinkText myTabConfig
-  where
-    myTabConfig = def { fontName            = "xft:Mononoki Nerd Font:regular:pixelsize=11"
-                      , activeColor         = "#282c34"
-                      , inactiveColor       = "#3e445e"
-                      , activeBorderColor   = "#af7fc9"
-                      , inactiveBorderColor = "#282c34"
-                      , activeTextColor     = "#ffffff"
-                      , inactiveTextColor   = "#d0d0d0"
-                      }
 
 -- Theme for showWName which prints current workspace when you change workspaces.
 myShowWNameTheme :: SWNConfig
@@ -355,7 +338,7 @@ myShowWNameTheme = def
 myManageHook :: XMonad.Query (Data.Monoid.Endo WindowSet)
 myManageHook = composeAll
      [ className =? "Slack"     --> doShift ( myWorkspaces !! 4 )
-     , className =? "Emacs"     --> doShift ( myWorkspaces !! 7 )
+     , className =? "Code"     --> doShift ( myWorkspaces !! 7 )
      , title =? "Oracle VM VirtualBox Manager"     --> doFloat
      , (className =? "firefox" <&&> resource =? "Dialog") --> doFloat  -- Float Firefox Dialog
      ] <+> namedScratchpadManageHook myScratchPads
@@ -367,11 +350,10 @@ myLayoutHook = avoidStruts $ mouseResize $ windowArrange $ T.toggleLayouts float
                -- I've commented out the layouts I don't use.
                myDefaultLayout =     grid
                                  ||| tall
-                                 ||| magnify
-                                 ||| noBorders monocle
-                                 ||| floats
-                                 ||| noBorders tabs
-                                 ||| spirals
+                                 -- ||| noBorders monocle
+                                 -- ||| floats
+                                 -- ||| noBorders tabs
+                                 -- ||| spirals
                                  ||| threeCol
                                  ||| threeRow
 
@@ -381,7 +363,7 @@ xmobarEscape = concatMap doubleLts
         doubleLts '<' = "<<"
         doubleLts x   = [x]
 
-myWorkspaces = ["www", "vid", "fm", "dev", "chat", "sys", "bg", "emacs", "misc"]
+myWorkspaces = ["www", "vid", "fm", "dev", "chat", "sys", "bg", "code", "misc"]
 
 myKeysP :: [(String, X ())]
 myKeysP =
