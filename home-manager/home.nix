@@ -48,25 +48,25 @@ in
     DIRENV_ALLOW_NIX = 1;
   };
 
-  home.file.".doom.d" = {
-    source = builtins.toPath "/home/gabriela/nix-configs/doom.d";
-    onChange = "${pkgs.writeShellScript "doom-change" ''
-      EMACSDIR=/home/gabriela/.emacs.d
-      DOOMBIN="$EMACSDIR"/bin/doom
-      DOOMLOCALDIR=/home/gabriela/.doom_local
-      mkdir -p "$DOOMLOCALDIR"
-      mkdir -p /home/gabriela/org/roam
-      if [ ! -f "$DOOMBIN" ]; then
-        echo "-------------> Installing DOOM EMACS"
-        mv "$EMACSDIR" "$EMACSDIR".bk
-        git clone --depth 1 https://github.com/hlissner/doom-emacs.git "$EMACSDIR"
-        "$DOOMBIN" -y install
-      else
-        echo "-------------> Syncing DOOM EMACS"
-        "$DOOMBIN" -y sync
-      fi
-    ''}";
-  };
+  # home.file.".doom.d" = {
+  #   source = builtins.toPath "/home/gabriela/nix-configs/doom.d";
+  #   onChange = "${pkgs.writeShellScript "doom-change" ''
+  #     EMACSDIR=/home/gabriela/.emacs.d
+  #     DOOMBIN="$EMACSDIR"/bin/doom
+  #     DOOMLOCALDIR=/home/gabriela/.doom_local
+  #     mkdir -p "$DOOMLOCALDIR"
+  #     mkdir -p /home/gabriela/org/roam
+  #     if [ ! -f "$DOOMBIN" ]; then
+  #       echo "-------------> Installing DOOM EMACS"
+  #       mv "$EMACSDIR" "$EMACSDIR".bk
+  #       git clone --depth 1 https://github.com/hlissner/doom-emacs.git "$EMACSDIR"
+  #       "$DOOMBIN" -y install
+  #     else
+  #       echo "-------------> Syncing DOOM EMACS"
+  #       "$DOOMBIN" -y sync
+  #     fi
+  #   ''}";
+  # };
 
   home.file.".google-cloud-sdk-installer.tar.gz" = {
     source =  pkgs.fetchurl {
@@ -140,7 +140,7 @@ in
     pkgs.copyq
     pkgs.libqalculate
 
-    pkgs.emacs
+    # pkgs.emacs
 
     pkgs.tlaplus
     pkgs.tlaplusToolbox

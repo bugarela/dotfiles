@@ -7,7 +7,7 @@ in
   programs.vscode = {
     enable = true;
     userSettings = builtins.fromJSON (builtins.readFile ./settings.json);
-    package = unstable.vscode-fhs;
+    package = unstable.vscode;
     extensions = [
       pkgs.vscode-extensions.scala-lang.scala
       pkgs.vscode-extensions.scalameta.metals
@@ -98,6 +98,12 @@ in
         publisher = "yoavbls";
         version = "0.3.0";
         sha256 = "1czhfvv5zal27m8krkclh533a1kmg5k7va82qsgjm1bqmsm4baq2";
+      }
+      {
+        name = "vsc-community-material-theme";
+        publisher = "Equinusocio";
+        version = "1.4.6";
+        sha256 = "0v34vm3asnw2maf4yz6lmn9xzv9232lm1a9vayybj1w0s09k4n0d";
       }
     ];
   };
