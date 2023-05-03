@@ -1,4 +1,4 @@
-{ pkgs, ...}:
+{ config, pkgs, lib, ...}:
 
 let
   unstable = import <nixpkgs-unstable> { config.allowUnfree = true; };
@@ -8,37 +8,30 @@ in
     enable = true;
     userSettings = builtins.fromJSON (builtins.readFile ./settings.json);
     package = unstable.vscode;
-    extensions = [
-      pkgs.vscode-extensions.scala-lang.scala
-      pkgs.vscode-extensions.scalameta.metals
-      pkgs.vscode-extensions.ms-vscode.makefile-tools
-      pkgs.vscode-extensions.ms-vscode.cpptools
-      pkgs.vscode-extensions.ms-vscode-remote.remote-ssh
-      pkgs.vscode-extensions.mkhl.direnv
-      pkgs.vscode-extensions.jnoortheen.nix-ide
-      pkgs.vscode-extensions.haskell.haskell
-      pkgs.vscode-extensions.github.vscode-pull-request-github
-      # pkgs.vscode-extensions.github.vscode-github-actions
-      pkgs.vscode-extensions.esbenp.prettier-vscode
-      pkgs.vscode-extensions.zhuangtongfa.material-theme
-      pkgs.vscode-extensions.editorconfig.editorconfig
-      pkgs.vscode-extensions.davidlday.languagetool-linter
-      pkgs.vscode-extensions.davidanson.vscode-markdownlint
-      pkgs.vscode-extensions.brettm12345.nixfmt-vscode
-      pkgs.vscode-extensions.dbaeumer.vscode-eslint
-      pkgs.vscode-extensions.justusadam.language-haskell
-      pkgs.vscode-extensions.tomoki1207.pdf
-      pkgs.vscode-extensions.stkb.rewrap
-      pkgs.vscode-extensions.vscodevim.vim
-      pkgs.vscode-extensions.waderyan.gitblame
-      # pkgs.vscode-extensions.wakatime.vscode-wakatime
-      pkgs.vscode-extensions.yzhang.markdown-all-in-one
-    ] ++ map
-      (extension: pkgs.vscode-utils.buildVscodeMarketplaceExtension {
-        mktplcRef = {
-         inherit (extension) name publisher version sha256;
-        };
-      })[
+    mutableExtensionsDir = true;
+    extensions = with pkgs.vscode-extensions; [
+      scala-lang.scala
+      scalameta.metals
+      ms-vscode.makefile-tools
+      ms-vscode-remote.remote-ssh
+      mkhl.direnv
+      jnoortheen.nix-ide
+      haskell.haskell
+      github.vscode-pull-request-github
+      esbenp.prettier-vscode
+      zhuangtongfa.material-theme
+      editorconfig.editorconfig
+      davidlday.languagetool-linter
+      davidanson.vscode-markdownlint
+      brettm12345.nixfmt-vscode
+      dbaeumer.vscode-eslint
+      justusadam.language-haskell
+      tomoki1207.pdf
+      stkb.rewrap
+      vscodevim.vim
+      waderyan.gitblame
+      yzhang.markdown-all-in-one
+    ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
       {
         name = "vscode-tlaplus";
         publisher = "alygin";
@@ -107,4 +100,6 @@ in
       }
     ];
   };
+
+  home.file.".vscode/extensions/.obsolete".text = "";
 }
