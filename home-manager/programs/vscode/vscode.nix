@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ...}:
+{ config, pkgs, lib, ... }:
 
 let
   unstable = import <nixpkgs-unstable> { config.allowUnfree = true; };
@@ -31,6 +31,7 @@ in
       vscodevim.vim
       waderyan.gitblame
       yzhang.markdown-all-in-one
+      golang.go
     ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
       {
         name = "vscode-tlaplus";
@@ -56,12 +57,12 @@ in
         version = "0.0.5";
         sha256 = "1znya0phd8j3is1188lxwa90hy8v7bxd95mdzv6d60li5q23rrzp";
       }
-      {
-        name = "quint-vscode";
-        publisher = "informal";
-        version = "0.3.0";
-        sha256 = "079lynwdwkacpkm0wxjckqjn5afizlykrx6v6dy4pqd3xha1hnxi";
-      }
+      # {
+      #   name = "quint-vscode";
+      #   publisher = "informal";
+      #   version = "0.3.0";
+      #   sha256 = "079lynwdwkacpkm0wxjckqjn5afizlykrx6v6dy4pqd3xha1hnxi";
+      # }
       {
         name = "fuzzy-search";
         publisher = "jacobdufault";

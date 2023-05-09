@@ -11,6 +11,7 @@ set PATH "$PATH:$HOME/google-cloud-sdk/bin"
 set PATH "$PATH:$HOME/.dotnet/tools"
 set PATH "$PATH:$HOME/.npm/bin"
 set PATH "$PATH:$HOME/projects/apalache/bin"
+set PATH "$PATH:/nix/store/633qlvqjryvq0h43nwvzkd5vqxh2rh3c-go-1.19.6/bin"
 set -x GPG_TTY (tty)
 
 function fish_user_key_bindings
