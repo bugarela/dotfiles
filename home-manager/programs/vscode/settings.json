@@ -54,5 +54,8 @@
     "rewrap.autoWrap.enabled": true,
     "workbench.colorTheme": "Community Material Theme Darker",
     "window.zoomLevel": 1,
-    "githubPullRequests.fileListLayout": "tree"
+    "githubPullRequests.fileListLayout": "tree",
+    "[nix]": {
+      "editor.defaultFormatter": "brettm12345.nixfmt-vscode"
+    }
 }

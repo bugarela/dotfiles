@@ -127,7 +127,7 @@ myStartupHook = do
           spawnOnce "setxkbmap -layout us -variant altgr-intl -option caps:swapescape &"
           setWMName "LG3D"
           spawnOnce "vivaldi"
-          spawnOnce "code"
+          spawnOnce "code-insiders"
           spawnOnce "slack"
           spawnOnce "flameshot"
           spawnOnce "xsetroot -cursor_name left_ptr"

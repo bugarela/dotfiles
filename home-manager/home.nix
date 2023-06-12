@@ -188,6 +188,7 @@ in
       "x-scheme-handler/tg" = ["userapp-Telegram Desktop-E8SX01.desktop"];
       "image/png" = ["vivaldi-stable.desktop"];
       "application/pdf" = ["okularApplication_pdf.desktop"];
+      "vscode-insiders" = ["code-insiders.desktop"];
     };
   };
 
