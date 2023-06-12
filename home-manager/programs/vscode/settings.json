@@ -11,11 +11,12 @@
     "editor.inlineSuggest.enabled": true,
     "[typescript]": {
         "editor.autoIndent": "advanced",
-        "editor.defaultFormatter": "vscode.typescript-language-features",
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.codeActionsOnSave": {
             "source.fixAll.eslint": true
         },
-        "editor.formatOnPaste": true
+        "editor.formatOnPaste": true,
+        "editor.formatOnSave": true
     },
     "files.watcherExclude": {
         "**/.bloop": true,
@@ -34,10 +35,7 @@
     "terminal.integrated.enableMultiLinePasteWarning": false,
     "haskell.serverExecutablePath": "/nix/store/f916sv3da68qb2my47ip8p9cbbrkp0mk-haskell-language-server-1.8.0.0/bin/haskell-language-server",
     "github.copilot.enable": {
-
         "*": true,
-        "yaml": false,
-        "plaintext": false,
         "markdown": true
     },
     "files.insertFinalNewline": true,
