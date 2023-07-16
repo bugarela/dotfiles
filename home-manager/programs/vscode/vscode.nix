@@ -58,6 +58,7 @@ in {
         waderyan.gitblame
         yzhang.markdown-all-in-one
         golang.go
+        ms-vsliveshare.vsliveshare
       ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
         {
           name = "vscode-tlaplus";
@@ -71,12 +72,13 @@ in {
           version = "0.4.3";
           sha256 = "1cacaqh93qgimb14w3k6a8cw9a190sn9r7hn6df162mdbxnkgkxw";
         }
-        {
-          name = "copilot-nightly";
-          publisher = "GitHub";
-          version = "1.86.111";
-          sha256 = "17wpyxcdb359pf8pnrvz273zd5mz2jj6a9iqy2yv4ldmaggrx95z";
-        }
+        # https://marketplace.visualstudio.com/_apis/public/gallery/publishers/GitHub/vsextensions/copilot/1.95.243/vspackage
+        # {
+        #   name = "copilot-nightly";
+        #   publisher = "GitHub";
+        #   version = "	1.94.226";
+        #   sha256 = "0fjs9qvbj44icw9zgv52dxj0h3z7zhgsm5czkhd9cqpqybgjrwp1";
+        # }
         {
           name = "itf-trace-viewer";
           publisher = "informal";
@@ -125,8 +127,21 @@ in {
           version = "1.4.6";
           sha256 = "0v34vm3asnw2maf4yz6lmn9xzv9232lm1a9vayybj1w0s09k4n0d";
         }
-      ];
+        {
+          name = "remote-explorer";
+          publisher = "ms-vscode";
+          version = "0.5.2023062609";
+          sha256 = "1zvxmqhnacpa8zz8b0s45ra8q9qcznpabpnd235pn8gs3c6bjqc4";
+        }
+        # {
+        #   name = "vsliveshare";
+        #   publisher = "ms-vsliveshare";
+        #   version = "1.0.5873";
+        #   sha256 = "1c5bqz267va6lkg2zrz99drypdskrhyq0573gpy06icfj5pdl1m7";
+        # }
+    ];
   };
 
   home.file.".vscode/extensions/.obsolete".text = "";
+  home.file.".vscode/extensions/.obsolete".executable = false;
 }

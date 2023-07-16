@@ -1,59 +1,59 @@
 {
-    "keyboard.dispatch": "keyCode",
-    "vim.replaceWithRegister": true,
-    "vim.useSystemClipboard": true,
-    "tlaplus.tlc.statisticsSharing": "doNotShare",
-    "window.menuBarVisibility": "toggle",
-    "task.problemMatchers.neverPrompt": {
-        "shell": true
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "yzhang.markdown-all-in-one"
+  },
+  "[nix]": {
+    "editor.defaultFormatter": "brettm12345.nixfmt-vscode"
+  },
+  "[typescript]": {
+    "editor.autoIndent": "advanced",
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true
     },
-    "breadcrumbs.enabled": false,
-    "editor.inlineSuggest.enabled": true,
-    "[typescript]": {
-        "editor.autoIndent": "advanced",
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.codeActionsOnSave": {
-            "source.fixAll.eslint": true
-        },
-        "editor.formatOnPaste": true,
-        "editor.formatOnSave": true
-    },
-    "files.watcherExclude": {
-        "**/.bloop": true,
-        "**/.metals": true,
-        "**/.ammonite": true
-    },
-    "git.autofetch": true,
-    "[jsonc]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "eslint.alwaysShowStatus": true,
-    "[json]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode"
-    },
-    "rust-analyzer.server.path": "/nix/store/rcjd15f577cq84m8kf9sn4xvsnkjfyih-rust-analyzer-2022-10-31/bin/rust-analyzer",
-    "terminal.integrated.enableMultiLinePasteWarning": false,
-    "haskell.serverExecutablePath": "/nix/store/f916sv3da68qb2my47ip8p9cbbrkp0mk-haskell-language-server-1.8.0.0/bin/haskell-language-server",
-    "github.copilot.enable": {
-        "*": true,
-        "markdown": true
-    },
-    "files.insertFinalNewline": true,
-    "files.trimFinalNewlines": true,
-    "files.trimTrailingWhitespace": true,
-    "diffEditor.ignoreTrimWhitespace": false,
-    "editor.tabSize": 2,
-    "[markdown]": {
-        "editor.defaultFormatter": "yzhang.markdown-all-in-one"
-    },
-    "workbench.editorAssociations": {
-        "*.md": "default"
-    },
-    "rewrap.autoWrap.enabled": true,
-    "workbench.colorTheme": "Community Material Theme Darker",
-    "window.zoomLevel": 1,
-    "githubPullRequests.fileListLayout": "tree",
-    "[nix]": {
-      "editor.defaultFormatter": "brettm12345.nixfmt-vscode"
-    }
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true
+  },
+  "breadcrumbs.enabled": false,
+  "diffEditor.ignoreTrimWhitespace": false,
+  "editor.inlineSuggest.enabled": true,
+  "editor.tabSize": 2,
+  "eslint.alwaysShowStatus": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
+  "files.watcherExclude": {
+    "**/.ammonite": true,
+    "**/.bloop": true,
+    "**/.metals": true
+  },
+  "git.autofetch": true,
+  "github.copilot.enable": {
+    "*": true,
+    "markdown": true
+  },
+  "githubPullRequests.fileListLayout": "tree",
+  "haskell.serverExecutablePath": "/nix/store/f916sv3da68qb2my47ip8p9cbbrkp0mk-haskell-language-server-1.8.0.0/bin/haskell-language-server",
+  "keyboard.dispatch": "keyCode",
+  "rewrap.autoWrap.enabled": true,
+  "rust-analyzer.server.path": "/nix/store/rcjd15f577cq84m8kf9sn4xvsnkjfyih-rust-analyzer-2022-10-31/bin/rust-analyzer",
+  "task.problemMatchers.neverPrompt": {
+    "shell": true
+  },
+  "terminal.integrated.enableMultiLinePasteWarning": false,
+  "tlaplus.tlc.statisticsSharing": "doNotShare",
+  "vim.replaceWithRegister": true,
+  "vim.useSystemClipboard": true,
+  "window.menuBarVisibility": "toggle",
+  "window.zoomLevel": 1,
+  "workbench.colorTheme": "Community Material Theme Ocean",
+  "workbench.editorAssociations": {
+    "*.md": "default"
+  }
 }

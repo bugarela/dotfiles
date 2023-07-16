@@ -168,6 +168,8 @@
     shell = pkgs.fish;
   };
 
+  programs.fish.enable = true;
+
   # Automount ecrypts
   security.pam.enableEcryptfs = true;
 
@@ -261,6 +263,10 @@
 
   # Docker config
   virtualisation.docker.enable = true;
+
+  nixpkgs.config.permittedInsecurePackages = [
+    "python-2.7.18.6"
+  ];
 
   # # Solution to VSCode server from https://nixos.wiki/wiki/Visual_Studio_Code
   # programs.nix-ld.enable = true;

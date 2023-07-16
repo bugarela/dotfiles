@@ -28,7 +28,7 @@ in
  {
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
-  home.stateVersion = "22.05";
+  home.stateVersion = "23.05";
 
   imports = [
     "${fetchTarball "https://github.com/msteen/nixos-vscode-server/tarball/master"}/modules/vscode-server/home.nix"
@@ -113,6 +113,7 @@ in
 
     pkgs.qbittorrent
     pkgs.spotify
+    pkgs.obsidian
 
     unstable.vivaldi
     unstable.vivaldi-ffmpeg-codecs
