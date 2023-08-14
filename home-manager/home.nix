@@ -111,7 +111,6 @@ in
 
     pkgs.networkmanagerapplet
 
-    pkgs.qbittorrent
     pkgs.spotify
     pkgs.obsidian
 
@@ -130,24 +129,20 @@ in
     pkgs.copyq
     pkgs.libqalculate
 
-    # pkgs.emacs
-
-    pkgs.tlaplus
-    pkgs.tlaplusToolbox
+    pkgs.emacs
 
     pkgs.sqlite
-    pkgs.texlive.combined.scheme-full
+    # pkgs.texlive.combined.scheme-full
     pkgs.nitrogen
     pkgs.nix-prefetch-git
 
     pkgs.pass
-    pkgs.openfortivpn
     pkgs.pinentry
     pkgs.gh
 
-    pkgs.steam
-    pkgs.lutris
-    pkgs.tuxguitar
+    # pkgs.steam
+    # pkgs.lutris
+    # pkgs.tuxguitar
 
     pkgs.megasync
     pkgs.obs-studio
@@ -159,12 +154,8 @@ in
     pkgs.openshot-qt
 
     pkgs.zoom-us
-    pkgs.teams
-
-    pkgs.xf86_input_wacom
 
     pkgs.pandoc
-    pkgs.pgformatter
     pkgs.nixfmt
     pkgs.nixpkgs-fmt
 
@@ -228,15 +219,6 @@ in
       }
 
     ];
-
-    # sessionVariables = rec {
-    #   EDITOR = "vim";
-    #   VISUAL = EDITOR;
-    #   GIT_EDITOR = EDITOR;
-    #   DOOMLOCALDIR = "$HOME/.doom_local";
-    #   DOOMDIR = "$HOME/nix-configs/doom.d";
-    #   DIRENV_ALLOW_NIX = 1;
-    # };
   };
 
   programs.bash = {
@@ -245,62 +227,6 @@ in
       ls = "ls --color=auto";
     };
   };
-
-  # programs.neovim = {
-  #   enable = true;
-  #   vimAlias = true;
-  #   extraConfig = builtins.readFile ./programs/vim/extraConfig.vim;
-
-  #   plugins = with pkgs.vimPlugins; [
-  #     # Syntax / Language Support ##########################
-  #     vim-nix
-  #     vim-ruby # ruby
-  #     vim-go # go
-  #     # vim-fish # fish
-  #     # vim-toml           # toml
-  #     # vim-gvpr           # gvpr
-  #     # rust-vim # rust
-  #     zig-vim
-  #     vim-pandoc # pandoc (1/2)
-  #     vim-pandoc-syntax # pandoc (2/2)
-  #     # yajs.vim           # JS syntax
-  #     # es.next.syntax.vim # ES7 syntax
-
-  #     # UI #################################################
-  #     nord-vim # colorscheme
-  #     vim-gitgutter # status in gutter
-  #     # vim-devicons
-  #     vim-airline
-
-  #     # Editor Features ####################################
-  #     vim-surround # cs"'
-  #     vim-repeat # cs"'...
-  #     vim-commentary # gcap
-  #     # vim-ripgrep
-  #     vim-indent-object # >aI
-  #     vim-easy-align # vipga
-  #     vim-eunuch # :Rename foo.rb
-  #     vim-sneak
-  #     supertab
-  #     # vim-endwise        # add end, } after opening block
-  #     # gitv
-  #     # tabnine-vim
-  #     ale # linting
-  #     nerdtree
-  #     # vim-toggle-quickfix
-  #     # neosnippet.vim
-  #     neosnippet-snippets
-  #     # splitjoin.vim
-  #     nerdtree
-
-  #     # Buffer / Pane / File Management ####################
-  #     fzf-vim # all the things
-
-  #     # Panes / Larger features ############################
-  #     tagbar # <leader>5
-  #     vim-fugitive # Gblame
-  #   ];
-  # };
 
   programs.alacritty = {
     enable = true;
@@ -316,7 +242,6 @@ in
         };
         # opacity = 0.9;
       };
-
 
       draw_bold_text_with_bright_colors = true;
       font = {

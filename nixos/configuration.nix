@@ -79,7 +79,6 @@
     };
 
     gnome.gnome-keyring.enable = true;
-    bloop.install = true;
   };
 
   # Xserver basic
@@ -91,7 +90,6 @@
     xkbOptions = "caps:swapescape";
     dpi = 141;
     videoDrivers = [ "nvidia" ];
-    modules = [ pkgs.xf86_input_wacom ];
 
     desktopManager = {
       xfce.enable = true;
@@ -156,11 +154,12 @@
       Option "AccelSpeed" "0"
     EndSection
   '';
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.gabriela = {
     isNormalUser = true;
     home = "/home/gabriela";
-    extraGroups = [ "wheel" "networkmanager" "docker" "video" ];
+    extraGroups = [ "wheel" "networkmanager" "docker" "video" "plugdev" ];
   };
 
 
@@ -207,8 +206,6 @@
     gnome.cheese
     mlt
     libsForQt5.mlt
-    # libnotify
-    # libdbusmenu
   ];
 
   # Fonts
@@ -236,7 +233,7 @@
     pinentryFlavor = "curses";
   };
 
-  programs.steam.enable = true;
+  # programs.steam.enable = true;
 
   # Some programs need SUID wrappers, can be configured further or are started
   # in user sessions. programs.mtr.enable = true; programs.gnupg.agent = {
