@@ -47,13 +47,43 @@
     "shell": true
   },
   "terminal.integrated.enableMultiLinePasteWarning": false,
-  "tlaplus.tlc.statisticsSharing": "doNotShare",
+  "tlaplus.tlc.statisticsSharing": "share",
   "vim.replaceWithRegister": true,
+  "vim.handleKeys": {
+    "<C-a>": false,
+    "<C-f>": false,
+    "<C-w>": false
+  },
+  "vim.easymotion": true,
+  "vim.incsearch": true,
   "vim.useSystemClipboard": true,
+  "vim.hlsearch": true,
+  "vim.visualModeKeyBindingsNonRecursive": [
+    {
+      "before": [">"],
+      "commands": ["editor.action.indentLines"]
+    },
+    {
+      "before": ["<"],
+      "commands": ["editor.action.outdentLines"]
+    },
+    {
+      "before": ["p"],
+      "after": ["p", "g", "v", "y"]
+    }
+  ],
+  "vim.statusBarColorControl": true,
   "window.menuBarVisibility": "toggle",
   "window.zoomLevel": 1,
   "workbench.colorTheme": "Community Material Theme Ocean",
   "workbench.editorAssociations": {
     "*.md": "default"
-  }
+  },
+  "workbench.activityBar.visible": false,
+  "explorer.openEditors.visible": 0,
+  "editor.roundedSelection": false,
+  "editor.folding": false,
+  "workbench.editor.showTabs": false,
+  "window.title": "${folderName}/${activeEditorShort}",
+  "editor.cursorBlinking": "solid"
 }
