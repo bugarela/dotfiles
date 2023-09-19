@@ -143,7 +143,6 @@
   # Enable touchpad support (enabled default in most desktopManager).
   services.xserver.libinput.enable = true;
 
-
   # Disables mouse acceleration
   services.xserver.config = ''
     Section "InputClass"
@@ -161,7 +160,6 @@
     home = "/home/gabriela";
     extraGroups = [ "wheel" "networkmanager" "docker" "video" "plugdev" ];
   };
-
 
   users.extraUsers.gabriela = {
     shell = pkgs.fish;

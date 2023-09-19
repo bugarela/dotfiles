@@ -11,7 +11,7 @@
 (package! pinentry)
 ;; (package! ivy-posframe)
 (package! company-org-roam)
-(package! org-roam-bibtex)
+(package! org-roam-bibtex :recipe (:host github :repo "org-roam/org-roam-bibtex"))
 (package! org-present)
 (package! org-bullets)
 (package! org-ref)
@@ -33,8 +33,11 @@
 (package! flx)
 (package! hlint-refactor)
 (package! hindent)
+(package! autothemer)
 
-(package! scroll-on-jump :recipe (:host gitlab :repo "ideasman42/emacs-scroll-on-jump"))
+(package! prettier)
+
+(package! scroll-on-jump)
 (package! sidebar :recipe (:host github :repo "sebastiencs/sidebar.el"))
 
 (package! tla-mode :recipe (:host github :repo "valschneider/tla-mode"))
@@ -49,6 +52,9 @@
   :recipe (:host github :repo "magit/git-modes"
            :files ("gitignore-mode.el")))
 ;; (package! pymupdf-mode :recipe (:host github :repo "dalanicolai/pymupdf-mode.el"))
+
+(package! copilot
+  :recipe (:host github :repo "zerolfx/copilot.el" :files ("*.el" "dist")))
 
 ;; To install a package directly from a remote git repo, you must specify a
 ;; `:recipe'. You'll find documentation on what `:recipe' accepts here:

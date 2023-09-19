@@ -23,11 +23,14 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-laserwave)
+(setq doom-theme 'doom-tomorrow-night)
 (setq doom-font (font-spec :family "Iosevka" :size 26))
 (setq doom-big-font (font-spec :family "Iosevka" :size 42))
 (setq doom-variable-pitch-font (font-spec :family "Iosevka" :size 14))
 
+;; (push "~/nix-configs/.doom.d/themes/emacs-material-ocean" custom-theme-load-path)
+;; (push "~/nix-configs/.doom.d/themes/emacs-material-ocean" load-path)
+;; (load-theme 'material-ocean t)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -36,7 +39,7 @@
       org-enable-org-journal-support t
       org-enable-trello-support t
       org-projectile-file "~/org/TODOs.org"
-      org-agenda-files '("~/org/" "~/org/todos/" "~/org/udesc/")
+      org-agenda-files '("~/org/" "~/org/todos/" "~/org/udesc/" "~/org/roam/daily")
       org-directory "~/org/")
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
@@ -60,7 +63,7 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
-(setq user-full-name "Gabriela Moreira Mafra")
+(setq user-full-name "Gabriela Moreira")
 ;; (load-file "~/.emacs.d/private/local/tla-mode/tla-mode.el")
 ;; (load-file "~/.emacs.d/private/local/tla+-mode/tla+-mode.el")
 ;; (load-file "~/.emacs.d/private/local/tokens.el")
@@ -77,8 +80,8 @@
 (setq org-bullets-bullet-list '("› "))
 (add-hook 'org-mode-hook 'org-bullets-mode)
 
-(setq org-gcal-recurring-events-mode 'nested)
-(setq org-gcal-remove-api-cancelled-events t)
+;; (setq org-gcal-recurring-events-mode 'nested)
+;; (setq org-gcal-remove-api-cancelled-events t)
 (setq org-agenda-time-grid (quote ((daily today require-timed)
                                    (700
                                     800
@@ -106,7 +109,7 @@
             (let ((filename (buffer-file-name (current-buffer))))
               (when (and filename (string= "trello" (file-name-extension filename)))
                 (org-trello-mode)))))
-(use-package org-gcal :ensure t)
+;; (use-package org-gcal :ensure t)
 
 (add-to-list 'org-babel-load-languages '(ledger . t))
 (with-eval-after-load 'ox-latex
@@ -379,46 +382,46 @@
    org-ref-notes-directory org_notes
    org-ref-notes-function 'orb-edit-notes
    ))
-(use-package org-roam
-  :hook (org-load . org-roam-mode)
-  :commands (org-roam-buffer-toggle-display
-             org-roam-find-file
-             org-roam-graph
-             org-roam-insert
-             org-roam-switch-to-buffer
-             org-roam-dailies-date
-             org-roam-dailies-today
-             org-roam-dailies-tomorrow
-             org-roam-dailies-yesterday)
-  :preface
-  ;; Set this to nil so we can later detect whether the user has set a custom
-  ;; directory for it, and default to `org-directory' if they haven't.
-  (defvar org-roam-directory nil)
-  :init
-  :config
-  (setq org-roam-directory (expand-file-name (or org-roam-directory "roam")
-                                             org-directory)
-        org-roam-verbose nil  ; https://youtu.be/fn4jIlFwuLU
-        org-roam-buffer-no-delete-other-windows t ; make org-roam buffer sticky
-        org-roam-completion-system 'default
-        )
+;; (use-package org-roam
+;;   :hook (org-load . org-roam-mode)
+;;   :commands (org-roam-buffer-toggle-display
+;;              org-roam-find-file
+;;              org-roam-graph
+;;              org-roam-insert
+;;              org-roam-switch-to-buffer
+;;              org-roam-dailies-date
+;;              org-roam-dailies-today
+;;              org-roam-dailies-tomorrow
+;;              org-roam-dailies-yesterday)
+;;   :preface
+;;   ;; Set this to nil so we can later detect whether the user has set a custom
+;;   ;; directory for it, and default to `org-directory' if they haven't.
+;;   (defvar org-roam-directory nil)
+;;   :init
+;;   :config
+;;   (setq org-roam-directory (expand-file-name (or org-roam-directory "roam")
+;;                                              org-directory)
+;;         org-roam-verbose nil  ; https://youtu.be/fn4jIlFwuLU
+;;         org-roam-buffer-no-delete-other-windows t ; make org-roam buffer sticky
+;;         org-roam-completion-system 'default
+;;         )
 
-  ;; Normally, the org-roam buffer doesn't open until you explicitly call
-  ;; `org-roam'. If `+org-roam-open-buffer-on-find-file' is non-nil, the
-  ;; org-roam buffer will be opened for you when you use `org-roam-find-file'
-  ;; (but not `find-file', to limit the scope of this behavior).
-  (add-hook 'find-file-hook
-            (defun +org-roam-open-buffer-maybe-h ()
-              (and +org-roam-open-buffer-on-find-file
-                   (memq 'org-roam-buffer--update-maybe post-command-hook)
-                   (not (window-parameter nil 'window-side)) ; don't proc for popups
-                   (not (eq 'visible (org-roam-buffer--visibility)))
-                   (with-current-buffer (window-buffer)
-                     (org-roam-buffer--get-create)))))
+;;   ;; Normally, the org-roam buffer doesn't open until you explicitly call
+;;   ;; `org-roam'. If `+org-roam-open-buffer-on-find-file' is non-nil, the
+;;   ;; org-roam buffer will be opened for you when you use `org-roam-find-file'
+;;   ;; (but not `find-file', to limit the scope of this behavior).
+;;   (add-hook 'find-file-hook
+;;             (defun +org-roam-open-buffer-maybe-h ()
+;;               (and +org-roam-open-buffer-on-find-file
+;;                    (memq 'org-roam-buffer--update-maybe post-command-hook)
+;;                    (not (window-parameter nil 'window-side)) ; don't proc for popups
+;;                    (not (eq 'visible (org-roam-buffer--visibility)))
+;;                    (with-current-buffer (window-buffer)
+;;                      (org-roam-buffer--get-create)))))
 
   ;; Hide the mode line in the org-roam buffer, since it serves no purpose. This
   ;; makes it easier to distinguish among other org buffers.
-  (add-hook 'org-roam-buffer-prepare-hook #'hide-mode-line-mode))
+  ;; (add-hook 'org-roam-buffer-prepare-hook #'hide-mode-line-mode))
 
 ;; Since the org module lazy loads org-protocol (waits until an org URL is
 ;; detected), we can safely chain `org-roam-protocol' to it.
@@ -533,36 +536,14 @@ Time-stamp: <>
          (org-present-mode-quit . dw/org-present-quit-hook)))
 
 (load-file "~/projects/quint/editor-plugins/emacs/quint-mode.el")
+(load-file "~/projects/quint/editor-plugins/emacs/lsp-quint.el")
 (require 'quint-mode)
-(add-to-list 'auto-mode-alist '("\\.quint" . quint-mode))
+(add-to-list 'auto-mode-alist '("\\.qnt" . quint-mode))
+(use-package lsp-quint
+  :ensure t
+  :hook (quint-mode . lsp))
 
-;; (defun my-ts-mode-hook ()
-;;   (interactive)
-;;   (tide-setup)
-;;   (eldoc-mode)
-;;   (tide-hl-identifier-mode +1)
-;;   (add-hook 'before-save-hook 'tide-format-before-save))
-
-;; (add-hook 'typescript-mode-hook #'my-ts-mode-hook)
-
-(require 'tide)
-
-(defun setup-tide-mode ()
-  "Set up tide mode."
-  (interactive)
-  (tide-mode +1)
-  (tide-restart-server)
-  (flycheck-mode +1)
-  (setq flycheck-check-syntax-automatically '(save mode-enabled))
-  ;; https://github.com/Microsoft/TypeScript/blob/v3.3.1/src/server/protocol.ts#L2858-L2890
-  (setq tide-format-options '(:insertSpaceBeforeFunctionParenthesis t :identSize 2))
-  (eldoc-mode +1))
-
-;; formats the buffer before saving
-(add-hook 'before-save-hook 'tide-format-before-save)
-
-(add-hook 'typescript-mode-hook #'setup-tide-mode)
-;;; end tide setup
+(add-hook 'typescript-mode-hook 'prettier-mode)
 
 (defun my-haskell-mode-hook ()
   (hindent-mode)
@@ -570,3 +551,12 @@ Time-stamp: <>
   ;; (lsp)
 )
 (add-hook 'haskell-mode-hook 'my-haskell-mode-hook)
+
+;; accept completion from copilot and fallback to company
+(use-package! copilot
+  :hook (prog-mode . copilot-mode)
+  :bind (:map copilot-completion-map
+              ("<tab>" . 'copilot-accept-completion)
+              ("TAB" . 'copilot-accept-completion)
+              ("C-TAB" . 'copilot-accept-completion-by-word)
+              ("C-<tab>" . 'copilot-accept-completion-by-word)))

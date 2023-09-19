@@ -1,15 +1,24 @@
 { config, pkgs, lib, ... }:
 
 let
-  unstable = import <nixpkgs-unstable> { config.allowUnfree = true; overlays = [(self: super: { discord = super.discord.overrideAttrs (_: { src = builtins.fetchTarball "https://discord.com/api/download?platform=linux&format=tar.gz"; });})];};
-  mypolybar = (pkgs.polybar.overrideAttrs (old: {
-    nativeBuildInputs = old.nativeBuildInputs ++ [
-      pkgs.python38Packages.sphinx
+  unstable = import <nixpkgs-unstable> {
+    config.allowUnfree = true;
+    overlays = [
+      (self: super: {
+        discord = super.discord.overrideAttrs (_: {
+          src = builtins.fetchTarball
+            "https://discord.com/api/download?platform=linux&format=tar.gz";
+        });
+      })
     ];
+  };
+  mypolybar = (pkgs.polybar.overrideAttrs (old: {
+    nativeBuildInputs = old.nativeBuildInputs
+      ++ [ pkgs.python38Packages.sphinx ];
     src = pkgs.fetchFromGitHub {
       owner = old.pname;
       repo = old.pname;
-      rev    = "10bbec44515d2479c0dd606ae48a2e0721ad94c0";
+      rev = "10bbec44515d2479c0dd606ae48a2e0721ad94c0";
       sha256 = "0kzv6crszs0yx70v0n89jvv40155chraw3scqdybibk4n1pmbkzn";
       fetchSubmodules = true;
     };
@@ -23,15 +32,18 @@ let
     nlSupport = true;
     pulseSupport = false;
   };
-  gh-md-toc = pkgs.writeScriptBin "gh-md-toc" "curl https://raw.githubusercontent.com/ekalinin/github-markdown-toc/master/gh-md-toc -o gh-md-toc && chmod a+x gh-md-toc";
-in
- {
+  gh-md-toc = pkgs.writeScriptBin "gh-md-toc"
+    "curl https://raw.githubusercontent.com/ekalinin/github-markdown-toc/master/gh-md-toc -o gh-md-toc && chmod a+x gh-md-toc";
+in {
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
   home.stateVersion = "23.05";
 
   imports = [
-    "${fetchTarball "https://github.com/msteen/nixos-vscode-server/tarball/master"}/modules/vscode-server/home.nix"
+    "${
+      fetchTarball
+      "https://github.com/msteen/nixos-vscode-server/tarball/master"
+    }/modules/vscode-server/home.nix"
     ./programs/xmonad/default.nix
     ./programs/vscode/vscode.nix
   ];
@@ -106,7 +118,7 @@ in
     pkgs.glxinfo
     pkgs.lm_sensors
 
-    (pkgs.aspellWithDicts (d: [d.en d.pt_BR]))
+    (pkgs.aspellWithDicts (d: [ d.en d.pt_BR ]))
     pkgs.languagetool
 
     pkgs.networkmanagerapplet
@@ -128,8 +140,6 @@ in
 
     pkgs.copyq
     pkgs.libqalculate
-
-    pkgs.emacs
 
     pkgs.sqlite
     # pkgs.texlive.combined.scheme-full
@@ -164,23 +174,31 @@ in
     pkgs.ledger-live-desktop
 
     pkgs.pulseeffects-legacy
+
+    # Required by emacs copilot
+    pkgs.nodejs-18_x
   ];
+
+  programs.emacs = {
+    enable = true;
+    package = pkgs.emacs;
+  };
 
   xdg.mimeApps = {
     enable = true;
 
-    associations.added = {};
+    associations.added = { };
     defaultApplications = {
-      "text/html" = ["vivaldi-stable.desktop"];
-      "x-scheme-handler/http" = ["vivaldi-stable.desktop"];
-      "x-scheme-handler/https" = ["vivaldi-stable.desktop"];
-      "x-scheme-handler/about" = ["vivaldi-stable.desktop"];
-      "x-scheme-handler/unknown" = ["vivaldi-stable.desktop"];
-      "video/mp4" = ["mpv.desktop" "userapp-vlc-HA5N50.desktop"];
-      "x-scheme-handler/tg" = ["userapp-Telegram Desktop-E8SX01.desktop"];
-      "image/png" = ["vivaldi-stable.desktop"];
-      "application/pdf" = ["okularApplication_pdf.desktop"];
-      "vscode-insiders" = ["code-insiders.desktop"];
+      "text/html" = [ "vivaldi-stable.desktop" ];
+      "x-scheme-handler/http" = [ "vivaldi-stable.desktop" ];
+      "x-scheme-handler/https" = [ "vivaldi-stable.desktop" ];
+      "x-scheme-handler/about" = [ "vivaldi-stable.desktop" ];
+      "x-scheme-handler/unknown" = [ "vivaldi-stable.desktop" ];
+      "video/mp4" = [ "mpv.desktop" "userapp-vlc-HA5N50.desktop" ];
+      "x-scheme-handler/tg" = [ "userapp-Telegram Desktop-E8SX01.desktop" ];
+      "image/png" = [ "vivaldi-stable.desktop" ];
+      "application/pdf" = [ "okularApplication_pdf.desktop" ];
+      "vscode-insiders" = [ "code-insiders.desktop" ];
     };
   };
 
@@ -223,9 +241,55 @@ in
 
   programs.bash = {
     enable = true;
-    shellAliases = {
-      ls = "ls --color=auto";
-    };
+    shellAliases = { ls = "ls --color=auto"; };
+  };
+
+  programs.neovim = {
+    enable = true;
+    vimAlias = true;
+    extraConfig = builtins.readFile ./programs/vim/extraConfig.vim;
+    extraLuaConfig = builtins.readFile ./programs/vim/extraLuaConfig.lua;
+
+    plugins = with pkgs.vimPlugins; [
+      # Syntax / Language Support ##########################
+      vim-nix
+      zig-vim
+      nvim-treesitter
+
+      # UI #################################################
+      nord-vim # colorscheme
+      vim-gitgutter # status in gutter
+      # vim-devicons
+      vim-airline
+
+      # Editor Features ####################################
+      vim-surround # cs"'
+      vim-repeat # cs"'...
+      vim-commentary # gcap
+      # vim-ripgrep
+      vim-indent-object # >aI
+      vim-easy-align # vipga
+      vim-eunuch # :Rename foo.rb
+      vim-sneak
+      supertab
+      # vim-endwise        # add end, } after opening block
+      # gitv
+      # tabnine-vim
+      ale # linting
+      nerdtree
+      # vim-toggle-quickfix
+      # neosnippet.vim
+      neosnippet-snippets
+      # splitjoin.vim
+      nerdtree
+
+      # Buffer / Pane / File Management ####################
+      fzf-vim # all the things
+
+      # Panes / Larger features ############################
+      tagbar # <leader>5
+      vim-fugitive # Gblame
+    ];
   };
 
   programs.alacritty = {
@@ -256,6 +320,39 @@ in
         size = 14.0;
       };
 
+      # Colors (Alabaster Dark)
+      colors = {
+        primary = {
+          background = "0x0E1415";
+          foreground = "0xCECECE";
+        };
+        cursor = {
+          text = "0x0E1415";
+          cursor = "0xCECECE";
+        };
+        normal = {
+          black = "0x0E1415";
+          red = "0xe25d56";
+          green = "0x73ca50";
+          yellow = "0xe9bf57";
+          blue = "0x4a88e4";
+          magenta = "0x915caf";
+          cyan = "0x23acdd";
+          white = "0xf0f0f0";
+        };
+        bright = {
+          black = "0x777777";
+          red = "0xf36868";
+          green = "0x88db3f";
+          yellow = "0xf0bf7a";
+          blue = "0x6f8fdb";
+          magenta = "0xe987e9";
+          cyan = "0x4ac9e2";
+          white = "0xFFFFFF";
+        };
+      };
+
+      # white
       # colors = {
       #   # Default colors
       #   primary = {
@@ -265,72 +362,72 @@ in
 
       #   # Normal colors
       #   normal = {
-      #     black =   "0x16130f";
-      #     red =     "0x826d57";
-      #     green =   "0x57826d";
-      #     yellow =  "0x6d8257";
-      #     blue =    "0x6d5782";
+      #     black = "0x16130f";
+      #     red = "0x826d57";
+      #     green = "0x57826d";
+      #     yellow = "0x6d8257";
+      #     blue = "0x6d5782";
       #     magenta = "0x82576d";
-      #     cyan =    "0x576d82";
-      #     white =   "0xa39a90";
+      #     cyan = "0x576d82";
+      #     white = "0xa39a90";
       #   };
 
       #   # Bright colors
       #   bright = {
-      #     black =   "0x5a5047";
-      #     red =     "0x826d57";
-      #     green =   "0x57826d";
-      #     yellow =  "0x6d8257";
-      #     blue =    "0x6d5782";
+      #     black = "0x5a5047";
+      #     red = "0x826d57";
+      #     green = "0x57826d";
+      #     yellow = "0x6d8257";
+      #     blue = "0x6d5782";
       #     magenta = "0x82576d";
-      #     cyan =    "0x576d82";
-      #     white =   "0xdbd6d1";
+      #     cyan = "0x576d82";
+      #     white = "0xdbd6d1";
       #   };
       # };
 
-      colors = {
-        primary = {
-          background = "0x000000";
-          foreground = "0xffffff";
-        };
+      # colors = {
+      #   primary = {
+      #     background = "0x000000";
+      #     foreground = "0xffffff";
+      #   };
 
-        cursor = {
-          background = "0xFFFFFF";
-          foreground = "0x222222";
-        };
+      #   cursor = {
+      #     background = "0xFFFFFF";
+      #     foreground = "0x222222";
+      #   };
 
-        vi_mode_cursor = {
-          background = "0xFFFFFF";
-          foreground = "0xbbc2cf";
-        };
+      #   vi_mode_cursor = {
+      #     background = "0xFFFFFF";
+      #     foreground = "0xbbc2cf";
+      #   };
 
-        selection= {
-          text = "0x000000";
-          background = "0x44475a";
-        };
+      #   selection= {
+      #     text = "0x000000";
+      #     background = "0x44475a";
+      #   };
 
-        normal = {
-          black   = "0x757575";
-          red     = "0xff5f5f";
-          green   = "0xde8a36";
-          yellow  = "0xd78787";
-          blue    = "0xaf5fd7";
-          magenta = "0xff87d7";
-          cyan    = "0xdea3e5";
-          white   = "0xb8b8b8";
-        };
+      #   normal = {
+      #     black   = "0x757575";
+      #     red     = "0xff5f5f";
+      #     green   = "0xde8a36";
+      #     yellow  = "0xd78787";
+      #     blue    = "0xaf5fd7";
+      #     magenta = "0xff87d7";
+      #     cyan    = "0xdea3e5";
+      #     white   = "0xb8b8b8";
+      #   };
 
-        bright = {
-          black   = "0xb8b8b8";
-          red     = "0xd78787";
-          green   = "0xff9f6f";
-          yellow  = "0xff5f5f";
-          blue    = "0xdea3e5";
-          magenta = "0xd7afaf";
-          cyan    = "0xaf5fd7";
-          white   = "0x757575";
-        };
-      };
+      #   bright = {
+      #     black   = "0xb8b8b8";
+      #     red     = "0xd78787";
+      #     green   = "0xff9f6f";
+      #     yellow  = "0xff5f5f";
+      #     blue    = "0xdea3e5";
+      #     magenta = "0xd7afaf";
+      #     cyan    = "0xaf5fd7";
+      #     white   = "0x757575";
+      #   };
+      # };
     };
   };
 
@@ -343,9 +440,7 @@ in
     cycle = true;
   };
 
-  programs.rofi.pass = {
-    enable = true;
-  };
+  programs.rofi.pass = { enable = true; };
 
   # services.picom = {
   #   # package = picom-fork;
@@ -391,8 +486,7 @@ in
   services.polybar = {
     enable = true;
     config = ./programs/polybar/config.ini;
-    script = ''
-    '';
+    script = "";
   };
 
   services.udiskie = {
