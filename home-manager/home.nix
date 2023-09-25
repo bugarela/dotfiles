@@ -261,6 +261,7 @@ in {
     extraConfig = ''
       autocmd FileType quint lua vim.treesitter.start()
       autocmd FileType quint lua vim.lsp.start({name = 'quint', cmd = {'quint-language-server', '--stdio'}, root_dir = vim.fs.dirname()})
+      au BufRead,BufNewFile *.qnt  setfiletype quint
     '';
 
     plugins = with pkgs.vimPlugins; [
