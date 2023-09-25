@@ -212,7 +212,7 @@ in {
       [gpg]
         format = ssh
       [gpg "ssh"]
-        program = /nix/store/6dhl47wrxgiz94ilrs86iwcxhhgw46qc-1password-8.10.9/bin/op-ssh-sign
+        program = /run/current-system/sw/bin/op-ssh-sign
     '';
     signing = {
       key =
