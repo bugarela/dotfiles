@@ -181,7 +181,7 @@ in {
 
   programs.emacs = {
     enable = true;
-    package = pkgs.emacs;
+    package = pkgs.emacs29;
   };
 
   xdg.mimeApps = {
@@ -206,8 +206,15 @@ in {
     enable = true;
     userName = "bugarela";
     userEmail = "gabrielamoreira05@gmail.com";
+    extraConfig = ''
+      [gpg]
+        format = ssh
+      [gpg "ssh"]
+        program = /nix/store/6dhl47wrxgiz94ilrs86iwcxhhgw46qc-1password-8.10.9/bin/op-ssh-sign
+    '';
     signing = {
-      key = "62E3DAEC882BA3873608D1CA4E9DBD7E8EB52FF9";
+      key =
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK9j0vEeUJi5vv++eeMOWkIYjGy8ED7s3M4FHY7YOzXH";
       signByDefault = true;
     };
     delta.enable = true;
@@ -218,24 +225,25 @@ in {
     shellInit = builtins.readFile ./programs/fish/config.fish;
     plugins = [
       {
-        name = "fzf";
-        src = pkgs.fetchFromGitHub {
-          owner = "jethrokuan";
-          repo = "fzf";
-          rev = "ac01d96fc6344ebeb48c03f2c9c0be5bf3b20f1c";
-          sha256 = "1h97zh3ghcvvn2x9rj51frhhi85nf7wa072g9mm2pc6sg71ijw4k";
-        };
+        name = "plugin-git";
+        src = pkgs.fishPlugins.plugin-git.src;
       }
       {
-        name = "plugin-git";
-        src = pkgs.fetchFromGitHub {
-          owner = "jhillyerd";
-          repo = "plugin-git";
-          rev = "e8da507732c8e2aa0bd6487cea800f7e3ab4bb3b";
-          sha256 = "0z36z1chiyv2m0iwa90brz6bf7wlvsibq1y3ldmsiqb8gqh80nrj";
-        };
+        name = "colored-man-pages";
+        src = pkgs.fishPlugins.colored-man-pages.src;
       }
-
+      {
+        name = "done";
+        src = pkgs.fishPlugins.done.src;
+      }
+      {
+        name = "fzf";
+        src = pkgs.fishPlugins.fzf.src;
+      }
+      {
+        name = "sponge";
+        src = pkgs.fishPlugins.sponge.src;
+      }
     ];
   };
 

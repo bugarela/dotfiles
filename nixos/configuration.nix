@@ -55,16 +55,13 @@
       trusted-users = [ "root" "gabriela" ];
 
       # Binary Cache for Haskell.nix
-      trusted-public-keys = [
-        "hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ="
-      ];
-      substituters = [
-        "https://hydra.iohk.io"
-      ];
+      trusted-public-keys =
+        [ "hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ=" ];
+      substituters = [ "https://hydra.iohk.io" ];
 
       auto-optimise-store = true;
     };
-   };
+  };
 
   # Enable the Plasma 5 Desktop Environment.
   # services.xserver.displayManager.lightdm.enable = true;
@@ -161,9 +158,7 @@
     extraGroups = [ "wheel" "networkmanager" "docker" "video" "plugdev" ];
   };
 
-  users.extraUsers.gabriela = {
-    shell = pkgs.fish;
-  };
+  users.extraUsers.gabriela = { shell = pkgs.fish; };
 
   programs.fish.enable = true;
 
@@ -259,9 +254,7 @@
   # Docker config
   virtualisation.docker.enable = true;
 
-  nixpkgs.config.permittedInsecurePackages = [
-    "python-2.7.18.6"
-  ];
+  nixpkgs.config.permittedInsecurePackages = [ "python-2.7.18.6" ];
 
   # # Solution to VSCode server from https://nixos.wiki/wiki/Visual_Studio_Code
   # programs.nix-ld.enable = true;
@@ -271,4 +264,18 @@
   #   ];
   #   NIX_LD = lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker";
   # };
+
+  services.fprintd.enable = true;
+  services.fprintd.tod.enable = true;
+  services.fprintd.tod.driver = pkgs.libfprint-2-tod1-vfs0090;
+
+  # {imported to configuration.nix direct as home-manager does not support 1password
+  programs._1password = { enable = true; };
+
+  # Enable the 1Passsword GUI with myself as an authorized user for polkit
+  programs._1password-gui = {
+    enable = true;
+    polkitPolicyOwners = [ "gabriela" ];
+  };
+  security.polkit.enable = true;
 }
