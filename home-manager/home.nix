@@ -177,6 +177,8 @@ in {
 
     # Required by emacs copilot
     pkgs.nodejs-18_x
+
+    pkgs.tree-sitter
   ];
 
   programs.emacs = {
@@ -255,14 +257,18 @@ in {
   programs.neovim = {
     enable = true;
     vimAlias = true;
-    extraConfig = builtins.readFile ./programs/vim/extraConfig.vim;
     extraLuaConfig = builtins.readFile ./programs/vim/extraLuaConfig.lua;
+    extraConfig = ''
+      autocmd FileType quint lua vim.treesitter.start()
+      autocmd FileType quint lua vim.lsp.start({name = 'quint', cmd = {'quint-language-server', '--stdio'}, root_dir = vim.fs.dirname()})
+    '';
 
     plugins = with pkgs.vimPlugins; [
       # Syntax / Language Support ##########################
       vim-nix
       zig-vim
       nvim-treesitter
+      nvim-lspconfig
 
       # UI #################################################
       nord-vim # colorscheme
@@ -280,16 +286,9 @@ in {
       vim-eunuch # :Rename foo.rb
       vim-sneak
       supertab
-      # vim-endwise        # add end, } after opening block
-      # gitv
-      # tabnine-vim
       ale # linting
       nerdtree
-      # vim-toggle-quickfix
-      # neosnippet.vim
       neosnippet-snippets
-      # splitjoin.vim
-      nerdtree
 
       # Buffer / Pane / File Management ####################
       fzf-vim # all the things
@@ -297,6 +296,14 @@ in {
       # Panes / Larger features ############################
       tagbar # <leader>5
       vim-fugitive # Gblame
+      (nvim-treesitter.withPlugins (_:
+        nvim-treesitter.allGrammars ++ [
+          (pkgs.tree-sitter.buildGrammar {
+            language = "quint";
+            version = "7c51ff7";
+            src = /home/gabriela/projects/quint/tree-sitter-quint;
+          })
+        ]))
     ];
   };
 
