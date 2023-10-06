@@ -75,7 +75,7 @@ in {
         "$DOOMBIN" -y install
       else
         echo "-------------> Syncing DOOM EMACS"
-        "$DOOMBIN" -y sync
+        # "$DOOMBIN" -y sync
       fi
     ''}";
   };
@@ -177,6 +177,8 @@ in {
 
     # Required by emacs copilot
     pkgs.nodejs-18_x
+    # Required by treemacs
+    pkgs.python3
 
     pkgs.tree-sitter
   ];
@@ -204,6 +206,10 @@ in {
     };
   };
 
+  home.file.".ssh/allowed_signers".text = ''
+    gabrielamoreira05@gmail.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK9j0vEeUJi5vv++eeMOWkIYjGy8ED7s3M4FHY7YOzXH
+  '';
+
   programs.git = {
     enable = true;
     userName = "bugarela";
@@ -212,6 +218,7 @@ in {
       [gpg]
         format = ssh
       [gpg "ssh"]
+        allowedSignersFile = ~/.ssh/allowed_signers
         program = /run/current-system/sw/bin/op-ssh-sign
     '';
     signing = {
@@ -302,7 +309,7 @@ in {
           (pkgs.tree-sitter.buildGrammar {
             language = "quint";
             version = "7c51ff7";
-            src = /home/gabriela/projects/quint/tree-sitter-quint;
+            src = /home/gabriela/projects/tree-sitter-quint;
           })
         ]))
     ];
@@ -317,10 +324,10 @@ in {
 
       window = {
         padding = {
-          x = 20;
-          y = 20;
+          x = 30;
+          y = 30;
         };
-        # opacity = 0.9;
+        opacity = 0.9;
       };
 
       draw_bold_text_with_bright_colors = true;
@@ -458,24 +465,20 @@ in {
 
   programs.rofi.pass = { enable = true; };
 
-  # services.picom = {
-  #   # package = picom-fork;
-  #   enable = false;
-  #   experimentalBackends = true;
-  #   backend = "glx";
-  #   # blur = true;
-  #   shadow = true;
-  #   # activeOpacity = 0.95;
-  #   # inactiveOpacity = "0.95";
-  #   shadowOpacity = "0.65";
-  #   extraOptions = ''
-  #     corner-radius = 10;
-  #     blur:
-  #     {
-  #       method = "dual_kawase";
-  #     };
-  #   '';
-  # };
+  services.picom = {
+    # package = picom-fork;
+    enable = true;
+    backend = "glx";
+    shadow = true;
+    fade = true;
+    fadeDelta = 2;
+    shadowOpacity = 0.65;
+    settings = {
+      corner-radius = 10;
+      experimentalBackends = true;
+      blur = { method = "dual_kawase"; };
+    };
+  };
 
   gtk = {
     enable = true;

@@ -33,7 +33,45 @@ function init-polybar
     sleep 1
     MONITOR=HDMI-0 polybar --reload mybar &
     sleep 1
-    for m in (xrandr --query | grep ' connected' | cut -d' ' -f1 | sort); MONITOR=$m polybar --reload mybar &; end
+    for m in (xrandr --query | grep ' connected' | cut -d' ' -f1 | sort)
+        MONITOR=$m polybar --reload mybar &
+    end
 end
 
 __git.init
+
+function _git_branch_name
+    echo (command git symbolic-ref HEAD 2> /dev/null | sed -e 's|^refs/heads/||')
+end
+
+function fish_prompt
+    set -l last_status $status
+
+    set -l cyan (set_color cyan)
+    set -l yellow (set_color yellow)
+    set -l red (set_color red)
+    set -l blue (set_color blue)
+    set -l green (set_color green)
+    set -l purple (set_color purple)
+    set -l normal (set_color normal)
+
+    set -l cwd $purple(pwd | sed "s:^$HOME:~:")
+
+    # Print pwd or full path
+    echo -n -s $cwd $normal
+
+    # Show git branch and status
+    if [ (_git_branch_name) ]
+        set -l git_branch (_git_branch_name)
+
+        set git_info '(' $blue $git_branch $normal ')'
+        echo -n -s ' · ' $git_info $normal
+    end
+
+    set -l prompt_color $red
+    if test $last_status = 0
+        set prompt_color $normal
+    end
+
+    echo -e -n -s $prompt_color ' $ ' $normal
+end

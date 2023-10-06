@@ -26,7 +26,7 @@
 (setq doom-theme 'doom-tomorrow-night)
 (setq doom-font (font-spec :family "Iosevka" :size 26))
 (setq doom-big-font (font-spec :family "Iosevka" :size 42))
-(setq doom-variable-pitch-font (font-spec :family "Iosevka" :size 14))
+(setq doom-variable-pitch-font (font-spec :family "Iosevka" :size 20))
 
 ;; (push "~/nix-configs/.doom.d/themes/emacs-material-ocean" custom-theme-load-path)
 ;; (push "~/nix-configs/.doom.d/themes/emacs-material-ocean" load-path)
@@ -540,15 +540,15 @@ Time-stamp: <>
 (require 'quint-mode)
 (add-to-list 'auto-mode-alist '("\\.qnt" . quint-mode))
 (use-package lsp-quint
-  :ensure t
   :hook (quint-mode . lsp))
 
-(add-hook 'typescript-mode-hook 'prettier-mode)
+(add-hook 'typescript-ts-mode-hook 'prettier-mode)
+(add-hook 'typescript-ts-mode-hook 'lsp-mode)
 
 (defun my-haskell-mode-hook ()
   (hindent-mode)
   ;; (add-hook 'before-save-hook 'hindent-reformat-buffer)
-  ;; (lsp)
+  (lsp-deferred)
 )
 (add-hook 'haskell-mode-hook 'my-haskell-mode-hook)
 
@@ -560,3 +560,13 @@ Time-stamp: <>
               ("TAB" . 'copilot-accept-completion)
               ("C-TAB" . 'copilot-accept-completion-by-word)
               ("C-<tab>" . 'copilot-accept-completion-by-word)))
+
+(use-package treesit-auto
+  :config
+  (global-treesit-auto-mode))
+
+(add-to-list 'default-frame-alist '(internal-border-width . 20))
+(custom-set-faces
+ `(vertical-border ((t (:background nil))))
+ `(mode-line ((t (:background nil))))
+ `(fringe ((t (:background nil)))))

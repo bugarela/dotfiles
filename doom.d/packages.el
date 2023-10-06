@@ -36,6 +36,7 @@
 (package! autothemer)
 
 (package! prettier)
+(package! treesit-auto)
 
 (package! scroll-on-jump)
 (package! sidebar :recipe (:host github :repo "sebastiencs/sidebar.el"))

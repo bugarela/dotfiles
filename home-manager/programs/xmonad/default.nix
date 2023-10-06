@@ -1,4 +1,4 @@
-{ pkgs, ...}:
+{ pkgs, ... }:
 
 {
   xsession = {
@@ -11,8 +11,10 @@
         haskellPackages.xmonad
         haskellPackages.xmonad-contrib
         haskellPackages.xmonad-extras
+        haskellPackages.haskell-language-server
       ];
-      config = /home/gabriela/nix-configs/home-manager/programs/xmonad/config.hs;
+      config =
+        /home/gabriela/nix-configs/home-manager/programs/xmonad/config.hs;
     };
 
   };
