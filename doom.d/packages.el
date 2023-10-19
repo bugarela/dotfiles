@@ -43,7 +43,7 @@
 
 (package! tla-mode :recipe (:host github :repo "valschneider/tla-mode"))
 ;; (package! tla-tools :recipe (:host github :repo "mrc/tla-tools"))
-(package! tla+-mode :recipe (:host nil :type git :repo "https://git.sdf.org/bch/tlamode"))
+;; (package! tla+-mode :recipe (:host nil :type git :repo "https://git.sdf.org/bch/tlamode"))
 
 ;; Workaround from https://github.com/hlissner/doom-emacs/issues/5667
 (package! gitconfig-mode

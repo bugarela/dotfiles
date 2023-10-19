@@ -58,6 +58,15 @@ in {
     EMACSDIR = "$HOME/.emacs.d";
     DOOMLOCALDIR = "$HOME/.doom_local";
     DIRENV_ALLOW_NIX = 1;
+    XDG_CONFIG_HOME = "$HOME";
+  };
+
+  home.activation = {
+    # installDoomEmacs = ''
+    #   if [ ! -d "$HOME/emacs" ]; then
+    #     git clone --depth=1 --single-branch https://github.com/doomemacs/doomemacs "$EMACSDIR"
+    #   fi
+    # '';
   };
 
   home.file.".doom.d" = {
@@ -68,15 +77,6 @@ in {
       DOOMLOCALDIR=/home/gabriela/.doom_local
       mkdir -p "$DOOMLOCALDIR"
       mkdir -p /home/gabriela/org/roam
-      if [ ! -f "$DOOMBIN" ]; then
-        echo "-------------> Installing DOOM EMACS"
-        mv "$EMACSDIR" "$EMACSDIR".bk
-        git clone --depth 1 https://github.com/hlissner/doom-emacs.git "$EMACSDIR"
-        "$DOOMBIN" -y install
-      else
-        echo "-------------> Syncing DOOM EMACS"
-        # "$DOOMBIN" -y sync
-      fi
     ''}";
   };
 
@@ -181,6 +181,8 @@ in {
     pkgs.python3
 
     pkgs.tree-sitter
+
+    pkgs.betterlockscreen
   ];
 
   programs.emacs = {
@@ -191,7 +193,12 @@ in {
   xdg.mimeApps = {
     enable = true;
 
-    associations.added = { };
+    associations.added = {
+      "x-scheme-handler/http" = [ "vivaldi-stable.desktop" ];
+      "x-scheme-handler/https" = [ "vivaldi-stable.desktop" ];
+      "x-scheme-handler/about" = [ "vivaldi-stable.desktop" ];
+      "x-scheme-handler/unknown" = [ "vivaldi-stable.desktop" ];
+    };
     defaultApplications = {
       "text/html" = [ "vivaldi-stable.desktop" ];
       "x-scheme-handler/http" = [ "vivaldi-stable.desktop" ];
@@ -206,8 +213,17 @@ in {
     };
   };
 
+  home.file.".ssh/config".text = ''
+    Host *
+        IdentityAgent ~/.1password/agent.sock
+  '';
+
   home.file.".ssh/allowed_signers".text = ''
     gabrielamoreira05@gmail.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK9j0vEeUJi5vv++eeMOWkIYjGy8ED7s3M4FHY7YOzXH
+  '';
+
+  home.file.".npmrc".text = ''
+    prefix=~/.npm
   '';
 
   programs.git = {

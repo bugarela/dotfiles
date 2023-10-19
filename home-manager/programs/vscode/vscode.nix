@@ -5,34 +5,34 @@ in {
   programs.vscode = {
     enable = true;
     userSettings = builtins.fromJSON (builtins.readFile ./settings.json);
-    # package = unstable.vscode;
-    package = (pkgs.vscode.override { isInsiders = true; }).overrideAttrs
-      (_: prev: {
-        pname = "vscode-insiders";
-        postPatch = ''
-      # this is a fix for "save as root" functionality
-      packed="resources/app/node_modules.asar"
-      unpacked="resources/app/node_modules"
-      asar extract "$packed" "$unpacked"
-      substituteInPlace $unpacked/@vscode/sudo-prompt/index.js \
-        --replace "/usr/bin/pkexec" "/run/wrappers/bin/pkexec" \
-        --replace "/bin/bash" "${pkgs.bash}/bin/bash"
-      rm -rf "$packed"
-      # without this symlink loading JsChardet, the library that is used for auto encoding detection when files.autoGuessEncoding is true,
-      # fails to load with: electron/js2c/renderer_init: Error: Cannot find module 'jschardet'
-      # and the window immediately closes which renders VSCode unusable
-      # see https://github.com/NixOS/nixpkgs/issues/152939 for full log
-      ln -rs "$unpacked" "$packed"
-      # this fixes bundled ripgrep
-      chmod +x resources/app/node_modules/@vscode/ripgrep/bin/rg
-    '';
-        src = (builtins.fetchTarball {
-          url =
-            "https://code.visualstudio.com/sha/download?build=insider&os=linux-x64";
-          sha256 = "1nvmnf4w2894v21zcmh1xzcxzzilc10qsqhz2i5hqvrn2vcw0ivv";
-        });
-        version = "latest";
-      });
+    package = unstable.vscode;
+    # package = (pkgs.vscode.override { isInsiders = true; }).overrideAttrs
+    #   (_: prev: {
+    #     pname = "vscode-insiders";
+    #     postPatch = ''
+    #       # this is a fix for "save as root" functionality
+    #       packed="resources/app/node_modules.asar"
+    #       unpacked="resources/app/node_modules"
+    #       asar extract "$packed" "$unpacked"
+    #       substituteInPlace $unpacked/@vscode/sudo-prompt/index.js \
+    #         --replace "/usr/bin/pkexec" "/run/wrappers/bin/pkexec" \
+    #         --replace "/bin/bash" "${pkgs.bash}/bin/bash"
+    #       rm -rf "$packed"
+    #       # without this symlink loading JsChardet, the library that is used for auto encoding detection when files.autoGuessEncoding is true,
+    #       # fails to load with: electron/js2c/renderer_init: Error: Cannot find module 'jschardet'
+    #       # and the window immediately closes which renders VSCode unusable
+    #       # see https://github.com/NixOS/nixpkgs/issues/152939 for full log
+    #       ln -rs "$unpacked" "$packed"
+    #       # this fixes bundled ripgrep
+    #       chmod +x resources/app/node_modules/@vscode/ripgrep/bin/rg
+    #     '';
+    #     src = (builtins.fetchTarball {
+    #       url =
+    #         "https://code.visualstudio.com/sha/download?build=insider&os=linux-x64";
+    #       sha256 = "01wg94iypcgykkhfbn7dlfxmza92zsnck42ivhab53qk3jdqjcbc";
+    #     });
+    #     version = "latest";
+    #   });
     mutableExtensionsDir = true;
     extensions = with pkgs.vscode-extensions;
       [
@@ -139,7 +139,7 @@ in {
         #   version = "1.0.5873";
         #   sha256 = "1c5bqz267va6lkg2zrz99drypdskrhyq0573gpy06icfj5pdl1m7";
         # }
-    ];
+      ];
   };
 
   home.file.".vscode/extensions/.obsolete".text = "";
