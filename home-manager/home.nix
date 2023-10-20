@@ -58,7 +58,6 @@ in {
     EMACSDIR = "$HOME/.emacs.d";
     DOOMLOCALDIR = "$HOME/.doom_local";
     DIRENV_ALLOW_NIX = 1;
-    XDG_CONFIG_HOME = "$HOME";
   };
 
   home.activation = {
