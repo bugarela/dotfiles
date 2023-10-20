@@ -126,6 +126,7 @@ myStartupHook = do
   spawnOnce "trayer --edge bottom --align right --widthtype request --padding 6 --SetDockType true --SetPartialStrut true --expand true --monitor 0 --transparent true --alpha 0 --tint 0x0c0c0c  --height 16 &"
   spawnOnce "emacs &"
   spawnOnce "dunst &"
+  spawnOnce "1password &"
   spawnOnce "setxkbmap -layout us -variant altgr-intl -option caps:swapescape &"
   setWMName "LG3D"
   spawnOnce "vivaldi"
