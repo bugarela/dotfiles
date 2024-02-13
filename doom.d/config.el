@@ -39,7 +39,7 @@
       org-enable-org-journal-support t
       org-enable-trello-support t
       org-projectile-file "~/org/TODOs.org"
-      org-agenda-files '("~/org/" "~/org/todos/" "~/org/udesc/" "~/org/roam/daily")
+      org-agenda-files '("~/org" "~/org/todos" "~/org/roam/daily")
       org-directory "~/org/")
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
@@ -113,6 +113,7 @@
 
 (add-to-list 'org-babel-load-languages '(ledger . t))
 (with-eval-after-load 'ox-latex
+  (setq org-latex-inputenc-alist '(("utf8" . "utf8x")))
   (add-to-list 'org-latex-classes
                '("acm"
                  "\\documentclass[sigconf]{acmart}"
@@ -197,8 +198,8 @@
     (t nil)))
 
 (use-package! pinentry
-        :init (setq epg-pinentry-mode `loopback)
-               (pinentry-start))
+  :init (setq epg-pinentry-mode `loopback)
+  (pinentry-start))
 
 
 (with-eval-after-load 'evil
@@ -231,30 +232,30 @@
 (setq doom-unreal-buffer-functions '(minibufferp))
 
 (setq go-projectile-tools
-  '((gocode    . "github.com/mdempsky/gocode")
-    (golint    . "golang.org/x/lint/golint")
-    (godef     . "github.com/rogpeppe/godef")
-    (errcheck  . "github.com/kisielk/errcheck")
-    (godoc     . "golang.org/x/tools/cmd/godoc")
-    (gogetdoc  . "github.com/zmb3/gogetdoc")
-    (goimports . "golang.org/x/tools/cmd/goimports")
-    (gorename  . "golang.org/x/tools/cmd/gorename")
-    (gomvpkg   . "golang.org/x/tools/cmd/gomvpkg")
-    (guru      . "golang.org/x/tools/cmd/guru")))
+      '((gocode    . "github.com/mdempsky/gocode")
+        (golint    . "golang.org/x/lint/golint")
+        (godef     . "github.com/rogpeppe/godef")
+        (errcheck  . "github.com/kisielk/errcheck")
+        (godoc     . "golang.org/x/tools/cmd/godoc")
+        (gogetdoc  . "github.com/zmb3/gogetdoc")
+        (goimports . "golang.org/x/tools/cmd/goimports")
+        (gorename  . "golang.org/x/tools/cmd/gorename")
+        (gomvpkg   . "golang.org/x/tools/cmd/gomvpkg")
+        (guru      . "golang.org/x/tools/cmd/guru")))
 
 (defun my-go-mode-hook ()
-  ; Use goimports instead of go-fmt
+                                        ; Use goimports instead of go-fmt
   (setq gofmt-command "goimports")
-  ; Call Gofmt before saving
+                                        ; Call Gofmt before saving
   (add-hook 'before-save-hook 'gofmt-before-save)
-  ; Customize compile command to run go build
+                                        ; Customize compile command to run go build
   (if (not (string-match "go" compile-command))
       (set (make-local-variable 'compile-command)
            "go build -v && go test -v && go vet"))
-  ; Godef jump key binding
+                                        ; Godef jump key binding
   (local-set-key (kbd "M-.") 'godef-jump)
   (local-set-key (kbd "M-*") 'pop-tag-mark)
-)
+  )
 (add-hook 'go-mode-hook 'my-go-mode-hook)
 
 ;; (require 'tla-mode)
@@ -323,7 +324,7 @@
     (with-temp-file tla-file
       (if module
           (insert body)
-          (insert (format "----------------------------- MODULE OB -----------------------------\n%s\n=============================================================================" body)))
+        (insert (format "----------------------------- MODULE OB -----------------------------\n%s\n=============================================================================" body)))
       (write-file tla-file)
       (org-babel-eval command ""))
     (with-temp-buffer
@@ -419,9 +420,9 @@
 ;;                    (with-current-buffer (window-buffer)
 ;;                      (org-roam-buffer--get-create)))))
 
-  ;; Hide the mode line in the org-roam buffer, since it serves no purpose. This
-  ;; makes it easier to distinguish among other org buffers.
-  ;; (add-hook 'org-roam-buffer-prepare-hook #'hide-mode-line-mode))
+;; Hide the mode line in the org-roam buffer, since it serves no purpose. This
+;; makes it easier to distinguish among other org buffers.
+;; (add-hook 'org-roam-buffer-prepare-hook #'hide-mode-line-mode))
 
 ;; Since the org module lazy loads org-protocol (waits until an org URL is
 ;; detected), we can safely chain `org-roam-protocol' to it.
@@ -457,6 +458,20 @@ Time-stamp: <>
   :END:
 " :unnarrowed t)))
   (setq bibtex-completion-notes-template-multiple-files orb-templates))
+
+(setq org-roam-capture-templates
+      '(
+        ("i" "informal" plain "%?" ;;(file "~/org/roam/work/gabriela/stuff.org")
+         :target (file+head "informal/gabriela/%<%Y%m%d%H%M%S>-${slug}.org"
+                            "#+title: ${title}\n") :unnarrowed t)
+        ("u" "udesc" plain "%?" ;;(file "~/org/roam/work/gabriela/stuff.org")
+         :target (file+head "udesc/%<%Y%m%d%H%M%S>-${slug}.org"
+                            "#+title: ${title}\n") :unnarrowed t)
+        ;; ("b" "research" plain (file "~/Documents/roam/study/templates/research.org")
+        ;;  :target (file+head "study/%<%Y%m%d%H%M%S>-${slug}.org"
+        ;;                     "#+title: ${title}\n") :unnarrowed t)
+        )
+      )
 
 (use-package org-noter
   :after (:any org pdf-view)
@@ -530,8 +545,8 @@ Time-stamp: <>
 
 (use-package org-present
   :bind (:map org-present-mode-keymap
-         ("C-c C-j" . dw/org-present-next)
-         ("C-c C-k" . dw/org-present-prev))
+              ("C-c C-j" . dw/org-present-next)
+              ("C-c C-k" . dw/org-present-prev))
   :hook ((org-present-mode . dw/org-present-hook)
          (org-present-mode-quit . dw/org-present-quit-hook)))
 
@@ -549,7 +564,7 @@ Time-stamp: <>
   (hindent-mode)
   ;; (add-hook 'before-save-hook 'hindent-reformat-buffer)
   (lsp-deferred)
-)
+  )
 (add-hook 'haskell-mode-hook 'my-haskell-mode-hook)
 
 ;; accept completion from copilot and fallback to company
@@ -557,6 +572,7 @@ Time-stamp: <>
   :hook (prog-mode . copilot-mode)
   :bind (:map copilot-completion-map
               ("<tab>" . 'copilot-accept-completion)
+              ("<backtab>" . 'copilot-accept-completion)
               ("TAB" . 'copilot-accept-completion)
               ("C-TAB" . 'copilot-accept-completion-by-word)
               ("C-<tab>" . 'copilot-accept-completion-by-word)))
@@ -570,3 +586,90 @@ Time-stamp: <>
  `(vertical-border ((t (:background nil))))
  `(mode-line ((t (:background nil))))
  `(fringe ((t (:background nil)))))
+
+;; https://robert.kra.hn/posts/rust-emacs-setup/
+(use-package rustic
+  :ensure
+  :bind (:map rustic-mode-map
+              ("M-j" . lsp-ui-imenu)
+              ("M-?" . lsp-find-references)
+              ("C-c C-c l" . flycheck-list-errors)
+              ("C-c C-c a" . lsp-execute-code-action)
+              ("C-c C-c r" . lsp-rename)
+              ("C-c C-c q" . lsp-workspace-restart)
+              ("C-c C-c Q" . lsp-workspace-shutdown)
+              ("C-c C-c s" . lsp-rust-analyzer-status))
+  :config
+  ;; uncomment for less flashiness
+  ;; (setq lsp-eldoc-hook nil)
+  ;; (setq lsp-enable-symbol-highlighting nil)
+  ;; (setq lsp-signature-auto-activate nil)
+
+  ;; comment to disable rustfmt on save
+  (setq rustic-format-on-save t)
+  (add-hook 'rustic-mode-hook 'rk/rustic-mode-hook))
+
+(defun rk/rustic-mode-hook ()
+  ;; so that run C-c C-c C-r works without having to confirm, but don't try to
+  ;; save rust buffers that are not file visiting. Once
+  ;; https://github.com/brotzeit/rustic/issues/253 has been resolved this should
+  ;; no longer be necessary.
+  (when buffer-file-name
+    (setq-local buffer-save-without-query t))
+  (add-hook 'before-save-hook 'lsp-format-buffer nil t))
+(use-package lsp-mode
+  :ensure
+  :commands lsp
+  :custom
+  ;; what to use when checking on-save. "check" is default, I prefer clippy
+  (lsp-rust-analyzer-cargo-watch-command "clippy")
+  (lsp-eldoc-render-all t)
+  (lsp-idle-delay 0.6)
+  ;; enable / disable the hints as you prefer:
+  (lsp-inlay-hint-enable t)
+  ;; These are optional configurations. See https://emacs-lsp.github.io/lsp-mode/page/lsp-rust-analyzer/#lsp-rust-analyzer-display-chaining-hints for a full list
+  ;; (lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
+  (lsp-rust-analyzer-display-chaining-hints t)
+  (lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil)
+  (lsp-rust-analyzer-display-closure-return-type-hints t)
+  (lsp-rust-analyzer-display-parameter-hints t)
+  (lsp-rust-analyzer-display-reborrow-hints t)
+  :config
+  (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+
+(use-package lsp-ui
+  :ensure
+  :commands lsp-ui-mode
+  :custom
+  (lsp-ui-peek-always-show t)
+  (lsp-ui-sideline-show-hover t)
+  (lsp-ui-doc-enable t))
+(use-package company
+  :ensure
+  :custom
+  (company-idle-delay 0.5) ;; how long to wait until popup
+  ;; (company-begin-commands nil) ;; uncomment to disable popup
+  :bind
+  (:map company-active-map
+	("C-n". company-select-next)
+	("C-p". company-select-previous)
+	("M-<". company-select-first)
+	("M->". company-select-last)))
+
+(use-package yasnippet
+  :ensure
+  :config
+  (yas-reload-all)
+  (add-hook 'prog-mode-hook 'yas-minor-mode)
+  (add-hook 'text-mode-hook 'yas-minor-mode))
+
+;; Export org files to a different directory to avoid mess
+(defun org-export-output-file-name-modified (orig-fun extension &optional subtreep pub-dir)
+  (unless pub-dir
+    (setq pub-dir "exported-org-files")
+    (unless (file-directory-p pub-dir)
+      (make-directory pub-dir)))
+  (apply orig-fun extension subtreep pub-dir nil))
+(advice-add 'org-export-output-file-name :around #'org-export-output-file-name-modified)
+
+(setq org-latex-pdf-process '("bash -c 'rm -f %b.log; pdflatex -interaction nonstopmode -output-directory %o %f; while (grep -e \"Rerun .* cross-references\" %o/%b.log > /dev/null); do rm -f %b.log; pdflatex -interaction nonstopmode -output-directory %o %f; done'"))

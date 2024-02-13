@@ -1,6 +1,5 @@
 # { stdenv, fetchFromGitHub, cmake, pkg-config, libevdev, libudev, libconfig }:
-with (import <nixpkgs> {});
-
+with (import <nixpkgs> { });
 
 stdenv.mkDerivation rec {
   pname = "logiops";
@@ -17,10 +16,11 @@ stdenv.mkDerivation rec {
 
   nativeBuildInputs = [ cmake pkg-config ];
 
-  buildInputs = [ libevdev libudev libconfig ];
+  buildInputs = [ libevdev udev libconfig ];
 
   meta = with lib; {
-    description = "An unofficial userspace driver for HID++ Logitech mice and keyboards";
+    description =
+      "An unofficial userspace driver for HID++ Logitech mice and keyboards";
     longDescription = ''
       Logiops is an unofficial userspace driver for HID++ Logitech mice and keyboards.
       It can configure features like: easy programmable buttons, DPI selection,

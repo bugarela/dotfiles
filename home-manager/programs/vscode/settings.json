@@ -42,7 +42,7 @@
   "haskell.serverExecutablePath": "/nix/store/f916sv3da68qb2my47ip8p9cbbrkp0mk-haskell-language-server-1.8.0.0/bin/haskell-language-server",
   "keyboard.dispatch": "keyCode",
   "rewrap.autoWrap.enabled": true,
-  "rust-analyzer.server.path": "/nix/store/rcjd15f577cq84m8kf9sn4xvsnkjfyih-rust-analyzer-2022-10-31/bin/rust-analyzer",
+  "rust-analyzer.server.path": "/nix/store/82pm0mngmpk5bq604mv8ljmimk0027d1-rustup-1.26.0/bin/rust-analyzer",
   "task.problemMatchers.neverPrompt": {
     "shell": true
   },
@@ -79,11 +79,13 @@
   "workbench.editorAssociations": {
     "*.md": "default"
   },
-  "workbench.activityBar.visible": false,
+  "workbench.activityBar.visible": true,
   "explorer.openEditors.visible": 0,
   "editor.roundedSelection": false,
-  "editor.folding": false,
-  "workbench.editor.showTabs": false,
+  "editor.folding": true,
+  "workbench.editor.showTabs": true,
   "window.title": "${folderName}/${activeEditorShort}",
-  "editor.cursorBlinking": "solid"
+  "editor.cursorBlinking": "solid",
+  "rust-analyzer.rustc.source": "discover",
+  "rust-analyzer.workspace.symbol.search.scope": "workspace_and_dependencies"
 }

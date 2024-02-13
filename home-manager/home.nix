@@ -131,8 +131,10 @@ in {
 
     unstable.tdesktop
     unstable.discord
+    unstable.whatsapp-for-linux
     pkgs.slack
     pkgs.zulip
+    pkgs.signal-desktop
 
     pkgs.flameshot
     pkgs.peek
@@ -141,7 +143,8 @@ in {
     pkgs.libqalculate
 
     pkgs.sqlite
-    # pkgs.texlive.combined.scheme-full
+    # pkgs.texlive.combined.scheme-small
+    pkgs.texlive.combined.scheme-full
     pkgs.nitrogen
     pkgs.nix-prefetch-git
 
@@ -182,6 +185,7 @@ in {
     pkgs.tree-sitter
 
     pkgs.betterlockscreen
+    pkgs.headsetcontrol
   ];
 
   programs.emacs = {
@@ -189,24 +193,25 @@ in {
     package = pkgs.emacs29;
   };
 
+  xdg.mime.enable = true;
   xdg.mimeApps = {
     enable = true;
 
     associations.added = {
-      "x-scheme-handler/http" = [ "vivaldi-stable.desktop" ];
-      "x-scheme-handler/https" = [ "vivaldi-stable.desktop" ];
-      "x-scheme-handler/about" = [ "vivaldi-stable.desktop" ];
-      "x-scheme-handler/unknown" = [ "vivaldi-stable.desktop" ];
+      "x-scheme-handler/http" = [ "vivaldi.desktop" ];
+      "x-scheme-handler/https" = [ "vivaldi.desktop" ];
+      "x-scheme-handler/about" = [ "vivaldi.desktop" ];
+      "x-scheme-handler/unknown" = [ "vivaldi.desktop" ];
     };
     defaultApplications = {
-      "text/html" = [ "vivaldi-stable.desktop" ];
-      "x-scheme-handler/http" = [ "vivaldi-stable.desktop" ];
-      "x-scheme-handler/https" = [ "vivaldi-stable.desktop" ];
-      "x-scheme-handler/about" = [ "vivaldi-stable.desktop" ];
-      "x-scheme-handler/unknown" = [ "vivaldi-stable.desktop" ];
+      "text/html" = [ "vivaldi.desktop" ];
+      "x-scheme-handler/http" = [ "vivaldi.desktop" ];
+      "x-scheme-handler/https" = [ "vivaldi.desktop" ];
+      "x-scheme-handler/about" = [ "vivaldi.desktop" ];
+      "x-scheme-handler/unknown" = [ "vivaldi.desktop" ];
       "video/mp4" = [ "mpv.desktop" "userapp-vlc-HA5N50.desktop" ];
       "x-scheme-handler/tg" = [ "userapp-Telegram Desktop-E8SX01.desktop" ];
-      "image/png" = [ "vivaldi-stable.desktop" ];
+      "image/png" = [ "vivaldi.desktop" ];
       "application/pdf" = [ "okularApplication_pdf.desktop" ];
       "vscode-insiders" = [ "code-insiders.desktop" ];
     };
@@ -221,9 +226,9 @@ in {
     gabrielamoreira05@gmail.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK9j0vEeUJi5vv++eeMOWkIYjGy8ED7s3M4FHY7YOzXH
   '';
 
-  home.file.".npmrc".text = ''
-    prefix=~/.npm
-  '';
+  # home.file.".npmrc".text = ''
+  #   prefix=~/.npm
+  # '';
 
   programs.git = {
     enable = true;
