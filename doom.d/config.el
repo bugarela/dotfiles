@@ -467,6 +467,9 @@ Time-stamp: <>
         ("u" "udesc" plain "%?" ;;(file "~/org/roam/work/gabriela/stuff.org")
          :target (file+head "udesc/%<%Y%m%d%H%M%S>-${slug}.org"
                             "#+title: ${title}\n") :unnarrowed t)
+        ("p" "personal" plain "%?" ;;(file "~/org/roam/work/gabriela/stuff.org")
+         :target (file+head "personal/%<%Y%m%d%H%M%S>-${slug}.org"
+                            "#+title: ${title}\n") :unnarrowed t)
         ;; ("b" "research" plain (file "~/Documents/roam/study/templates/research.org")
         ;;  :target (file+head "study/%<%Y%m%d%H%M%S>-${slug}.org"
         ;;                     "#+title: ${title}\n") :unnarrowed t)
@@ -673,3 +676,5 @@ Time-stamp: <>
 (advice-add 'org-export-output-file-name :around #'org-export-output-file-name-modified)
 
 (setq org-latex-pdf-process '("bash -c 'rm -f %b.log; pdflatex -interaction nonstopmode -output-directory %o %f; while (grep -e \"Rerun .* cross-references\" %o/%b.log > /dev/null); do rm -f %b.log; pdflatex -interaction nonstopmode -output-directory %o %f; done'"))
+
+(setq lsp-completion-provider :capf)

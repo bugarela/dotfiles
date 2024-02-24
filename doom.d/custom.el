@@ -16,7 +16,7 @@
  '(css-indent-offset 2)
  '(custom-safe-themes
    '("7e377879cbd60c66b88e51fad480b3ab18d60847f31c435f15f5df18bdb18184" "961645c88ac7d89eb13e01005f3710b99ba42dc18661b43eecaf17c978ef5363" "7f3e2839cc6411f236d6d7e65fcae8e78343a7755e407038d6ff8473592b43c6" "1cd1ef3f80fbe5f7eaeabd1678b9942fbacf036ca1c2f899781cc1088ede4400" "8d7b028e7b7843ae00498f68fad28f3c6258eda0650fe7e17bfb017d51d0e2a2" "1d44ec8ec6ec6e6be32f2f73edf398620bb721afeed50f75df6b12ccff0fbb15" "cbdf8c2e1b2b5c15b34ddb5063f1b21514c7169ff20e081d39cf57ffee89bc1e" "76b4632612953d1a8976d983c4fdf5c3af92d216e2f87ce2b0726a1f37606158" "e7ba99d0f4c93b9c5ca0a3f795c155fa29361927cadb99cfce301caf96055dfd" "f4876796ef5ee9c82b125a096a590c9891cec31320569fc6ff602ff99ed73dca" default))
- '(debug-on-error t)
+ '(debug-on-error nil)
  '(doom-themes-treemacs-enable-variable-pitch nil)
  '(doom-themes-treemacs-theme "doom-colors")
  '(exec-path
@@ -37,7 +37,10 @@
    '(ccls lsp-actionscript lsp-ada lsp-angular lsp-ansible lsp-awk lsp-astro lsp-bash lsp-beancount lsp-clangd lsp-clojure lsp-cmake lsp-credo lsp-crystal lsp-csharp lsp-css lsp-d lsp-dart lsp-dhall lsp-docker lsp-dockerfile lsp-elm lsp-elixir lsp-emmet lsp-erlang lsp-eslint lsp-fortran lsp-fsharp lsp-gdscript lsp-go lsp-gleam lsp-glsl lsp-graphql lsp-hack lsp-grammarly lsp-groovy lsp-haskell lsp-haxe lsp-idris lsp-java lsp-javascript lsp-json lsp-kotlin lsp-latex lsp-ltex lsp-lua lsp-markdown lsp-marksman lsp-mint lsp-nginx lsp-nim lsp-nix lsp-magik lsp-metals lsp-mssql lsp-ocaml lsp-openscad lsp-pascal lsp-perl lsp-perlnavigator lsp-pls lsp-php lsp-pwsh lsp-pyls lsp-pylsp lsp-pyright lsp-python-ms lsp-purescript lsp-r lsp-racket lsp-remark lsp-ruff-lsp lsp-rf lsp-rust lsp-semgrep lsp-shader lsp-solargraph lsp-sorbet lsp-sourcekit lsp-sonarlint lsp-tailwindcss lsp-tex lsp-terraform lsp-toml lsp-ttcn3 lsp-typeprof lsp-v lsp-vala lsp-verilog lsp-vetur lsp-volar lsp-vhdl lsp-vimscript lsp-xml lsp-yaml lsp-ruby-lsp lsp-ruby-syntax-tree lsp-sqls lsp-svelte lsp-steep lsp-tilt lsp-zig lsp-quint))
  '(lsp-haskell-server-path
    "/nix/store/dbyjzdqcvn2q1wha2i1p4bf9jdwm23k2-haskell-language-server-2.0.0.0/bin/haskell-language-server-wrapper")
+ '(lsp-rust-analyzer-display-parameter-hints t)
  '(lsp-rust-analyzer-linked-projects [])
+ '(lsp-rust-analyzer-rustc-source
+   "/home/gabriela/.rustup/toolchains/nightly-2024-01-06-x86_64-unknown-linux-gnu/lib/rustlib/rustc-src/rust/compiler/rustc_driver/Cargo.toml")
  '(lsp-rust-features [])
  '(magit-todos-insert-after '(bottom) nil nil "Changed by setter of obsolete option `magit-todos-insert-at'")
  '(objed-cursor-color "#EDD26C")

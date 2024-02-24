@@ -152,11 +152,12 @@ in {
     pkgs.pinentry
     pkgs.gh
 
-    # pkgs.steam
+    # pkgs.steam --via nixos
     # pkgs.lutris
     # pkgs.tuxguitar
 
     pkgs.megasync
+    pkgs.megacmd
     pkgs.obs-studio
     pkgs.okular
     pkgs.vlc
