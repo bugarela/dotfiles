@@ -60,6 +60,11 @@
 (package! ox-thtml
   :recipe (:host github :repo "juanjosegarciaripoll/org-thtml" :files ("*.el")))
 
+(package! org-inline-pdf
+  :recipe (:host github :repo "shg/org-inline-pdf.el" :files ("*.el")))
+
+;; https://github.com/doomemacs/doomemacs/issues/7568
+(unpin! apheleia)
 ;; To install a package directly from a remote git repo, you must specify a
 ;; `:recipe'. You'll find documentation on what `:recipe' accepts here:
 ;; https://github.com/raxod502/straight.el#the-recipe-format

@@ -216,6 +216,7 @@
     font-awesome_5
     papirus-icon-theme
     iosevka
+    etBook
     emacs-all-the-icons-fonts
     (nerdfonts.override { fonts = [ "FiraCode" "DroidSansMono" "Mononoki" ]; })
   ];

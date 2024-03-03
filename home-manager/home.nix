@@ -187,6 +187,10 @@ in {
 
     pkgs.betterlockscreen
     pkgs.headsetcontrol
+
+    unstable.tlaplus
+    pkgs.imagemagick
+    pkgs.pdf2svg
   ];
 
   programs.emacs = {

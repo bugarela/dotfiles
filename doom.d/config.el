@@ -23,7 +23,7 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-tomorrow-night)
+(setq doom-theme 'doom-lantern)
 (setq doom-font (font-spec :family "Iosevka" :size 26))
 (setq doom-big-font (font-spec :family "Iosevka" :size 42))
 (setq doom-variable-pitch-font (font-spec :family "Iosevka" :size 20))
@@ -77,8 +77,8 @@
 
 (server-start)
 (require 'org-tempo)
-(setq org-bullets-bullet-list '("› "))
-(add-hook 'org-mode-hook 'org-bullets-mode)
+;; (setq org-bullets-bullet-list '("› "))
+;; (add-hook 'org-mode-hook 'org-bullets-mode)
 
 ;; (setq org-gcal-recurring-events-mode 'nested)
 ;; (setq org-gcal-remove-api-cancelled-events t)
@@ -311,10 +311,10 @@
 
 (defun org-babel-execute:tla (body params)
   "Converts TLA block to TeX using tla2tex"
-  (let* ((base-name (concat (file-name-sans-extension buffer-file-name) "-tla-tex"))
+  (let* ((base-name (concat (file-name-directory buffer-file-name) "exported-org-files/" (file-name-base buffer-file-name) "-tla-tex"))
          (tla-file (concat base-name ".tla"))
-         (tex-file (concat base-name ".tex"))
-         (command (concat "tlatex" " " (org-babel-process-file-name tla-file)))
+         (my-tex-file (concat base-name ".tex"))
+         (command (concat "tlatex" " -latexCommand pdflatex " (org-babel-process-file-name tla-file)))
          (module (string= "yes" (cdr (assq :module params))))
          (figure (not (string= "no" (cdr (assq :figure params)))))
          (caption (cdr (assq :caption params)))
@@ -328,7 +328,7 @@
       (write-file tla-file)
       (org-babel-eval command ""))
     (with-temp-buffer
-      (insert-file-contents tex-file)
+      (insert-file-contents my-tex-file)
       (search-forward "\\bottombar\\")
       (beginning-of-line)
       (if module (progn (forward-line 1) (kill-line 1)) (kill-line 2))
@@ -344,7 +344,7 @@
                      (if figure (format "\\label{%s}" label))
                      (if figure "\\end{minipage}\\end{figure}" "\\medskip"))))
     (delete-file tla-file)
-    (delete-file tex-file)
+    (delete-file my-tex-file)
     results))
 (provide 'ob-tla)
 
@@ -502,10 +502,6 @@ Time-stamp: <>
 (add-to-list 'org-export-filter-bold-functions 'my-beamer-bold)
 
 (setq omnisharp-server-executable-path "/nix/store/sfd273zm599d13simay695b3xsmm3l45-omnisharp-roslyn-1.37.8/bin/omnisharp")
-
-;; (setq org-caldav-url 'google
-;;       org-caldav-calendar-id "gabriela@magrathealabs.com"
-;;       org-caldav-inbox "~/org/calendar.org")
 
 (defun dw/org-present-prepare-slide ()
   (org-overview)
@@ -678,3 +674,103 @@ Time-stamp: <>
 (setq org-latex-pdf-process '("bash -c 'rm -f %b.log; pdflatex -interaction nonstopmode -output-directory %o %f; while (grep -e \"Rerun .* cross-references\" %o/%b.log > /dev/null); do rm -f %b.log; pdflatex -interaction nonstopmode -output-directory %o %f; done'"))
 
 (setq lsp-completion-provider :capf)
+(setq org-cite-export-processors nil);;'((t . (csl "~/MEGA/org/roam/udesc/exported-org-files/abntex2.cls"))))
+(setq org-export-allow-bind-keywords t)
+(require 'ox-extra)
+(ox-extras-activate '(ignore-headlines))
+
+;; https://zzamboni.org/post/beautifying-org-mode-in-emacs/
+(setq org-hide-emphasis-markers t)
+(font-lock-add-keywords 'org-mode
+                        '(("^ *\\([-]\\) "
+                           (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+(use-package org-bullets
+  :config
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+
+(let* ((variable-tuple
+        (cond ((x-list-fonts "ETBembo")         '(:font "ETBembo"))
+              ((x-list-fonts "Iosevka")         '(:font "Iosevka"))
+              ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
+              ((x-list-fonts "Verdana")         '(:font "Verdana"))
+              ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
+              (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
+       (base-font-color     (face-foreground 'default nil 'default))
+       (headline           `(:inherit default :weight bold :foreground ,base-font-color)))
+
+  (custom-theme-set-faces
+   'user
+   `(org-level-8 ((t (,@headline ,@variable-tuple))))
+   `(org-level-7 ((t (,@headline ,@variable-tuple))))
+   `(org-level-6 ((t (,@headline ,@variable-tuple))))
+   `(org-level-5 ((t (,@headline ,@variable-tuple))))
+   `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.1))))
+   `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.25))))
+   `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.5))))
+   `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.75))))
+   `(org-document-title ((t (,@headline ,@variable-tuple :height 2.0 :underline nil))))))
+
+(custom-theme-set-faces
+ 'user
+ '(variable-pitch ((t (:family "ETBembo" :height 190 :weight thin))))
+ '(fixed-pitch ((t ( :family "Iosevka" :height 130)))))
+(add-hook 'org-mode-hook 'variable-pitch-mode)
+
+(add-hook 'org-mode-hook 'visual-line-mode)
+
+;; (custom-theme-set-faces
+;;  'user
+;;  '(org-block ((t (:inherit fixed-pitch))))
+;;  '(org-code ((t (:inherit (shadow fixed-pitch)))))
+;;  '(org-document-info ((t (:foreground "dark orange"))))
+;;  '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
+;;  '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
+;;  '(org-link ((t (:foreground "royal blue" :underline t))))
+;;  '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+;;  '(org-property-value ((t (:inherit fixed-pitch))) t)
+;;  '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+;;  '(org-table ((t (:inherit fixed-pitch :foreground "#83a598"))))
+;;  '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
+;;  '(org-verbatim ((t (:inherit (shadow fixed-pitch))))))
+
+(add-hook 'org-mode-hook #'org-inline-pdf-mode)
+(defun org-include-img-from-pdf (&rest _)
+  "Convert pdf files to image files in org-mode bracket links.
+
+    # ()convertfrompdf:t # This is a special comment; tells that the upcoming
+                         # link points to the to-be-converted-to file.
+    # If you have a foo.pdf that you need to convert to foo.png, use the
+    # foo.png file name in the link.
+    [[./foo.png]]
+"
+  (interactive)
+  (if (executable-find "convert")
+      (save-excursion
+        (goto-char (point-min))
+        (while (re-search-forward "^[ \t]*#\\s-+()convertfrompdf\\s-*:\\s-*t"
+                                  nil :noerror)
+          ;; Keep on going to the next line till it finds a line with bracketed
+          ;; file link.
+          (while (progn
+                   (forward-line 1)
+                   (not (looking-at org-bracket-link-regexp))))
+          ;; Get the sub-group 1 match, the link, from `org-bracket-link-regexp'
+          (let ((link (match-string-no-properties 1)))
+            (when (stringp link)
+              (let* ((imgfile (expand-file-name link))
+                     (pdffile (expand-file-name
+                               (concat (file-name-sans-extension imgfile)
+                                       "." "pdf")))
+                     (cmd (concat "convert -density 300 -quality 300 -crop -0-1500 -trim "
+                                  pdffile " " imgfile)))
+                (when (and (file-readable-p pdffile)
+                           (file-newer-than-file-p pdffile imgfile))
+                  ;; This block is executed only if pdffile is newer than
+                  ;; imgfile or if imgfile does not exist.
+                  (shell-command cmd)
+                  (message "%s" cmd)))))))
+    (user-error "`convert' executable (part of Imagemagick) is not found")))
+(defun my/org-include-img-from-pdf-before-save ()
+  "Execute `org-include-img-from-pdf' just before saving the file."
+  (add-hook 'before-save-hook #'org-include-img-from-pdf nil :local))
+(add-hook 'org-mode-hook #'my/org-include-img-from-pdf-before-save)

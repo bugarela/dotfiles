@@ -45,7 +45,29 @@
  '(magit-todos-insert-after '(bottom) nil nil "Changed by setter of obsolete option `magit-todos-insert-at'")
  '(objed-cursor-color "#EDD26C")
  '(org-agenda-files '("~/org/roam/daily" "~/org" "~/org/todos"))
+ '(org-cite-csl-styles-dir "/home/gabriela/MEGA/org/roam/udesc/exported-org-files")
  '(org-latex-compiler "xelatex")
+ '(org-latex-default-packages-alist
+   '(("" "amsmath" t
+      ("lualatex" "xetex"))
+     ("" "fontspec" t
+      ("lualatex" "xetex"))
+     ("AUTO" "inputenc" t
+      ("pdflatex"))
+     ("T1" "fontenc" t
+      ("pdflatex"))
+     ("" "graphicx" t nil)
+     ("" "longtable" nil nil)
+     ("" "wrapfig" nil nil)
+     ("" "rotating" nil nil)
+     ("normalem" "ulem" t nil)
+     ("" "amsmath" t
+      ("pdflatex"))
+     ("" "amssymb" t
+      ("pdflatex"))
+     ("" "titletoc" t nil)
+     ("" "capt-of" nil nil)
+     ("" "hyperref" t nil)))
  '(org-latex-hyperref-template nil)
  '(org-roam-capture-immediate-template
    '("d" "default" plain #'org-roam-capture--get-point "%?" :file-name "${slug}" :head "#+title: ${title}\12" :unnarrowed t :immediate-finish t))
