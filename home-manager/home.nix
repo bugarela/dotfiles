@@ -191,6 +191,7 @@ in {
     unstable.tlaplus
     pkgs.imagemagick
     pkgs.pdf2svg
+    unstable.mermaid-cli
   ];
 
   programs.emacs = {
