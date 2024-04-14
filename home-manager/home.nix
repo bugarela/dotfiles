@@ -191,6 +191,8 @@ in {
     pkgs.imagemagick
     pkgs.pdf2svg
     unstable.mermaid-cli
+
+    pkgs.brightnessctl
   ];
 
   programs.emacs = {
@@ -357,7 +359,6 @@ in {
         opacity = 0.9;
       };
 
-      draw_bold_text_with_bright_colors = true;
       font = {
         normal.family = "Iosevka";
         normal.style = "Regular";
