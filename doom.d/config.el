@@ -39,7 +39,7 @@
       org-enable-org-journal-support t
       org-enable-trello-support t
       org-projectile-file "~/org/TODOs.org"
-      org-agenda-files '("~/org" "~/org/todos" "~/org/roam/daily")
+      org-agenda-files '("~/org" "~/org/todos" "~/org/roam/personal" "~/org/roam/informal" "~/org/roam/daily")
       org-directory "~/org/")
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
@@ -501,6 +501,13 @@ Time-stamp: <>
 
 (add-to-list 'org-export-filter-bold-functions 'my-beamer-bold)
 
+;; Translate /italic/ to \textit in beamer
+(defun my-beamer-italic (contents backend info)
+  (when (eq backend 'beamer)
+    (replace-regexp-in-string "\\`\\\\[A-Za-z0-9]+" "\\\\textit" contents)))
+
+(add-to-list 'org-export-filter-italic-functions 'my-beamer-italic)
+
 (setq omnisharp-server-executable-path "/nix/store/sfd273zm599d13simay695b3xsmm3l45-omnisharp-roslyn-1.37.8/bin/omnisharp")
 
 (defun dw/org-present-prepare-slide ()
@@ -793,4 +800,7 @@ Time-stamp: <>
 (add-to-list 'org-entities-user '("faBomb" "\\faBomb[]" nil "<i class=\"fa fa-bomb\"></i>" "" "" ""))
 (add-to-list 'org-entities-user '("faSearch" "\\faSearch[]" nil "<i class=\"fa fa-search\"></i>" "" "" ""))
 (add-to-list 'org-entities-user '("faBug" "\\faBug[]" nil "<i class=\"fa fa-bug\"></i>" "" "" ""))
+
 (add-to-list 'org-entities-user '("faCircle" "\\faCircle[regular]" nil "<i class=\"fa-regular fa-circle\"></i>" "" "" ""))
+(add-to-list 'org-entities-user '("faWrench" "\\faWrench[regular]" nil "<i class=\"fa-solid fa-wrench\"></i>" "" "" ""))
+(add-to-list 'org-entities-user '("faDollarSign" "\\faDollarSign" nil "<i class=\"fa fa-dollar-sign\"></i>" "" "" ""))

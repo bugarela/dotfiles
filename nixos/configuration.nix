@@ -5,13 +5,13 @@
 { config, pkgs, lib, ... }:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      /etc/nixos/hardware-configuration.nix
-      <home-manager/nixos>
-    ];
+  imports = [ # Include the results of the hardware scan.
+    /etc/nixos/hardware-configuration.nix
+    <home-manager/nixos>
+  ];
 
-  environment.pathsToLink = [ "/libexec" ]; # links /libexec from derivations to /run/current-system/sw
+  environment.pathsToLink =
+    [ "/libexec" ]; # links /libexec from derivations to /run/current-system/sw
 
   hardware.bluetooth.enable = true;
 
@@ -54,11 +54,6 @@
     settings = {
       trusted-users = [ "root" "gabriela" ];
 
-      # Binary Cache for Haskell.nix
-      trusted-public-keys =
-        [ "hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ=" ];
-      substituters = [ "https://hydra.iohk.io" ];
-
       auto-optimise-store = true;
     };
   };
@@ -98,28 +93,28 @@
       defaultSession = "xfce";
     };
 
-#    deviceSection = ''
-#      Identifier     "Device0"
-#      Driver         "nvidia"
-#      VendorName     "NVIDIA Corporation"
-#      BoardName      "NVIDIA GeForce RTX 3080"
-#    '';
+    #    deviceSection = ''
+    #      Identifier     "Device0"
+    #      Driver         "nvidia"
+    #      VendorName     "NVIDIA Corporation"
+    #      BoardName      "NVIDIA GeForce RTX 3080"
+    #    '';
 
-#    screenSection = ''
-#      Identifier     "Screen0"
-#      Device         "Device0"
-#      Monitor        "Monitor0"
-#      DefaultDepth    24
-#      Option         "Stereo" "0"
-#      Option         "nvidiaXineramaInfoOrder" "DFP-0"
-#      Option         "metamodes" "HDMI-0: nvidia-auto-select +3840+0 {ForceCompositionPipeline=On, ForceFullCompositionPipeline=On}, DP-3: 1920x1080 +7680+0 {rotation=right, ForceCompositionPipeline=On, ForceFullCompositionPipeline=On}, DP-0: 3840x2160 +0+0 {ForceCompositionPipeline=On, ForceFullCompositionPipeline=On}"
-#      Option         "SLI" "Off"
-#      Option         "MultiGPU" "Off"
-#      Option         "BaseMosaic" "off"
-#      SubSection     "Display"
-#          Depth       24
-#      EndSubSection
-#    '';
+    #    screenSection = ''
+    #      Identifier     "Screen0"
+    #      Device         "Device0"
+    #      Monitor        "Monitor0"
+    #      DefaultDepth    24
+    #      Option         "Stereo" "0"
+    #      Option         "nvidiaXineramaInfoOrder" "DFP-0"
+    #      Option         "metamodes" "HDMI-0: nvidia-auto-select +3840+0 {ForceCompositionPipeline=On, ForceFullCompositionPipeline=On}, DP-3: 1920x1080 +7680+0 {rotation=right, ForceCompositionPipeline=On, ForceFullCompositionPipeline=On}, DP-0: 3840x2160 +0+0 {ForceCompositionPipeline=On, ForceFullCompositionPipeline=On}"
+    #      Option         "SLI" "Off"
+    #      Option         "MultiGPU" "Off"
+    #      Option         "BaseMosaic" "off"
+    #      SubSection     "Display"
+    #          Depth       24
+    #      EndSubSection
+    #    '';
   };
 
   services.pantheon.apps.enable = false;
@@ -173,7 +168,6 @@
     git
     htop
     gparted
-    firefox
     terminator
     fish
     vim
@@ -190,9 +184,10 @@
     coreutils
     fd
     docker-compose
-    rnix-lsp
     cachix
-    gnutar gzip gnumake
+    gnutar
+    gzip
+    gnumake
 
     jre
 
@@ -202,7 +197,7 @@
   ];
 
   # Fonts
-  fonts.fonts = with pkgs; [
+  fonts.packages = with pkgs; [
     noto-fonts
     noto-fonts-cjk
     noto-fonts-emoji
@@ -227,7 +222,13 @@
     pinentryFlavor = "curses";
   };
 
-  # programs.steam.enable = true;
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall =
+      true; # Open ports in the firewall for Steam Remote Play
+    dedicatedServer.openFirewall =
+      true; # Open ports in the firewall for Source Dedicated Server
+  };
 
   # Some programs need SUID wrappers, can be configured further or are started
   # in user sessions. programs.mtr.enable = true; programs.gnupg.agent = {
@@ -239,7 +240,10 @@
   services.openssh.enable = true;
 
   # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [ 443 ];
+  networking.firewall = {
+    allowedTCPPorts = [ 443 4443 17500 ];
+    allowedUDPPorts = [ 17500 ];
+  };
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
@@ -255,7 +259,7 @@
   # Docker config
   virtualisation.docker.enable = true;
 
-  nixpkgs.config.permittedInsecurePackages = [ "python-2.7.18.6" ];
+  nixpkgs.config.permittedInsecurePackages = [ "python-2.7.18.7" ];
 
   # # Solution to VSCode server from https://nixos.wiki/wiki/Visual_Studio_Code
   # programs.nix-ld.enable = true;
@@ -279,4 +283,23 @@
     polkitPolicyOwners = [ "gabriela" ];
   };
   security.polkit.enable = true;
+
+  # https://nixos.wiki/wiki/Dropbox
+  # systemd.user.services.dropbox = {
+  #   description = "Dropbox";
+  #   wantedBy = [ "graphical-session.target" ];
+  #   environment = {
+  #     QT_PLUGIN_PATH = "/run/current-system/sw/" + pkgs.qt5.qtbase.qtPluginPrefix;
+  #     QML2_IMPORT_PATH = "/run/current-system/sw/" + pkgs.qt5.qtbase.qtQmlPrefix;
+  #   };
+  #   serviceConfig = {
+  #     ExecStart = "${lib.getBin pkgs.dropbox}/bin/dropbox";
+  #     ExecReload = "${lib.getBin pkgs.coreutils}/bin/kill -HUP $MAINPID";
+  #     KillMode = "control-group"; # upstream recommends process
+  #     Restart = "on-failure";
+  #     PrivateTmp = true;
+  #     ProtectSystem = "full";
+  #     Nice = 10;
+  #   };
+  # };
 }

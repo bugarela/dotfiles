@@ -37,7 +37,7 @@ let
 in {
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
-  home.stateVersion = "23.05";
+  home.stateVersion = "23.11";
 
   imports = [
     "${
@@ -46,6 +46,7 @@ in {
     }/modules/vscode-server/home.nix"
     ./programs/xmonad/default.nix
     ./programs/vscode/vscode.nix
+    ./programs/firefox/firefox.nix
   ];
 
   home.username = "gabriela";
@@ -87,7 +88,6 @@ in {
     pkgs.jq
     pkgs.autorandr
     pkgs.tree
-    pkgs.rnix-lsp
     pkgs.libgccjit
     pkgs.xorg.xwininfo
     pkgs.xmobar
@@ -123,7 +123,6 @@ in {
     pkgs.networkmanagerapplet
 
     pkgs.spotify
-    pkgs.obsidian
 
     unstable.vivaldi
     unstable.vivaldi-ffmpeg-codecs
@@ -246,6 +245,8 @@ in {
       [gpg "ssh"]
         allowedSignersFile = ~/.ssh/allowed_signers
         program = /run/current-system/sw/bin/op-ssh-sign
+      [push]
+        recurseSubmodules = on-demand;
     '';
     signing = {
       key =

@@ -87,5 +87,6 @@
   "window.title": "${folderName}/${activeEditorShort}",
   "editor.cursorBlinking": "solid",
   "rust-analyzer.rustc.source": "discover",
-  "rust-analyzer.workspace.symbol.search.scope": "workspace_and_dependencies"
+  "rust-analyzer.workspace.symbol.search.scope": "workspace_and_dependencies",
+  "tlaplus.java.options": "-DTLA-Library=/home/gabriela/projects/apalache/src/tla"
 }

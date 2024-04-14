@@ -372,7 +372,6 @@ myManageHook :: XMonad.Query (Data.Monoid.Endo WindowSet)
 myManageHook =
   composeAll
     [ className =? "Slack" --> doShift (myWorkspaces !! 4),
-      className =? "Code" --> doShift (myWorkspaces !! 7),
       title =? "Oracle VM VirtualBox Manager" --> doFloat,
       (className =? "firefox" <&&> resource =? "Dialog") --> doFloat -- Float Firefox Dialog
     ]
