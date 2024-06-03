@@ -64,6 +64,13 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 (setq user-full-name "Gabriela Moreira")
+
+(load-file "~/org/org-thtml/ox-thtml.el")
+(require 'ox-thtml)
+
+(require 'ox-html-stable-ids)
+(org-html-stable-ids-add)
+(setq org-html-stable-ids t)
 ;; (load-file "~/.emacs.d/private/local/tla-mode/tla-mode.el")
 ;; (load-file "~/.emacs.d/private/local/tla+-mode/tla+-mode.el")
 ;; (load-file "~/.emacs.d/private/local/tokens.el")
@@ -71,6 +78,8 @@
 ;; (load-file "~/.emacs.d/private/local/ob-haskell.el")
 ;; (load-file "~/.emacs.d/private/local/ob-go.el")
 ;; (add-to-list 'load-path "~/.emacs.d/private" "~/.emacs.d/tla-tools")
+
+(setq shell-file-name (executable-find "bash"))
 
 (setq mouse-wheel-scroll-amount '(4))
 (setq mouse-wheel-progressive-speed nil)
@@ -148,7 +157,18 @@
                  ("\\subsubsubsection{%s}" . "\\subsubsubsection*{%s}")
                  ("\\subsubsubsubsection{%s}" . "\\subsubsubsubsection*{%s}")
                  ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+  (add-to-list 'org-latex-classes
+               '("bugarela-article"
+                 "\\documentclass[11pt]{article}"
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\subsubsubsection{%s}" . "\\subsubsubsection*{%s}")
+                 ("\\subsubsubsubsection{%s}" . "\\subsubsubsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
                  ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
+
 
 (add-to-list 'org-file-apps
              '("\\.pdf\\'" . emacs))
@@ -657,10 +677,10 @@ Time-stamp: <>
   ;; (company-begin-commands nil) ;; uncomment to disable popup
   :bind
   (:map company-active-map
-	("C-n". company-select-next)
-	("C-p". company-select-previous)
-	("M-<". company-select-first)
-	("M->". company-select-last)))
+        ("C-n". company-select-next)
+        ("C-p". company-select-previous)
+        ("M-<". company-select-first)
+        ("M->". company-select-last)))
 
 (use-package yasnippet
   :ensure
@@ -695,33 +715,33 @@ Time-stamp: <>
   :config
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 
-(let* ((variable-tuple
-        (cond ((x-list-fonts "ETBembo")         '(:font "ETBembo"))
-              ((x-list-fonts "Iosevka")         '(:font "Iosevka"))
-              ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
-              ((x-list-fonts "Verdana")         '(:font "Verdana"))
-              ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
-              (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
-       (base-font-color     (face-foreground 'default nil 'default))
-       (headline           `(:inherit default :weight bold :foreground ,base-font-color)))
+;; (let* ((variable-tuple
+;;         (cond ((x-list-fonts "ETBembo")         '(:font "ETBembo"))
+;;               ((x-list-fonts "Iosevka")         '(:font "Iosevka"))
+;;               ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
+;;               ((x-list-fonts "Verdana")         '(:font "Verdana"))
+;;               ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
+;;               (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
+;;        (base-font-color     (face-foreground 'default nil 'default))
+;;        (headline           `(:inherit default :weight bold :foreground ,base-font-color)))
 
-  (custom-theme-set-faces
-   'user
-   `(org-level-8 ((t (,@headline ,@variable-tuple))))
-   `(org-level-7 ((t (,@headline ,@variable-tuple))))
-   `(org-level-6 ((t (,@headline ,@variable-tuple))))
-   `(org-level-5 ((t (,@headline ,@variable-tuple))))
-   `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.1))))
-   `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.25))))
-   `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.5))))
-   `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.75))))
-   `(org-document-title ((t (,@headline ,@variable-tuple :height 2.0 :underline nil))))))
+;;   (custom-theme-set-faces
+;;    'user
+;;    `(org-level-8 ((t (,@headline ,@variable-tuple))))
+;;    `(org-level-7 ((t (,@headline ,@variable-tuple))))
+;;    `(org-level-6 ((t (,@headline ,@variable-tuple))))
+;;    `(org-level-5 ((t (,@headline ,@variable-tuple))))
+;;    `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.1))))
+;;    `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.25))))
+;;    `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.5))))
+;;    `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.75))))
+;;    `(org-document-title ((t (,@headline ,@variable-tuple :height 2.0 :underline nil))))))
 
-(custom-theme-set-faces
- 'user
- '(variable-pitch ((t (:family "ETBembo" :height 190 :weight thin))))
- '(fixed-pitch ((t ( :family "Iosevka" :height 130)))))
-(add-hook 'org-mode-hook 'variable-pitch-mode)
+;; (custom-theme-set-faces
+;;  'user
+;;  '(variable-pitch ((t (:family "ETBembo" :height 190 :weight thin))))
+;;  '(fixed-pitch ((t ( :family "Iosevka" :height 130)))))
+;; (add-hook 'org-mode-hook 'variable-pitch-mode)
 
 (add-hook 'org-mode-hook 'visual-line-mode)
 
@@ -804,3 +824,35 @@ Time-stamp: <>
 (add-to-list 'org-entities-user '("faCircle" "\\faCircle[regular]" nil "<i class=\"fa-regular fa-circle\"></i>" "" "" ""))
 (add-to-list 'org-entities-user '("faWrench" "\\faWrench[regular]" nil "<i class=\"fa-solid fa-wrench\"></i>" "" "" ""))
 (add-to-list 'org-entities-user '("faDollarSign" "\\faDollarSign" nil "<i class=\"fa fa-dollar-sign\"></i>" "" "" ""))
+
+(defun bugarela/org-publish-sitemap (title list)
+  "Default site map, as a string.
+TITLE is the title of the site map.  LIST is an internal
+representation for the files to include, as returned by
+`org-list-to-lisp'.  PROJECT is the current project."
+  (concat "#+TITLE: " title "\n\n"
+          (bugarela/org-list-to-org list)))
+
+(defun bugarela/org-list-to-org (list &optional params)
+  "Convert LIST into an Org plain list.
+LIST is as returned by `org-list-parse-list'.  PARAMS is a property list
+with overruling parameters for `org-list-to-generic'."
+  (let* ((make-item
+          (lambda (_type depth &optional c)
+            (concat (if (eq depth 1) "* " "- ")
+                    (and c (format "[@%d] " c)))))
+         (defaults
+          (list :istart make-item
+                :icount make-item
+                :ifmt (lambda (_type contents)
+                        (replace-regexp-in-string "\n" "\n  " contents))
+                :dtend " :: "
+                :cbon "[X] "
+                :cboff "[ ] "
+                :cbtrans "[-] ")))
+    (org-list-to-generic list (org-combine-plists defaults params))))
+
+(straight-use-package 'use-package)
+(use-package tla-input
+  :straight (:host github :repo "bugarela/tla-input")
+  :hook ((tla-mode . setup-tla-input)))
