@@ -197,6 +197,8 @@ in {
     pkgs.headsetcontrol
 
     unstable.tlaplus18
+    pkgs.tlaplusToolbox
+
     pkgs.imagemagick
     pkgs.pdf2svg
     unstable.mermaid-cli
@@ -547,19 +549,19 @@ in {
     settings = {
       corner-radius = 10;
       experimentalBackends = true;
-      blur = { method = "dual_kawase"; };
+      # blur = { method = "dual_kawase"; };
     };
   };
 
   gtk = {
     enable = true;
     theme = {
-      name = "Sweet-Dark";
-      package = pkgs.sweet;
+      name = "rose-pine";
+      package = pkgs.rose-pine-gtk-theme;
     };
     iconTheme = {
-      name = "Qogir-ubuntu-dark";
-      package = pkgs.qogir-icon-theme;
+      name = "rose-pine";
+      package = pkgs.rose-pine-gtk-theme;
     };
   };
 

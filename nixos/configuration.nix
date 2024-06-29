@@ -194,6 +194,8 @@
     gnome.cheese
     mlt
     libsForQt5.mlt
+
+    headsetcontrol
   ];
 
   # Fonts
@@ -283,6 +285,8 @@
     polkitPolicyOwners = [ "gabriela" ];
   };
   security.polkit.enable = true;
+
+  services.udev.packages = [ pkgs.headsetcontrol ];
 
   # https://nixos.wiki/wiki/Dropbox
   # systemd.user.services.dropbox = {

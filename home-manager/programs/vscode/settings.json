@@ -24,7 +24,6 @@
   "diffEditor.ignoreTrimWhitespace": false,
   "editor.inlineSuggest.enabled": true,
   "editor.tabSize": 2,
-  "eslint.alwaysShowStatus": true,
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
   "files.trimTrailingWhitespace": true,
@@ -75,12 +74,11 @@
   "vim.statusBarColorControl": true,
   "window.menuBarVisibility": "toggle",
   "window.zoomLevel": 1,
-  "workbench.colorTheme": "Community Material Theme Ocean",
+  "workbench.colorTheme": "Material Deep Ocean",
   "workbench.editorAssociations": {
     "*.md": "default"
   },
   "workbench.activityBar.visible": true,
-  "explorer.openEditors.visible": 0,
   "editor.roundedSelection": false,
   "editor.folding": true,
   "workbench.editor.showTabs": true,
@@ -88,5 +86,6 @@
   "editor.cursorBlinking": "solid",
   "rust-analyzer.rustc.source": "discover",
   "rust-analyzer.workspace.symbol.search.scope": "workspace_and_dependencies",
-  "tlaplus.java.options": "-DTLA-Library=/home/gabriela/projects/apalache/src/tla"
+  "tlaplus.java.options": "-DTLA-Library=/home/gabriela/projects/apalache/src/tla",
+  "chronicler.ffmpeg-binary": "/home/gabriela/.nix-profile/bin/ffmpeg"
 }

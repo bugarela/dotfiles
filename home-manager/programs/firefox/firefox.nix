@@ -21,7 +21,7 @@ in {
         };
         search = {
           force = true;
-          default = "Google";
+          default = "DuckDuckGo";
           order = [ "Google" ];
           engines = {
             "Nix Packages" = {

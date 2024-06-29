@@ -40,6 +40,7 @@
 
 (package! scroll-on-jump)
 (package! ob-mermaid)
+(package! ox-gfm)
 (package! sidebar :recipe (:host github :repo "sebastiencs/sidebar.el"))
 
 (package! tla-mode :recipe (:host github :repo "valschneider/tla-mode"))

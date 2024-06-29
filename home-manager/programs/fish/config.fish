@@ -1,10 +1,9 @@
 set -U fish_greeting
 set -g theme_short_path yes
 
-set GOPATH "$HOME/.gvm/pkgsets/go1.13/global"
+set GOPATH "$HOME/go"
+set PATH "$GOPATH/bin:$PATH"
 set PATH "$HOME/.cargo/bin:/usr/local/kubebuilder/bin:$PATH"
-set PATH "$PATH:$HOME/.gvm/gos/go1.13/bin"
-set PATH "$PATH:$HOME/.gvm/pkgsets/go1.13/global/bin"
 set PATH "$PATH:/opt/texlive/2020/bin/x86_64-linux"
 set PATH "$PATH:$HOME/.emacs.d/bin"
 set PATH "$PATH:$HOME/google-cloud-sdk/bin"
