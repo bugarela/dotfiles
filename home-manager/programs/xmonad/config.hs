@@ -129,7 +129,7 @@ myStartupHook = do
   spawnOnce "1password &"
   spawnOnce "setxkbmap -layout us -variant altgr-intl -option caps:swapescape &"
   setWMName "LG3D"
-  spawnOnce "vivaldi"
+  spawnOnce "firefox"
   -- spawnOnce "code-insiders"
   spawnOnce "slack"
   spawnOnce "flameshot"

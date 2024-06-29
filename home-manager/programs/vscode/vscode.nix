@@ -6,33 +6,6 @@ in {
     enable = true;
     userSettings = builtins.fromJSON (builtins.readFile ./settings.json);
     package = unstable.vscode;
-    # package = (pkgs.vscode.override { isInsiders = true; }).overrideAttrs
-    #   (_: prev: {
-    #     pname = "vscode-insiders";
-    #     postPatch = ''
-    #       # this is a fix for "save as root" functionality
-    #       packed="resources/app/node_modules.asar"
-    #       unpacked="resources/app/node_modules"
-    #       asar extract "$packed" "$unpacked"
-    #       substituteInPlace $unpacked/@vscode/sudo-prompt/index.js \
-    #         --replace "/usr/bin/pkexec" "/run/wrappers/bin/pkexec" \
-    #         --replace "/bin/bash" "${pkgs.bash}/bin/bash"
-    #       rm -rf "$packed"
-    #       # without this symlink loading JsChardet, the library that is used for auto encoding detection when files.autoGuessEncoding is true,
-    #       # fails to load with: electron/js2c/renderer_init: Error: Cannot find module 'jschardet'
-    #       # and the window immediately closes which renders VSCode unusable
-    #       # see https://github.com/NixOS/nixpkgs/issues/152939 for full log
-    #       ln -rs "$unpacked" "$packed"
-    #       # this fixes bundled ripgrep
-    #       chmod +x resources/app/node_modules/@vscode/ripgrep/bin/rg
-    #     '';
-    #     src = (builtins.fetchTarball {
-    #       url =
-    #         "https://code.visualstudio.com/sha/download?build=insider&os=linux-x64";
-    #       sha256 = "01wg94iypcgykkhfbn7dlfxmza92zsnck42ivhab53qk3jdqjcbc";
-    #     });
-    #     version = "latest";
-    #   });
     mutableExtensionsDir = true;
     extensions = with pkgs.vscode-extensions;
       [
@@ -73,12 +46,12 @@ in {
           sha256 = "1cacaqh93qgimb14w3k6a8cw9a190sn9r7hn6df162mdbxnkgkxw";
         }
         # https://marketplace.visualstudio.com/_apis/public/gallery/publishers/GitHub/vsextensions/copilot/1.95.243/vspackage
-        # {
-        #   name = "copilot-nightly";
-        #   publisher = "GitHub";
-        #   version = "	1.94.226";
-        #   sha256 = "0fjs9qvbj44icw9zgv52dxj0h3z7zhgsm5czkhd9cqpqybgjrwp1";
-        # }
+        {
+          name = "copilot";
+          publisher = "GitHub";
+          version = "1.208.0";
+          sha256 = "sha256-b04sl9WPrv/OilKEeK5u0STj8EqrHBiJA73B2REz8oo=";
+        }
         {
           name = "itf-trace-viewer";
           publisher = "informal";
@@ -121,11 +94,18 @@ in {
           version = "0.3.0";
           sha256 = "1czhfvv5zal27m8krkclh533a1kmg5k7va82qsgjm1bqmsm4baq2";
         }
+        # This was deleted from the marketplace :(
+        # {
+        #   name = "vsc-community-material-theme";
+        #   publisher = "Equinusocio";
+        #   version = "1.4.6";
+        #   sha256 = "0v34vm3asnw2maf4yz6lmn9xzv9232lm1a9vayybj1w0s09k4n0d";
+        # }
         {
-          name = "vsc-community-material-theme";
-          publisher = "Equinusocio";
-          version = "1.4.6";
-          sha256 = "0v34vm3asnw2maf4yz6lmn9xzv9232lm1a9vayybj1w0s09k4n0d";
+          name = "material-deep-ocean-theme";
+          publisher = "KYDronePilot";
+          version = "0.0.4";
+          sha256 = "sha256-7SJCa81CXDUC1dItApQ9ST5seRa9Ddz4qW7RlonoCCI=";
         }
         {
           name = "remote-explorer";
@@ -139,6 +119,12 @@ in {
         #   version = "1.0.5873";
         #   sha256 = "1c5bqz267va6lkg2zrz99drypdskrhyq0573gpy06icfj5pdl1m7";
         # }
+        {
+          name = "chronicler";
+          publisher = "arcsine";
+          version = "0.1.16";
+          sha256 = "sha256-R/+nMfyD6dv+jMMbg0/Acoaciqbp3qym7Xw8R0/z/KQ=";
+        }
       ];
   };
 

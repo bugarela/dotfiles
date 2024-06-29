@@ -1,10 +1,9 @@
 set -U fish_greeting
 set -g theme_short_path yes
 
-set GOPATH "$HOME/.gvm/pkgsets/go1.13/global"
+set GOPATH "$HOME/go"
+set PATH "$GOPATH/bin:$PATH"
 set PATH "$HOME/.cargo/bin:/usr/local/kubebuilder/bin:$PATH"
-set PATH "$PATH:$HOME/.gvm/gos/go1.13/bin"
-set PATH "$PATH:$HOME/.gvm/pkgsets/go1.13/global/bin"
 set PATH "$PATH:/opt/texlive/2020/bin/x86_64-linux"
 set PATH "$PATH:$HOME/.emacs.d/bin"
 set PATH "$PATH:$HOME/google-cloud-sdk/bin"
@@ -12,6 +11,7 @@ set PATH "$PATH:$HOME/.dotnet/tools"
 set PATH "$PATH:$HOME/.npm/bin"
 set PATH "$PATH:$HOME/projects/apalache/bin"
 set PATH "$PATH:/nix/store/633qlvqjryvq0h43nwvzkd5vqxh2rh3c-go-1.19.6/bin"
+set SSH_AUTH_SOCK "$HOME/.1password/agent.sock"
 set -x GPG_TTY (tty)
 
 function fish_user_key_bindings
@@ -75,3 +75,5 @@ function fish_prompt
 
     echo -e -n -s $prompt_color ' $ ' $normal
 end
+
+jj util completion fish | source

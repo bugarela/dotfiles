@@ -34,6 +34,15 @@ let
   };
   gh-md-toc = pkgs.writeScriptBin "gh-md-toc"
     "curl https://raw.githubusercontent.com/ekalinin/github-markdown-toc/master/gh-md-toc -o gh-md-toc && chmod a+x gh-md-toc";
+  fromGitHub = ref: repo:
+    pkgs.vimUtils.buildVimPlugin {
+      pname = "${lib.strings.sanitizeDerivationName repo}";
+      version = ref;
+      src = builtins.fetchGit {
+        url = "https://github.com/${repo}.git";
+        ref = ref;
+      };
+    };
 in {
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
@@ -187,12 +196,16 @@ in {
     pkgs.betterlockscreen
     pkgs.headsetcontrol
 
-    unstable.tlaplus
+    unstable.tlaplus18
+    pkgs.tlaplusToolbox
+
     pkgs.imagemagick
     pkgs.pdf2svg
     unstable.mermaid-cli
 
     pkgs.brightnessctl
+    pkgs.rustc
+    pkgs.cargo
   ];
 
   programs.emacs = {
@@ -205,20 +218,20 @@ in {
     enable = true;
 
     associations.added = {
-      "x-scheme-handler/http" = [ "vivaldi.desktop" ];
-      "x-scheme-handler/https" = [ "vivaldi.desktop" ];
-      "x-scheme-handler/about" = [ "vivaldi.desktop" ];
-      "x-scheme-handler/unknown" = [ "vivaldi.desktop" ];
+      "x-scheme-handler/http" = [ "firefox.desktop" ];
+      "x-scheme-handler/https" = [ "firefox.desktop" ];
+      "x-scheme-handler/about" = [ "firefox.desktop" ];
+      "x-scheme-handler/unknown" = [ "firefox.desktop" ];
     };
     defaultApplications = {
-      "text/html" = [ "vivaldi.desktop" ];
-      "x-scheme-handler/http" = [ "vivaldi.desktop" ];
-      "x-scheme-handler/https" = [ "vivaldi.desktop" ];
-      "x-scheme-handler/about" = [ "vivaldi.desktop" ];
-      "x-scheme-handler/unknown" = [ "vivaldi.desktop" ];
+      "text/html" = [ "firefox.desktop" ];
+      "x-scheme-handler/http" = [ "firefox.desktop" ];
+      "x-scheme-handler/https" = [ "firefox.desktop" ];
+      "x-scheme-handler/about" = [ "firefox.desktop" ];
+      "x-scheme-handler/unknown" = [ "firefox.desktop" ];
       "video/mp4" = [ "mpv.desktop" "userapp-vlc-HA5N50.desktop" ];
       "x-scheme-handler/tg" = [ "userapp-Telegram Desktop-E8SX01.desktop" ];
-      "image/png" = [ "vivaldi.desktop" ];
+      "image/png" = [ "firefox.desktop" ];
       "application/pdf" = [ "okularApplication_pdf.desktop" ];
       "vscode-insiders" = [ "code-insiders.desktop" ];
     };
@@ -233,6 +246,7 @@ in {
     gabrielamoreira05@gmail.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK9j0vEeUJi5vv++eeMOWkIYjGy8ED7s3M4FHY7YOzXH
   '';
 
+  # My auth token goes in here now, so I'm setting up that manually until I figure a better way
   # home.file.".npmrc".text = ''
   #   prefix=~/.npm
   # '';
@@ -256,6 +270,28 @@ in {
       signByDefault = true;
     };
     delta.enable = true;
+  };
+
+  programs.jujutsu = {
+    enable = true;
+    package = unstable.jujutsu;
+    settings = {
+      user = {
+        name = "Gabriela Moreira";
+        email = "gabrielamoreira05@gmail.com";
+      };
+
+      signing = {
+        sign-all = true;
+        backend = "ssh";
+        key =
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK9j0vEeUJi5vv++eeMOWkIYjGy8ED7s3M4FHY7YOzXH";
+        backends.ssh = {
+          allowed-signers = "/home/gabriela/.ssh/allowed_signers";
+          program = "/run/current-system/sw/bin/op-ssh-sign";
+        };
+      };
+    };
   };
 
   programs.fish = {
@@ -298,13 +334,14 @@ in {
       autocmd FileType quint lua vim.treesitter.start()
       autocmd FileType quint lua vim.lsp.start({name = 'quint', cmd = {'quint-language-server', '--stdio'}, root_dir = vim.fs.dirname()})
       au BufRead,BufNewFile *.qnt  setfiletype quint
+
+      let g:tlaplus_mappings_enable = 1
     '';
 
     plugins = with pkgs.vimPlugins; [
       # Syntax / Language Support ##########################
       vim-nix
       zig-vim
-      nvim-treesitter
       nvim-lspconfig
 
       # UI #################################################
@@ -333,6 +370,8 @@ in {
       # Panes / Larger features ############################
       tagbar # <leader>5
       vim-fugitive # Gblame
+
+      copilot-vim
       (nvim-treesitter.withPlugins (_:
         nvim-treesitter.allGrammars ++ [
           (pkgs.tree-sitter.buildGrammar {
@@ -341,6 +380,7 @@ in {
             src = /home/gabriela/projects/tree-sitter-quint;
           })
         ]))
+      (fromGitHub "HEAD" "tlaplus-community/tlaplus-nvim-plugin")
     ];
   };
 
@@ -482,6 +522,11 @@ in {
     };
   };
 
+  programs.zellij = {
+    enable = true;
+    enableFishIntegration = true;
+  };
+
   programs.autorandr.enable = true;
 
   programs.rofi = {
@@ -504,19 +549,19 @@ in {
     settings = {
       corner-radius = 10;
       experimentalBackends = true;
-      blur = { method = "dual_kawase"; };
+      # blur = { method = "dual_kawase"; };
     };
   };
 
   gtk = {
     enable = true;
     theme = {
-      name = "Sweet-Dark";
-      package = pkgs.sweet;
+      name = "rose-pine";
+      package = pkgs.rose-pine-gtk-theme;
     };
     iconTheme = {
-      name = "Qogir-ubuntu-dark";
-      package = pkgs.qogir-icon-theme;
+      name = "rose-pine";
+      package = pkgs.rose-pine-gtk-theme;
     };
   };
 
@@ -528,7 +573,7 @@ in {
   };
 
   # Autoload nix shells
-  # services.lorri.enable = true;
+  services.lorri.enable = true;
 
   services.polybar = {
     enable = true;

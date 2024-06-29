@@ -40,6 +40,7 @@
 
 (package! scroll-on-jump)
 (package! ob-mermaid)
+(package! ox-gfm)
 (package! sidebar :recipe (:host github :repo "sebastiencs/sidebar.el"))
 
 (package! tla-mode :recipe (:host github :repo "valschneider/tla-mode"))
@@ -58,8 +59,8 @@
 (package! copilot
   :recipe (:host github :repo "zerolfx/copilot.el" :files ("*.el" "dist")))
 
-(package! ox-thtml
-  :recipe (:host github :repo "juanjosegarciaripoll/org-thtml" :files ("*.el")))
+(package! ox-html-stable-ids
+  :recipe (:host github :repo "jeffkreeftmeijer/ox-html-stable-ids.el"))
 
 (package! org-inline-pdf
   :recipe (:host github :repo "shg/org-inline-pdf.el" :files ("*.el")))
