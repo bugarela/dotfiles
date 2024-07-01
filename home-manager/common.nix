@@ -171,7 +171,6 @@ in {
     pkgs.zoom-us
 
     pkgs.pandoc
-    pkgs.nixfmt
     pkgs.nixpkgs-fmt
 
     pkgs.libsecret
@@ -207,29 +206,29 @@ in {
     package = pkgs.emacs29;
   };
 
-  xdg.mime.enable = true;
-  xdg.mimeApps = {
-    enable = true;
+  # xdg.mime.enable = true;
+  # xdg.mimeApps = {
+  #   enable = true;
 
-    associations.added = {
-      "x-scheme-handler/http" = [ "firefox.desktop" ];
-      "x-scheme-handler/https" = [ "firefox.desktop" ];
-      "x-scheme-handler/about" = [ "firefox.desktop" ];
-      "x-scheme-handler/unknown" = [ "firefox.desktop" ];
-    };
-    defaultApplications = {
-      "text/html" = [ "firefox.desktop" ];
-      "x-scheme-handler/http" = [ "firefox.desktop" ];
-      "x-scheme-handler/https" = [ "firefox.desktop" ];
-      "x-scheme-handler/about" = [ "firefox.desktop" ];
-      "x-scheme-handler/unknown" = [ "firefox.desktop" ];
-      "video/mp4" = [ "mpv.desktop" "userapp-vlc-HA5N50.desktop" ];
-      "x-scheme-handler/tg" = [ "userapp-Telegram Desktop-E8SX01.desktop" ];
-      "image/png" = [ "firefox.desktop" ];
-      "application/pdf" = [ "okularApplication_pdf.desktop" ];
-      "vscode-insiders" = [ "code-insiders.desktop" ];
-    };
-  };
+  #   associations.added = {
+  #     "x-scheme-handler/http" = [ "firefox.desktop" ];
+  #     "x-scheme-handler/https" = [ "firefox.desktop" ];
+  #     "x-scheme-handler/about" = [ "firefox.desktop" ];
+  #     "x-scheme-handler/unknown" = [ "firefox.desktop" ];
+  #   };
+  #   defaultApplications = {
+  #     "text/html" = [ "firefox.desktop" ];
+  #     "x-scheme-handler/http" = [ "firefox.desktop" ];
+  #     "x-scheme-handler/https" = [ "firefox.desktop" ];
+  #     "x-scheme-handler/about" = [ "firefox.desktop" ];
+  #     "x-scheme-handler/unknown" = [ "firefox.desktop" ];
+  #     "video/mp4" = [ "mpv.desktop" "userapp-vlc-HA5N50.desktop" ];
+  #     "x-scheme-handler/tg" = [ "userapp-Telegram Desktop-E8SX01.desktop" ];
+  #     "image/png" = [ "firefox.desktop" ];
+  #     "application/pdf" = [ "okularApplication_pdf.desktop" ];
+  #     "vscode-insiders" = [ "code-insiders.desktop" ];
+  #   };
+  # };
 
   home.file.".ssh/config".text = ''
     Host *
@@ -290,7 +289,7 @@ in {
 
   programs.fish = {
     enable = true;
-    shellInit = builtins.readFile ./programs/fish/config.fish;
+    interactiveShellInit = builtins.readFile ./programs/fish/config.fish;
     plugins = [
       {
         name = "plugin-git";
@@ -383,7 +382,6 @@ in {
 
     settings = {
       scrolling.history = 10000;
-      TERM = "xterm-256color";
 
       window = {
         padding = {
@@ -400,8 +398,6 @@ in {
         bold.style = "Regular";
         italic.family = "Iosevka";
         italic.style = "Regular";
-        blod_italic.family = "Iosevka";
-        blod_italic.style = "Regular";
         size = 14.0;
       };
 
@@ -467,50 +463,6 @@ in {
       #     magenta = "0x82576d";
       #     cyan = "0x576d82";
       #     white = "0xdbd6d1";
-      #   };
-      # };
-
-      # colors = {
-      #   primary = {
-      #     background = "0x000000";
-      #     foreground = "0xffffff";
-      #   };
-
-      #   cursor = {
-      #     background = "0xFFFFFF";
-      #     foreground = "0x222222";
-      #   };
-
-      #   vi_mode_cursor = {
-      #     background = "0xFFFFFF";
-      #     foreground = "0xbbc2cf";
-      #   };
-
-      #   selection= {
-      #     text = "0x000000";
-      #     background = "0x44475a";
-      #   };
-
-      #   normal = {
-      #     black   = "0x757575";
-      #     red     = "0xff5f5f";
-      #     green   = "0xde8a36";
-      #     yellow  = "0xd78787";
-      #     blue    = "0xaf5fd7";
-      #     magenta = "0xff87d7";
-      #     cyan    = "0xdea3e5";
-      #     white   = "0xb8b8b8";
-      #   };
-
-      #   bright = {
-      #     black   = "0xb8b8b8";
-      #     red     = "0xd78787";
-      #     green   = "0xff9f6f";
-      #     yellow  = "0xff5f5f";
-      #     blue    = "0xdea3e5";
-      #     magenta = "0xd7afaf";
-      #     cyan    = "0xaf5fd7";
-      #     white   = "0x757575";
       #   };
       # };
     };

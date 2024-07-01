@@ -856,3 +856,5 @@ with overruling parameters for `org-list-to-generic'."
 (use-package tla-input
   :straight (:host github :repo "bugarela/tla-input")
   :hook ((tla-mode . setup-tla-input)))
+
+(add-to-list 'auto-mode-alist '("\\.mdx" . markdown-mode))

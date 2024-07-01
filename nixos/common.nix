@@ -44,6 +44,24 @@
   #   keyMap = "us";
   # };
 
+  # Xserver basic
+  services.xserver = {
+    enable = true;
+    exportConfiguration = true;
+    xkb = {
+      layout = "us";
+      variant = "altgr-intl";
+      options = "caps:swapescape";
+    };
+    desktopManager = {
+      xfce.enable = true;
+      xterm.enable = false;
+    };
+    displayManager.lightdm.enable = true;
+  };
+
+  services.displayManager = { defaultSession = "xfce"; };
+
   # Enable the Plasma 5 Desktop Environment.
   # services.xserver.displayManager.lightdm.enable = true;
   # services.xserver.desktopManager.plasma5.enable = true;
@@ -75,7 +93,7 @@
   hardware.pulseaudio.enable = true;
 
   # Enable touchpad support (enabled default in most desktopManager).
-  services.xserver.libinput.enable = true;
+  services.libinput.enable = true;
 
   # Disables mouse acceleration
   services.xserver.config = ''
@@ -96,7 +114,7 @@
     extraGroups = [ "wheel" "networkmanager" "docker" "video" "plugdev" ];
   };
 
-  # users.extraUsers.gabriela = { shell = pkgs.fish; };
+  users.extraUsers.gabriela = { shell = pkgs.fish; };
 
   programs.fish.enable = true;
 
