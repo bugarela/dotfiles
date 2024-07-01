@@ -1,11 +1,10 @@
 { config, pkgs, lib, ... }:
 
-let unstable = import <nixpkgs-unstable> { config.allowUnfree = true; };
-in {
+{
   programs.vscode = {
     enable = true;
     userSettings = builtins.fromJSON (builtins.readFile ./settings.json);
-    package = unstable.vscode;
+    package = pkgs.vscode;
     mutableExtensionsDir = true;
     extensions = with pkgs.vscode-extensions;
       [
