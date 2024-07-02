@@ -14,8 +14,7 @@
         haskellPackages.haskell-language-server
       ];
       config =
-        /home/gabriela/nix-configs/home-manager/programs/xmonad/config.hs;
+        ./config.hs;
     };
-
   };
 }
