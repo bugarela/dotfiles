@@ -370,7 +370,7 @@ in {
           (pkgs.tree-sitter.buildGrammar {
             language = "quint";
             version = "7c51ff7";
-            src = /home/gabriela/projects/tree-sitter-quint;
+            src = ./programs/tree-sitter-quint;
           })
         ]))
       (fromGitHub "HEAD" "tlaplus-community/tlaplus-nvim-plugin")
