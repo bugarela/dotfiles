@@ -21,6 +21,7 @@
 
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   networking.networkmanager.enable = true;
+  networking.nameservers = [ "8.8.8.8" "8.8.4.4" ];
 
   # Set your time zone.
   time.timeZone = "America/Sao_Paulo";
@@ -89,8 +90,18 @@
   services.printing.enable = false;
 
   # Enable sound.
-  sound.enable = true;
+  # sound.enable = true;
   hardware.pulseaudio.enable = true;
+  services.pipewire = {
+    enable = false;
+    # audio.enable = true;
+    # pulse.enable = true;
+    # alsa = {
+    #   enable = true;
+    #   support32Bit = true;
+    # };
+    # jack.enable = true;
+  };
 
   # Enable touchpad support (enabled default in most desktopManager).
   services.libinput.enable = true;
@@ -151,11 +162,12 @@
 
     jre
 
-    gnome.cheese
+    cheese
     mlt
     libsForQt5.mlt
 
     headsetcontrol
+    alsa-utils
   ];
 
   # Fonts
