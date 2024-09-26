@@ -8,4 +8,6 @@
     dpi = 141;
     videoDrivers = [ "nvidia" ];
   };
+
+  hardware.nvidia.open = false;
 }
