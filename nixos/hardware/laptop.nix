@@ -11,9 +11,10 @@
   boot.initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "vmd" "nvme" "usb_storage" "sd_mod" ];
   boot.initrd.kernelModules = [ "dm-snapshot" ];
   boot.initrd.luks.devices.nixos = {
-    device = "/dev/disk/by-uuid/34e9110f2-18a7-464d-a42f-19c593497e09";
+    device = "/dev/disk/by-uuid/281cc214-e03a-4bf0-86d2-7b6e3ef8fc67";
     preLVM = true;
     allowDiscards = true;
+  };
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
@@ -42,4 +43,7 @@
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+
+  powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
+
 }

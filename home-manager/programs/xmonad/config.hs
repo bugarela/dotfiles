@@ -308,6 +308,8 @@ mySpacing i = spacingRaw False (Border i i i i) True (Border i i i i) True
 mySpacing' :: Integer -> l a -> XMonad.Layout.LayoutModifier.ModifiedLayout Spacing l a
 mySpacing' i = spacingRaw True (Border i i i i) True (Border i i i i) True
 
+projectorSpacing :: l a -> XMonad.Layout.LayoutModifier.ModifiedLayout Spacing l a
+projectorSpacing = spacingRaw False (Border 50 50 40 40) True (Border 50 50 40 40) True
 -- Defining a bunch of layouts, many that I don't use.
 tall =
   renamed [Replace "tall"] $
@@ -333,7 +335,7 @@ grid =
 gridGaps =
   renamed [Replace "gridGaps"] $
     limitWindows 12 $
-      mySpacing (myGaps * 4) $
+      projectorSpacing $
         mkToggle (single MIRROR) $
           Grid (16 / 10)
 
@@ -387,8 +389,8 @@ myLayoutHook =
   where
     -- I've commented out the layouts I don't use.
     myDefaultLayout =
-      gridGaps
-        ||| grid
+      grid
+        ||| gridGaps
 
 -- \||| tall
 -- \||| noBorders monocle
@@ -430,6 +432,7 @@ myKeysP =
     -- , ("M-f", sendMessage (T.Toggle "monocle"))       -- Toggles my 'monocle' layout
     ("M-<Space>", sendMessage (T.Toggle "floats")), -- Toggles my 'floats' layout
     ("M-G", sendMessage (T.Toggle "grid")), -- Toggles my 'floats' layout
+    ("M-S-G", sendMessage (T.Toggle "gridGaps")), -- Toggles my 'big gaps' layout
     ("M-<Delete>", withFocused $ windows . W.sink), -- Push floating window back to tile
     ("M-S-<Delete>", sinkAll), -- Push ALL floating windows to tile
 
