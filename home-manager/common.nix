@@ -1,48 +1,18 @@
 { config, pkgs, lib, ... }:
 
 let
-  # pkgs = pkgs {
-  #   config.allowUnfree = true;
-  #   overlays = [
-  #     (self: super: {
-  #       discord = super.discord.overrideAttrs (_: {
-  #         src = builtins.fetchTarball
-  #           "https://discord.com/api/download?platform=linux&format=tar.gz";
-  #       });
-  #     })
-  #   ];
-  # };
-  mypolybar = (pkgs.polybar.overrideAttrs (old: {
-    nativeBuildInputs = old.nativeBuildInputs
-      ++ [ pkgs.python38Packages.sphinx ];
-    src = pkgs.fetchFromGitHub {
-      owner = old.pname;
-      repo = old.pname;
-      rev = "10bbec44515d2479c0dd606ae48a2e0721ad94c0";
-      sha256 = "0kzv6crszs0yx70v0n89jvv40155chraw3scqdybibk4n1pmbkzn";
-      fetchSubmodules = true;
-    };
-  })).override {
-    i3Support = false;
-    i3GapsSupport = false;
-    alsaSupport = true;
-    iwSupport = false;
-    githubSupport = true;
-    mpdSupport = true;
-    nlSupport = true;
-    pulseSupport = false;
-  };
-  gh-md-toc = pkgs.writeScriptBin "gh-md-toc"
-    "curl https://raw.githubusercontent.com/ekalinin/github-markdown-toc/master/gh-md-toc -o gh-md-toc && chmod a+x gh-md-toc";
-  fromGitHub = ref: repo:
-    pkgs.vimUtils.buildVimPlugin {
-      pname = "${lib.strings.sanitizeDerivationName repo}";
-      version = ref;
-      src = builtins.fetchGit {
-        url = "https://github.com/${repo}.git";
-        ref = ref;
-      };
-    };
+  bg = "#3b224c";
+  bgFade = "#5A3D6E";
+  fg = "#CECECE";
+  black = "#281733";
+  red = "#D678B5";
+  green = "#7FC9AB";
+  yellow = "#E3C0A8";
+  blue = "#70bad1";
+  magenta = "#C78DFC";
+  cyan = "#23acdd";
+  white = "#f0f0f0";
+  orange = "#D678B5";
 in {
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
@@ -52,6 +22,7 @@ in {
     ./programs/xmonad/default.nix
     ./programs/vscode/vscode.nix
     ./programs/firefox/firefox.nix
+    ./programs/vim/vim.nix
   ];
 
   home.username = "gabriela";
@@ -97,7 +68,6 @@ in {
     pkgs.xdotool
     pkgs.lxrandr
     pkgs.pscircle
-    pkgs.gpicview
     pkgs.neofetch
     pkgs.lxappearance
     pkgs.evince
@@ -126,6 +96,7 @@ in {
     pkgs.networkmanagerapplet
 
     pkgs.spotify
+    pkgs.pulsemixer
 
     pkgs.vivaldi
     pkgs.vivaldi-ffmpeg-codecs
@@ -145,7 +116,6 @@ in {
     pkgs.libqalculate
 
     pkgs.sqlite
-    # pkgs.texlive.combined.scheme-small
     pkgs.texlive.combined.scheme-full
     pkgs.nitrogen
     pkgs.nix-prefetch-git
@@ -199,36 +169,15 @@ in {
     pkgs.brightnessctl
     pkgs.rustc
     pkgs.cargo
+
+    pkgs.helix
+    pkgs.zed-editor
   ];
 
   programs.emacs = {
     enable = true;
     package = pkgs.emacs29;
   };
-
-  # xdg.mime.enable = true;
-  # xdg.mimeApps = {
-  #   enable = true;
-
-  #   associations.added = {
-  #     "x-scheme-handler/http" = [ "firefox.desktop" ];
-  #     "x-scheme-handler/https" = [ "firefox.desktop" ];
-  #     "x-scheme-handler/about" = [ "firefox.desktop" ];
-  #     "x-scheme-handler/unknown" = [ "firefox.desktop" ];
-  #   };
-  #   defaultApplications = {
-  #     "text/html" = [ "firefox.desktop" ];
-  #     "x-scheme-handler/http" = [ "firefox.desktop" ];
-  #     "x-scheme-handler/https" = [ "firefox.desktop" ];
-  #     "x-scheme-handler/about" = [ "firefox.desktop" ];
-  #     "x-scheme-handler/unknown" = [ "firefox.desktop" ];
-  #     "video/mp4" = [ "mpv.desktop" "userapp-vlc-HA5N50.desktop" ];
-  #     "x-scheme-handler/tg" = [ "userapp-Telegram Desktop-E8SX01.desktop" ];
-  #     "image/png" = [ "firefox.desktop" ];
-  #     "application/pdf" = [ "okularApplication_pdf.desktop" ];
-  #     "vscode-insiders" = [ "code-insiders.desktop" ];
-  #   };
-  # };
 
   home.file.".ssh/config".text = ''
     Host *
@@ -319,64 +268,6 @@ in {
     shellAliases = { ls = "ls --color=auto"; };
   };
 
-  programs.neovim = {
-    enable = true;
-    vimAlias = true;
-    extraLuaConfig = builtins.readFile ./programs/vim/extraLuaConfig.lua;
-    extraConfig = ''
-      autocmd FileType quint lua vim.treesitter.start()
-      autocmd FileType quint lua vim.lsp.start({name = 'quint', cmd = {'quint-language-server', '--stdio'}, root_dir = vim.fs.dirname()})
-      au BufRead,BufNewFile *.qnt  setfiletype quint
-
-      let g:tlaplus_mappings_enable = 1
-    '';
-
-    plugins = with pkgs.vimPlugins; [
-      # Syntax / Language Support ##########################
-      vim-nix
-      zig-vim
-      nvim-lspconfig
-
-      # UI #################################################
-      nord-vim # colorscheme
-      vim-gitgutter # status in gutter
-      # vim-devicons
-      vim-airline
-
-      # Editor Features ####################################
-      vim-surround # cs"'
-      vim-repeat # cs"'...
-      vim-commentary # gcap
-      # vim-ripgrep
-      vim-indent-object # >aI
-      vim-easy-align # vipga
-      vim-eunuch # :Rename foo.rb
-      vim-sneak
-      supertab
-      ale # linting
-      nerdtree
-      neosnippet-snippets
-
-      # Buffer / Pane / File Management ####################
-      fzf-vim # all the things
-
-      # Panes / Larger features ############################
-      tagbar # <leader>5
-      vim-fugitive # Gblame
-
-      copilot-vim
-      (nvim-treesitter.withPlugins (_:
-        nvim-treesitter.allGrammars ++ [
-          (pkgs.tree-sitter.buildGrammar {
-            language = "quint";
-            version = "7c51ff7";
-            src = ./programs/tree-sitter-quint;
-          })
-        ]))
-      (fromGitHub "HEAD" "tlaplus-community/tlaplus-nvim-plugin")
-    ];
-  };
-
   programs.alacritty = {
     enable = true;
 
@@ -384,11 +275,7 @@ in {
       scrolling.history = 10000;
 
       window = {
-        padding = {
-          x = 30;
-          y = 30;
-        };
-        opacity = 0.9;
+        opacity = 1.0;
       };
 
       font = {
@@ -401,76 +288,65 @@ in {
         size = 14.0;
       };
 
-      # Colors (Alabaster Dark)
       colors = {
         primary = {
-          background = "0x0E1415";
-          foreground = "0xCECECE";
+          background = bg;
+          foreground = fg;
         };
         cursor = {
-          text = "0x0E1415";
-          cursor = "0xCECECE";
+          text = "#0E1415";
+          cursor = bgFade;
         };
         normal = {
-          black = "0x0E1415";
-          red = "0xe25d56";
-          green = "0x73ca50";
-          yellow = "0xe9bf57";
-          blue = "0x4a88e4";
-          magenta = "0x915caf";
-          cyan = "0x23acdd";
-          white = "0xf0f0f0";
+          black = black;
+          red = red;
+          green = green;
+          yellow = yellow;
+          blue = blue;
+          magenta = magenta;
+          cyan = cyan;
+          white = white;
         };
         bright = {
-          black = "0x777777";
-          red = "0xf36868";
-          green = "0x88db3f";
-          yellow = "0xf0bf7a";
-          blue = "0x6f8fdb";
-          magenta = "0xe987e9";
-          cyan = "0x4ac9e2";
-          white = "0xFFFFFF";
+          black = "#777777";
+          red = "#f36868";
+          green = "#88db3f";
+          yellow = "#f0bf7a";
+          blue = "#6f8fdb";
+          magenta = "#e987e9";
+          cyan = "#4ac9e2";
+          white = "#FFFFFF";
         };
       };
-
-      # white
-      # colors = {
-      #   # Default colors
-      #   primary = {
-      #     background = "0xdbd6d1";
-      #     foreground = "0x433b32";
-      #   };
-
-      #   # Normal colors
-      #   normal = {
-      #     black = "0x16130f";
-      #     red = "0x826d57";
-      #     green = "0x57826d";
-      #     yellow = "0x6d8257";
-      #     blue = "0x6d5782";
-      #     magenta = "0x82576d";
-      #     cyan = "0x576d82";
-      #     white = "0xa39a90";
-      #   };
-
-      #   # Bright colors
-      #   bright = {
-      #     black = "0x5a5047";
-      #     red = "0x826d57";
-      #     green = "0x57826d";
-      #     yellow = "0x6d8257";
-      #     blue = "0x6d5782";
-      #     magenta = "0x82576d";
-      #     cyan = "0x576d82";
-      #     white = "0xdbd6d1";
-      #   };
-      # };
     };
   };
 
   programs.zellij = {
     enable = true;
     enableFishIntegration = true;
+    settings = {
+      ui.pane_frames.hide_session_name = true;
+      scrollback_editor = "hx";
+      keybinds.shared.bind = {
+        _args = [ "Alt ;" ];
+        ToggleFocusFullscreen = {};
+        MoveFocusOrTab = ["Right"];
+      }; 
+      theme = "booberry";
+      themes.booberry = {
+          fg = fg;
+          bg = bg;  
+          black = black;
+          red = red;
+          green = green;
+          yellow = yellow;
+          blue = blue;
+          magenta = magenta;
+          cyan = cyan;
+          white = white;
+          orange = orange;
+      };
+    };
   };
 
   programs.autorandr.enable = true;
@@ -478,11 +354,43 @@ in {
   programs.rofi = {
     enable = true;
     terminal = "${pkgs.alacritty}/bin/alacritty";
-    theme = ./programs/rofi/theme.slate;
     cycle = true;
-  };
+    theme = let inherit (config.lib.formats.rasi) mkLiteral;
+    in {
+      "*" = {
+        background-color = mkLiteral bg;
+        text-color = mkLiteral fg;
+        accent = mkLiteral bgFade;
+      };
 
-  programs.rofi.pass = { enable = true; };
+      "window" = {
+        border-radius = mkLiteral "5px";
+        padding = mkLiteral "30px";
+      };
+
+      "prompt, entry" = {
+        padding = mkLiteral "3px";
+        text-color = mkLiteral fg;
+      };
+
+      "element" = { 
+        border-radius = mkLiteral "2px";
+        padding = mkLiteral "4px";
+      };
+
+      "element selected" = {
+        background-color = mkLiteral fg;
+        text-color = mkLiteral bg;
+      };
+
+      "button selected" = {
+        background-color = mkLiteral fg;
+        text-color = mkLiteral bg;
+        border-radius = mkLiteral "2px";
+        padding = mkLiteral "3px";
+      };
+    };  
+  };
 
   services.picom = {
     # package = picom-fork;

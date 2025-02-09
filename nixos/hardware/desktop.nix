@@ -15,7 +15,7 @@
     preLVM = true;
     allowDiscards = true;
   };
-  boot.kernelModules = [ "kvm-intel" ];
+  boot.kernelModules = [ "kvm-intel" "iwlmvm" "iwlwifi" ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =

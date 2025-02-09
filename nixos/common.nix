@@ -91,7 +91,11 @@
 
   # Enable sound.
   # sound.enable = true;
-  hardware.pulseaudio.enable = true;
+  hardware.pulseaudio = {
+    enable = true;
+    package = pkgs.pulseaudioFull;
+  };
+
   services.pipewire = {
     enable = false;
     # audio.enable = true;
@@ -143,6 +147,9 @@
     terminator
     fish
     vim
+    helix
+    helix-gpt
+    xclip
     home-manager
     gnupg
     gcc
@@ -169,12 +176,14 @@
 
     headsetcontrol
     alsa-utils
+
+    gsmartcontrol
   ];
 
   # Fonts
   fonts.packages = with pkgs; [
     noto-fonts
-    noto-fonts-cjk
+    noto-fonts-cjk-sans
     noto-fonts-emoji
     liberation_ttf
     fira-code

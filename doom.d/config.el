@@ -23,8 +23,8 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-lantern)
-(setq doom-font (font-spec :family "Iosevka" :size 26))
+(setq doom-theme 'doom-moonlight)
+(setq doom-font (font-spec :family "Iosevka" :size 32))
 (setq doom-big-font (font-spec :family "Iosevka" :size 42))
 (setq doom-variable-pitch-font (font-spec :family "Iosevka" :size 20))
 
@@ -577,14 +577,15 @@ Time-stamp: <>
          (org-present-mode-quit . dw/org-present-quit-hook)))
 
 (load-file "~/projects/quint/editor-plugins/emacs/quint-mode.el")
-(load-file "~/projects/quint/editor-plugins/emacs/lsp-quint.el")
 (require 'quint-mode)
 (add-to-list 'auto-mode-alist '("\\.qnt" . quint-mode))
-(use-package lsp-quint
-  :hook (quint-mode . lsp))
+;; (add-to-list 'auto-mode-alist '("\\.qnt" . prog-mode))
+;; (load-file "~/projects/quint/editor-plugins/emacs/lsp-quint.el")
+;; (use-package lsp-quint
+;;   :hook (quint-mode . lsp))
 
 (add-hook 'typescript-ts-mode-hook 'prettier-mode)
-(add-hook 'typescript-ts-mode-hook 'lsp-mode)
+;; (add-hook 'typescript-ts-mode-hook 'lsp-mode)
 
 (defun my-haskell-mode-hook ()
   (hindent-mode)
@@ -643,25 +644,25 @@ Time-stamp: <>
   (when buffer-file-name
     (setq-local buffer-save-without-query t))
   (add-hook 'before-save-hook 'lsp-format-buffer nil t))
-(use-package lsp-mode
-  :ensure
-  :commands lsp
-  :custom
-  ;; what to use when checking on-save. "check" is default, I prefer clippy
-  (lsp-rust-analyzer-cargo-watch-command "clippy")
-  (lsp-eldoc-render-all t)
-  (lsp-idle-delay 0.6)
-  ;; enable / disable the hints as you prefer:
-  (lsp-inlay-hint-enable t)
-  ;; These are optional configurations. See https://emacs-lsp.github.io/lsp-mode/page/lsp-rust-analyzer/#lsp-rust-analyzer-display-chaining-hints for a full list
-  ;; (lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
-  (lsp-rust-analyzer-display-chaining-hints t)
-  (lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil)
-  (lsp-rust-analyzer-display-closure-return-type-hints t)
-  (lsp-rust-analyzer-display-parameter-hints t)
-  (lsp-rust-analyzer-display-reborrow-hints t)
-  :config
-  (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+;; (use-package lsp-mode
+;;   :ensure
+;;   :commands lsp
+;;   :custom
+;;   ;; what to use when checking on-save. "check" is default, I prefer clippy
+;;   (lsp-rust-analyzer-cargo-watch-command "clippy")
+;;   (lsp-eldoc-render-all t)
+;;   (lsp-idle-delay 0.6)
+;;   ;; enable / disable the hints as you prefer:
+;;   (lsp-inlay-hint-enable t)
+;;   ;; These are optional configurations. See https://emacs-lsp.github.io/lsp-mode/page/lsp-rust-analyzer/#lsp-rust-analyzer-display-chaining-hints for a full list
+;;   ;; (lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
+;;   (lsp-rust-analyzer-display-chaining-hints t)
+;;   (lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil)
+;;   (lsp-rust-analyzer-display-closure-return-type-hints t)
+;;   (lsp-rust-analyzer-display-parameter-hints t)
+;;   (lsp-rust-analyzer-display-reborrow-hints t)
+;;   :config
+;;   (add-hook 'lsp-mode-hook 'lsp-ui-mode))
 
 (use-package lsp-ui
   :ensure
@@ -852,9 +853,43 @@ with overruling parameters for `org-list-to-generic'."
                 :cbtrans "[-] ")))
     (org-list-to-generic list (org-combine-plists defaults params))))
 
-(straight-use-package 'use-package)
-(use-package tla-input
-  :straight (:host github :repo "bugarela/tla-input")
-  :hook ((tla-mode . setup-tla-input)))
+;; (straight-use-package 'use-package)
+;; (use-package tla-input
+;;   :straight (:host github :repo "bugarela/tla-input")
+;;   :hook ((tla-mode . setup-tla-input)))
+
+(require 'tla-input)
+(add-hook 'tla-mode-hook 'setup-tla-input)
 
 (add-to-list 'auto-mode-alist '("\\.mdx" . markdown-mode))
+
+(after! markdown-mode
+  (setq markdown-fontify-code-blocks-natively t))
+
+(use-package lsp-copilot
+  :load-path "~/projects/lsp-copilot"
+  :config
+  (add-hook! '(
+               tsx-ts-mode-hook
+               js-ts-mode-hook
+               typescript-mode-hook
+               typescript-ts-mode-hook
+               rjsx-mode-hook
+               less-css-mode-hook
+               web-mode-hook
+               python-ts-mode-hook
+               rust-mode-hook
+               rustic-mode-hook
+               rust-ts-mode-hook
+               toml-ts-mode-hook
+               conf-toml-mode-hook
+               bash-ts-mode-hook
+               quint-mode-hook
+               ) #'lsp-copilot-mode))
+
+(set-lookup-handlers! 'lsp-copilot-mode
+  :definition '(lsp-copilot-find-definition :async t)
+  :references '(lsp-copilot-find-references :async t)
+  :implementations '(lsp-copilot-find-implementations :async t)
+  :type-definition '(lsp-copilot-find-type-definition :async t)
+  :documentation '(lsp-copilot-describe-thing-at-point :async t))

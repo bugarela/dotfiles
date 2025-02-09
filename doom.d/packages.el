@@ -65,8 +65,16 @@
 (package! org-inline-pdf
   :recipe (:host github :repo "shg/org-inline-pdf.el" :files ("*.el")))
 
+(package! tla-input
+  :recipe (:host github :repo "bugarela/tla-input" :files ("*.el")))
+
 ;; https://github.com/doomemacs/doomemacs/issues/7568
 (unpin! apheleia)
+
+(package! lsp-copilot :recipe (:host github :repo "jadestrong/lsp-copilot"
+                               :files ("lsp-copilot.el" "lsp-copilot")
+                               :pre-build (("cargo" "build" "--release") ("cp" "./target/release/lsp-copilot" "./"))))
+
 ;; To install a package directly from a remote git repo, you must specify a
 ;; `:recipe'. You'll find documentation on what `:recipe' accepts here:
 ;; https://github.com/raxod502/straight.el#the-recipe-format

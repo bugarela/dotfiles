@@ -17,6 +17,7 @@ set -x GPG_TTY (tty)
 function fish_user_key_bindings
     fish_vi_key_bindings
     bind \cw backward-kill-word
+    bind -M insert \cf accept-autosuggestion
 end
 
 alias o='devour xdg-open'

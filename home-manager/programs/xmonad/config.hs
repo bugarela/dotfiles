@@ -46,6 +46,7 @@ import XMonad.Hooks.ManageHelpers (doFullFloat, isFullscreen)
 import XMonad.Hooks.ServerMode
 import XMonad.Hooks.SetWMName
 import XMonad.Hooks.WorkspaceHistory
+import XMonad.Hooks.InsertPosition
 import XMonad.Layout.Fullscreen
 import XMonad.Layout.Gaps
 import XMonad.Layout.GridVariants (Grid (Grid))
@@ -130,7 +131,6 @@ myStartupHook = do
   spawnOnce "setxkbmap -layout us -variant altgr-intl -option caps:swapescape &"
   setWMName "LG3D"
   spawnOnce "firefox"
-  -- spawnOnce "code-insiders"
   spawnOnce "slack"
   spawnOnce "flameshot"
   spawnOnce "xsetroot -cursor_name left_ptr"
@@ -138,6 +138,7 @@ myStartupHook = do
   spawnOnce "xset r rate 200 30"
   spawnOnce "fish -c init-polybar"
   spawnOnce "nm-applet"
+  spawnOnce "amixer -D default"
 
 myColorizer :: Window -> Bool -> X (String, String)
 myColorizer =
@@ -282,7 +283,8 @@ myScratchPads =
   [ NS "terminal" spawnTerm findTerm manageScratch,
     NS "spotify" spawnSpotify findSpotify manageScratch,
     NS "telegram" spawnTelegram findTelegram manageScratch,
-    NS "discord" spawnDiscord findDiscord manageScratch
+    NS "discord" spawnDiscord findDiscord manageScratch,
+    NS "side-terminal" spawnSideTerm findSideTerm (insertPosition Below Newer <> nonFloating)
   ]
   where
     manageScratch = customFloating $ W.RationalRect l t w h
@@ -293,6 +295,8 @@ myScratchPads =
         l = 0.95 - w
     spawnTerm = myTerminal ++ " -t scratch"
     findTerm = title =? "scratch"
+    spawnSideTerm = myTerminal ++ " -t sidescratch"
+    findSideTerm = title =? "sidescratch"
     spawnSpotify = "spotify"
     findSpotify = className =? "Spotify"
     spawnTelegram = "telegram-desktop"
@@ -377,7 +381,7 @@ myManageHook =
       title =? "Oracle VM VirtualBox Manager" --> doFloat,
       (className =? "firefox" <&&> resource =? "Dialog") --> doFloat -- Float Firefox Dialog
     ]
-    <+> namedScratchpadManageHook myScratchPads
+    <+> insertPosition Below Newer <> namedScratchpadManageHook myScratchPads
 
 -- The layout hook
 myLayoutHook =
@@ -478,6 +482,8 @@ myKeysP =
     ("M-C-c", namedScratchpadAction myScratchPads "spotify"),
     ("M-C-t", namedScratchpadAction myScratchPads "telegram"),
     ("M-C-d", namedScratchpadAction myScratchPads "discord"),
+    ("M-;", namedScratchpadAction myScratchPads "side-terminal" >> windows W.swapDown),
+
     -- Apps
     ("M-u", spawn "pavucontrol"),
     ("<XF86Tools>", spawn "pavucontrol"),
