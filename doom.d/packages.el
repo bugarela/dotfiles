@@ -59,8 +59,9 @@
 (package! copilot
   :recipe (:host github :repo "zerolfx/copilot.el" :files ("*.el" "dist")))
 
+;; Install from my fork to include heading level on the ids and avoid duplications
 (package! ox-html-stable-ids
-  :recipe (:host github :repo "jeffkreeftmeijer/ox-html-stable-ids.el"))
+  :recipe (:host github :repo "bugarela/ox-html-stable-ids.el"))
 
 (package! org-inline-pdf
   :recipe (:host github :repo "shg/org-inline-pdf.el" :files ("*.el")))
@@ -74,6 +75,8 @@
 (package! lsp-copilot :recipe (:host github :repo "jadestrong/lsp-copilot"
                                :files ("lsp-copilot.el" "lsp-copilot")
                                :pre-build (("cargo" "build" "--release") ("cp" "./target/release/lsp-copilot" "./"))))
+
+(package! ox-typst)
 
 ;; To install a package directly from a remote git repo, you must specify a
 ;; `:recipe'. You'll find documentation on what `:recipe' accepts here:

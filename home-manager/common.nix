@@ -22,7 +22,7 @@ in {
     ./programs/xmonad/default.nix
     ./programs/vscode/vscode.nix
     ./programs/firefox/firefox.nix
-    ./programs/vim/vim.nix
+    # ./programs/vim/vim.nix
   ];
 
   home.username = "gabriela";
@@ -30,7 +30,6 @@ in {
 
   home.sessionVariables = {
     PAGER = "less";
-    EDITOR = "vim";
     DOOMDIR = "$HOME/nix-configs/doom.d";
     EMACSDIR = "$HOME/.emacs.d";
     DOOMLOCALDIR = "$HOME/.doom_local";
@@ -170,13 +169,36 @@ in {
     pkgs.rustc
     pkgs.cargo
 
-    pkgs.helix
     pkgs.zed-editor
   ];
 
   programs.emacs = {
     enable = true;
     package = pkgs.emacs29;
+  };
+
+  programs.helix = {
+    enable = true;
+    defaultEditor = true;
+    settings = {
+      editor = {
+        cursor-shape = {
+          insert = "bar";
+          normal = "block";
+          select = "underline";
+        };
+        inline-diagnostics = {
+          cursor-line = "error";
+        };
+      };
+      keys.normal = {
+        space.space = "file_picker";
+        space.w = ":w";
+        space.q = ":q";
+        esc = [ "collapse_selection" "keep_primary_selection" ];
+      };
+    };
+    # TODO: languages
   };
 
   home.file.".ssh/config".text = ''

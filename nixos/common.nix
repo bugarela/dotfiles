@@ -91,7 +91,7 @@
 
   # Enable sound.
   # sound.enable = true;
-  hardware.pulseaudio = {
+  services.pulseaudio = {
     enable = true;
     package = pkgs.pulseaudioFull;
   };
@@ -197,7 +197,10 @@
     iosevka
     etBook
     emacs-all-the-icons-fonts
-    (nerdfonts.override { fonts = [ "FiraCode" "DroidSansMono" "Mononoki" ]; })
+
+    nerd-fonts.droid-sans-mono
+    nerd-fonts.mononoki
+    paratype-pt-sans
   ];
 
   programs.gnupg.agent = {

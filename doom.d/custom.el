@@ -61,6 +61,7 @@
      ("bluespec" . quint-mode)))
  '(objed-cursor-color "#EDD26C")
  '(org-agenda-files '("~/org/roam/daily" "~/org" "~/org/todos"))
+ '(org-beamer-frame-environment "frame")
  '(org-cite-csl-styles-dir "/home/gabriela/MEGA/org/roam/udesc/exported-org-files")
  '(org-latex-compiler "xelatex")
  '(org-latex-default-packages-alist

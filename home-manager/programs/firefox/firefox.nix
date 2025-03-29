@@ -9,9 +9,9 @@ in {
   programs.firefox = {
     enable = true;
     profiles = {
-      default = {
+      bugarela = {
         id = 0;
-        name = "default";
+        name = "bugarela";
         isDefault = true;
         settings = {
           # "browser.startup.homepage" = "https://searx.aicampground.com";
@@ -59,6 +59,7 @@ in {
           darkreader
           vimium
           onepassword-password-manager
+          metamask
         ];
       };
     };
