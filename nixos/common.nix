@@ -127,7 +127,7 @@
     isNormalUser = true;
     description = "Gabriela Moreira";
     home = "/home/gabriela";
-    extraGroups = [ "wheel" "networkmanager" "docker" "video" "plugdev" ];
+    extraGroups = [ "wheel" "networkmanager" "docker" "video" "plugdev" "render" ];
   };
 
   users.extraUsers.gabriela = { shell = pkgs.fish; };
@@ -172,7 +172,6 @@
 
     cheese
     mlt
-    libsForQt5.mlt
 
     headsetcontrol
     alsa-utils
@@ -282,10 +281,6 @@
   #   NIX_LD = lib.fileContents "${pkgs.stdenv.cc}/nix-support/dynamic-linker";
   # };
 
-  services.fprintd.enable = true;
-  services.fprintd.tod.enable = true;
-  services.fprintd.tod.driver = pkgs.libfprint-2-tod1-vfs0090;
-
   # {imported to configuration.nix direct as home-manager does not support 1password
   programs._1password = { enable = true; };
 
@@ -297,6 +292,8 @@
   security.polkit.enable = true;
 
   services.udev.packages = [ pkgs.headsetcontrol ];
+
+  systemd.services.nix-daemon.serviceConfig.EnvironmentFile = "/etc/nixos/nix-daemon-environment";
 
   # https://nixos.wiki/wiki/Dropbox
   # systemd.user.services.dropbox = {

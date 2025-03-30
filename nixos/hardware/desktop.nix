@@ -8,28 +8,34 @@
     [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
+  boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "sd_mod" ];
-  boot.initrd.kernelModules = [ "dm-snapshot" ];
+  boot.initrd.kernelModules = [ "dm-snapshot" "amdgpu" ];
   boot.initrd.luks.devices.nixos = {
-    device = "/dev/disk/by-uuid/300bfa12-c616-4098-b5c8-fd9569e6ee72";
+    device = "/dev/disk/by-uuid/e7c29403-f073-4259-91f7-1032a5027c2b";
     preLVM = true;
     allowDiscards = true;
   };
-  boot.kernelModules = [ "kvm-intel" "iwlmvm" "iwlwifi" ];
+  boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
+  boot.kernelParams = [
+    "amdgpu.dc=1"
+    "amdgpu.dpm=1"
+  ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/b7e040a3-1c0f-4dd4-87c5-f1e3d68f2927";
+    { device = "/dev/disk/by-uuid/b38fb1dc-b40e-4e2f-9a6d-1bd6f8ceb01f";
       fsType = "ext4";
     };
 
   fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/355B-9798";
+    { device = "/dev/disk/by-uuid/DB07-E025";
       fsType = "vfat";
+      options = [ "fmask=0022" "dmask=0022" ];
     };
 
   swapDevices =
-    [ { device = "/dev/disk/by-uuid/7b516919-a86b-4dcc-b777-58a4263aa0fe"; }
+    [ { device = "/dev/disk/by-uuid/58141840-3e14-4350-bdfb-ccb6ed907c99"; }
     ];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
@@ -37,10 +43,9 @@
   # still possible to use this option, but it's recommended to use it in conjunction
   # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
   networking.useDHCP = lib.mkDefault true;
-  # networking.interfaces.enp2s0.useDHCP = lib.mkDefault true;
+  # networking.interfaces.enp3s0.useDHCP = lib.mkDefault true;
   # networking.interfaces.wlo1.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-  powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }

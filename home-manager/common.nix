@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, fetchFromGithub, ... }:
 
 let
   bg = "#3b224c";
@@ -13,6 +13,14 @@ let
   cyan = "#23acdd";
   white = "#f0f0f0";
   orange = "#D678B5";
+
+  pkgs2405 = import (builtins.fetchTarball {
+    url = "https://github.com/NixOS/nixpkgs/archive/refs/tags/24.05.tar.gz";
+    sha256 = "1lr1h35prqkd1mkmzriwlpvxcb34kmhc9dnr48gkm8hh089hifmx";
+  }) {
+    config.allowUnfree = true;
+  };
+
 in {
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
@@ -30,30 +38,19 @@ in {
 
   home.sessionVariables = {
     PAGER = "less";
-    DOOMDIR = "$HOME/nix-configs/doom.d";
+    DOOMDIR = "$HOME/dotfiles/doom.d";
     EMACSDIR = "$HOME/.emacs.d";
-    DOOMLOCALDIR = "$HOME/.doom_local";
+    # DOOMLOCALDIR = "$HOME/._local";
     DIRENV_ALLOW_NIX = 1;
   };
 
-  home.activation = {
-    # installDoomEmacs = ''
-    #   if [ ! -d "$HOME/emacs" ]; then
-    #     git clone --depth=1 --single-branch https://github.com/doomemacs/doomemacs "$EMACSDIR"
-    #   fi
-    # '';
-  };
-
-  home.file.".doom.d" = {
-    source = builtins.toPath "/home/gabriela/nix-configs/doom.d";
-    onChange = "${pkgs.writeShellScript "doom-change" ''
-      EMACSDIR=/home/gabriela/.emacs.d
-      DOOMBIN="$EMACSDIR"/bin/doom
-      DOOMLOCALDIR=/home/gabriela/.doom_local
-      mkdir -p "$DOOMLOCALDIR"
-      mkdir -p /home/gabriela/org/roam
-    ''}";
-  };
+  # home.activation = {
+  #   installDoomEmacs = ''
+  #     if [ ! -d "$HOME/emacs" ]; then
+  #       git clone --depth=0 --single-branch https://github.com/doomemacs/doomemacs "$EMACSDIR"
+  #     fi
+  #   '';
+  # };
 
   home.packages = [
     pkgs.ripgrep
@@ -127,10 +124,9 @@ in {
     # pkgs.lutris
     # pkgs.tuxguitar
 
-    pkgs.megasync
     pkgs.megacmd
     pkgs.obs-studio
-    pkgs.okular
+    pkgs.kdePackages.okular
     pkgs.vlc
     pkgs.mpv
     pkgs.ffmpeg
@@ -149,7 +145,7 @@ in {
     pkgs.pulseeffects-legacy
 
     # Required by emacs copilot
-    pkgs.nodejs-18_x
+    pkgs.nodejs_20
     # Required by treemacs
     pkgs.python3
 
@@ -174,7 +170,6 @@ in {
 
   programs.emacs = {
     enable = true;
-    package = pkgs.emacs29;
   };
 
   programs.helix = {
@@ -245,14 +240,27 @@ in {
         email = "gabrielamoreira05@gmail.com";
       };
 
+      git = {
+        subprocess = false;
+        sign-on-push = true;
+      };
+
       signing = {
-        sign-all = true;
+        # behavior = "own";
         backend = "ssh";
         key =
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK9j0vEeUJi5vv++eeMOWkIYjGy8ED7s3M4FHY7YOzXH";
         backends.ssh = {
           allowed-signers = "/home/gabriela/.ssh/allowed_signers";
           program = "/run/current-system/sw/bin/op-ssh-sign";
+        };
+      };
+
+      ui = {
+        pager = "${pkgs.delta}/bin/delta";
+        diff-editor = "${pkgs.meld}/bin/meld";
+        diff = {
+          format = "git";
         };
       };
     };
@@ -357,7 +365,7 @@ in {
       theme = "booberry";
       themes.booberry = {
           fg = fg;
-          bg = bg;  
+          bg = bgFade;
           black = black;
           red = red;
           green = green;
@@ -490,6 +498,16 @@ in {
         foreground = "#EEEEEE";
       };
     };
+  };
+
+  services.megasync = {
+    enable = true;
+    package = pkgs2405.megasync;
+  };
+
+  programs.nix-index = {
+    enable = true;
+    enableFishIntegration = true;
   };
 
   programs.direnv.nix-direnv.enable = true;

@@ -378,7 +378,8 @@ myManageHook :: XMonad.Query (Data.Monoid.Endo WindowSet)
 myManageHook =
   composeAll
     [ className =? "Slack" --> doShift (myWorkspaces !! 4),
-      title =? "Oracle VM VirtualBox Manager" --> doFloat,
+      title =? "megasync" --> doF W.swapDown,
+      className =? "megasync" --> doF W.swapDown,
       (className =? "firefox" <&&> resource =? "Dialog") --> doFloat -- Float Firefox Dialog
     ]
     <+> insertPosition Below Newer <> namedScratchpadManageHook myScratchPads

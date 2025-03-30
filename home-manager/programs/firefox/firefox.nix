@@ -20,8 +20,8 @@ in {
         };
         search = {
           force = true;
-          default = "DuckDuckGo";
-          order = [ "Google" ];
+          default = "ddg";
+          order = [ "google" ];
           engines = {
             "Nix Packages" = {
               urls = [{
@@ -45,16 +45,16 @@ in {
               urls = [{
                 template = "https://nixos.wiki/index.php?search={searchTerms}";
               }];
-              iconUpdateURL = "https://nixos.wiki/favicon.png";
+              icon = "https://nixos.wiki/favicon.png";
               updateInterval = 24 * 60 * 60 * 1000; # every day
               definedAliases = [ "@nw" ];
             };
-            "Bing".metaData.hidden = true;
-            "Google".metaData.alias =
+            "bing".metaData.hidden = true;
+            "google".metaData.alias =
               "@g"; # builtin engines only support specifying one additional alias
           };
         };
-        extensions = with nur.repos.rycee.firefox-addons; [
+        extensions.packages = with nur.repos.rycee.firefox-addons; [
           ublock-origin
           darkreader
           vimium

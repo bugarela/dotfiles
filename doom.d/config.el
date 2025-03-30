@@ -239,14 +239,14 @@
 
 (global-set-key (kbd "<269025093>") "λ")
 (map! :leader
-      (:prefix ("a" . "custom")
+      (:prefix-map ("a" . "custom")
        :desc "Find definition" "d" #'xref-find-definitions-other-window
        :desc "Open spec" "s" #'projectile-find-implementation-or-test-other-window
        :desc "Yank relative path" "y" #'(lambda () (interactive) (kill-new (file-relative-name buffer-file-name (projectile-project-root))))
        :desc "Delete JSON value" "k" #'json-delete-value
        :desc "Cite with org-ref" "c" #'org-ref-insert-link
-       :desc "Zoom transient state" "z" #'+hydra/text-zoom/body
-       :desc "BibTeX transient state" "b" #'org-ref-bibtex-hydra/body
+       ; :desc "Zoom transient state" "z" #'+hydra/text-zoom/body
+       ; :desc "BibTeX transient state" "b" #'org-ref-bibtex-hydra/body
        :desc "Org preset" "p" #'org-present))
 
 (setq doom-unreal-buffer-functions '(minibufferp))
@@ -579,10 +579,9 @@ Time-stamp: <>
 (load-file "~/projects/quint/editor-plugins/emacs/quint-mode.el")
 (require 'quint-mode)
 (add-to-list 'auto-mode-alist '("\\.qnt" . quint-mode))
-;; (add-to-list 'auto-mode-alist '("\\.qnt" . prog-mode))
-;; (load-file "~/projects/quint/editor-plugins/emacs/lsp-quint.el")
-;; (use-package lsp-quint
-;;   :hook (quint-mode . lsp))
+(load-file "~/projects/quint/editor-plugins/emacs/lsp-quint.el")
+(use-package lsp-quint
+  :hook (quint-mode . lsp))
 
 (add-hook 'typescript-ts-mode-hook 'prettier-mode)
 ;; (add-hook 'typescript-ts-mode-hook 'lsp-mode)
@@ -604,9 +603,9 @@ Time-stamp: <>
               ("C-TAB" . 'copilot-accept-completion-by-word)
               ("C-<tab>" . 'copilot-accept-completion-by-word)))
 
-(use-package treesit-auto
-  :config
-  (global-treesit-auto-mode))
+;; (use-package treesit-auto
+;;   :config
+;;   (global-treesit-auto-mode))
 
 (add-to-list 'default-frame-alist '(internal-border-width . 20))
 (custom-set-faces
@@ -866,33 +865,36 @@ with overruling parameters for `org-list-to-generic'."
 (after! markdown-mode
   (setq markdown-fontify-code-blocks-natively t))
 
-(use-package lsp-copilot
-  :load-path "~/projects/lsp-copilot"
-  :config
-  (add-hook! '(
-               tsx-ts-mode-hook
-               js-ts-mode-hook
-               typescript-mode-hook
-               typescript-ts-mode-hook
-               rjsx-mode-hook
-               less-css-mode-hook
-               web-mode-hook
-               python-ts-mode-hook
-               rust-mode-hook
-               rustic-mode-hook
-               rust-ts-mode-hook
-               toml-ts-mode-hook
-               conf-toml-mode-hook
-               bash-ts-mode-hook
-               quint-mode-hook
-               ) #'lsp-copilot-mode))
+                                        ; (use-package lsp-copilot
+                                        ;   :load-path "~/projects/lsp-copilot"
+                                        ;   :config
+                                        ;   (add-hook! '(
+                                        ;                tsx-ts-mode-hook
+                                        ;                js-ts-mode-hook
+                                        ;                typescript-mode-hook
+                                        ;                typescript-ts-mode-hook
+                                        ;                rjsx-mode-hook
+                                        ;                less-css-mode-hook
+                                        ;                web-mode-hook
+                                        ;                python-ts-mode-hook
+                                        ;                rust-mode-hook
+                                        ;                rustic-mode-hook
+                                        ;                rust-ts-mode-hook
+                                        ;                toml-ts-mode-hook
+                                        ;                conf-toml-mode-hook
+                                        ;                bash-ts-mode-hook
+                                        ;                quint-mode-hook
+                                        ;                ) #'lsp-copilot-mode))
 
-(set-lookup-handlers! 'lsp-copilot-mode
-  :definition '(lsp-copilot-find-definition :async t)
-  :references '(lsp-copilot-find-references :async t)
-  :implementations '(lsp-copilot-find-implementations :async t)
-  :type-definition '(lsp-copilot-find-type-definition :async t)
-  :documentation '(lsp-copilot-describe-thing-at-point :async t))
+                                        ; (set-lookup-handlers! 'lsp-copilot-mode
+                                        ;   :definition '(lsp-copilot-find-definition :async t)
+                                        ;   :references '(lsp-copilot-find-references :async t)
+                                        ;   :implementations '(lsp-copilot-find-implementations :async t)
+                                        ;   :type-definition '(lsp-copilot-find-type-definition :async t)
+                                        ;   :documentation '(lsp-copilot-describe-thing-at-point :async t))
 
 (use-package ox-typst
   :after org)
+
+(setq shell-file-name (executable-find
+      "bash"))

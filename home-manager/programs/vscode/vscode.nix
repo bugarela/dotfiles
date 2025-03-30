@@ -3,10 +3,10 @@
 {
   programs.vscode = {
     enable = true;
-    userSettings = builtins.fromJSON (builtins.readFile ./settings.json);
+    profiles.default.userSettings = builtins.fromJSON (builtins.readFile ./settings.json);
     package = pkgs.vscode;
     mutableExtensionsDir = true;
-    extensions = with pkgs.vscode-extensions;
+    profiles.default.extensions = with pkgs.vscode-extensions;
       [
         scala-lang.scala
         scalameta.metals

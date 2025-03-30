@@ -4,48 +4,50 @@
 
   networking.hostName = "gabriela-nixos"; # Define your hostname.
 
+  environment.systemPackages = with pkgs; [
+    vulkan-tools
+    dxvk
+  ];
+
   hardware.graphics = {
     enable = true;
+    enable32Bit = true;
+    extraPackages = with pkgs; [
+      vulkan-loader
+      vulkan-validation-layers
+      vulkan-extension-layer
+      # amdvlk   # AMD's official Vulkan driver, commented out because of conflicts with RADV
+      rocmPackages.clr.icd
+      mesa
+    ];
+    # extraPackages32 = [ pkgs.driversi686Linux.amdvlk ];
   };
+
+  hardware.firmware = with pkgs; [
+    (linux-firmware.overrideAttrs (old: {
+      src = builtins.fetchGit {
+        url = "https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git";
+        # rev = "de78f0aaafb96b3a47c92e9a47485a9509c51093"; # --impure gets the latest
+      };
+    }))
+  ];
 
   # Xserver basic
   services.xserver = {
     dpi = 160;
-    videoDrivers = [ "nvidia" ];
+    videoDrivers = [ "amdgpu" ];
+    deviceSection = ''Option "TearFree" "true"'';
   };
 
-  hardware.nvidia = {
-    # Modesetting is required.
-    modesetting.enable = true;
-
-    # Nvidia power management. Experimental, and can cause sleep/suspend to fail.
-    # Enable this if you have graphical corruption issues or application crashes after waking
-    # up from sleep. This fixes it by saving the entire VRAM memory to /tmp/ instead
-    # of just the bare essentials.
-    powerManagement.enable = false;
-
-    # Fine-grained power management. Turns off GPU when not in use.
-    # Experimental and only works on modern Nvidia GPUs (Turing or newer).
-    powerManagement.finegrained = false;
-
-    # Use the NVidia open source kernel module (not to be confused with the
-    # independent third-party "nouveau" open source driver).
-    # Support is limited to the Turing and later architectures. Full list of
-    # supported GPUs is at:
-    # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus
-    # Only available from driver 515.43.04+
-    # Currently alpha-quality/buggy, so false is currently the recommended setting.
-    open = false;
-
-    # Enable the Nvidia settings menu,
-    # accessible via `nvidia-settings`.
-    nvidiaSettings = true;
-
-    # Optionally, you may need to select the appropriate driver version for your specific GPU.
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
-
-    forceFullCompositionPipeline = true;
+  hardware.amdgpu = {
+    amdvlk = {
+      enable = true;
+      support32Bit.enable = true;
+    };
+    opencl.enable = true;  
   };
+
+  services.picom.vSync = true;
 
   hardware.xpadneo.enable = true;
 }

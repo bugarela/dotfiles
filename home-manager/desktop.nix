@@ -1,6 +1,8 @@
 { ... }: {
   imports = [ ./common.nix ];
 
+  programs.mangohud.enable = true;
+
   programs.alacritty = {
     settings = {
       window = {
