@@ -357,6 +357,7 @@ in {
     settings = {
       ui.pane_frames.hide_session_name = true;
       scrollback_editor = "hx";
+      show_startup_tips = false;
       keybinds.shared.bind = {
         _args = [ "Alt ;" ];
         ToggleFocusFullscreen = {};
