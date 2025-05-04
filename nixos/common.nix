@@ -91,15 +91,15 @@
 
   # Enable sound.
   # sound.enable = true;
-  services.pulseaudio = {
-    enable = true;
-    package = pkgs.pulseaudioFull;
-  };
+  # services.pulseaudio = {
+  #   enable = true;
+  #   package = pkgs.pulseaudioFull;
+  # };
 
   services.pipewire = {
-    enable = false;
-    # audio.enable = true;
-    # pulse.enable = true;
+    enable = true;
+    audio.enable = true;
+    pulse.enable = true;
     # alsa = {
     #   enable = true;
     #   support32Bit = true;

@@ -898,3 +898,14 @@ with overruling parameters for `org-list-to-generic'."
 
 (setq shell-file-name (executable-find
       "bash"))
+
+(setq copilot-language-server "/home/gabriela/.npm/bin/copilot-language-server")
+(setq LaTeX-command "xelatex")
+
+;; Avoid issues with BEAMER: \end{frame} in org-mode beamer export
+(setq org-beamer-frame-environment "frame")
+
+(setq org-latex-listings-options '(("numbers" "left")))
+(setq org-latex-src-block-backend 'listings)
+
+(setq ob-mermaid-cli-path "/etc/profiles/per-user/gabriela/bin/mmdc")

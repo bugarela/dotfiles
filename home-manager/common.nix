@@ -21,6 +21,7 @@ let
     config.allowUnfree = true;
   };
 
+  wiremix = import ./programs/wiremix/default.nix {};
 in {
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
@@ -53,6 +54,8 @@ in {
   # };
 
   home.packages = [
+    wiremix
+
     pkgs.ripgrep
     pkgs.bat
     pkgs.jq
@@ -120,8 +123,7 @@ in {
     pkgs.pinentry
     pkgs.gh
 
-    # pkgs.steam --via nixos
-    # pkgs.lutris
+    pkgs.lutris
     # pkgs.tuxguitar
 
     pkgs.megacmd
@@ -145,7 +147,7 @@ in {
     pkgs.pulseeffects-legacy
 
     # Required by emacs copilot
-    pkgs.nodejs_20
+    pkgs.nodejs_22
     # Required by treemacs
     pkgs.python3
 
@@ -451,10 +453,10 @@ in {
   };
 
   home.pointerCursor = {
-    package = pkgs.qogir-icon-theme;
+    package = pkgs.qogir-theme;
     name = "Qogir-dark";
     size = 28;
-    x11.enable = true;
+    x11.enable = false;
   };
 
   # Autoload nix shells

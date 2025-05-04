@@ -4,7 +4,6 @@
 ;; To install a package with Doom you must declare them here and run 'doom sync'
 ;; on the command line, then restart Emacs for the changes to take effect -- or
 
-  
 (package! pinentry)
 (package! company-org-roam)
 (package! org-roam-bibtex :recipe (:host github :repo "org-roam/org-roam-bibtex"))
@@ -46,7 +45,7 @@
 ;; (package! pymupdf-mode :recipe (:host github :repo "dalanicolai/pymupdf-mode.el"))
 
 (package! copilot
-  :recipe (:host github :repo "zerolfx/copilot.el" :files ("*.el" "dist")))
+  :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el" "dist")))
 (package! copilot-chat)
 
 ;; Install from my fork to include heading level on the ids and avoid duplications
