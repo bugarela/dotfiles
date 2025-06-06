@@ -30,9 +30,9 @@ function gvm
 end
 
 function init-polybar
-    MONITOR=DP-5 polybar --reload mybar &
+    MONITOR=HDMI-A-1 polybar --reload mybar &
     sleep 1
-    MONITOR=HDMI-0 polybar --reload mybar &
+    MONITOR=DisplayPort-0 polybar --reload mybar &
     sleep 1
     for m in (xrandr --query | grep ' connected' | cut -d' ' -f1 | sort)
         MONITOR=$m polybar --reload mybar &

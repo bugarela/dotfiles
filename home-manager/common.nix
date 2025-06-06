@@ -124,6 +124,7 @@ in {
     pkgs.gh
 
     pkgs.lutris
+    pkgs.wine
     # pkgs.tuxguitar
 
     pkgs.megacmd
@@ -168,6 +169,10 @@ in {
     pkgs.cargo
 
     pkgs.zed-editor
+
+    pkgs.openai-whisper
+    pkgs.parallel
+    pkgs.presenterm
   ];
 
   programs.emacs = {
@@ -216,19 +221,12 @@ in {
     enable = true;
     userName = "bugarela";
     userEmail = "gabrielamoreira05@gmail.com";
-    extraConfig = ''
-      [gpg]
-        format = ssh
-      [gpg "ssh"]
-        allowedSignersFile = ~/.ssh/allowed_signers
-        program = /run/current-system/sw/bin/op-ssh-sign
-      [push]
-        recurseSubmodules = on-demand;
-    '';
     signing = {
       key =
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK9j0vEeUJi5vv++eeMOWkIYjGy8ED7s3M4FHY7YOzXH";
       signByDefault = true;
+      format = "ssh";
+      signer = "/run/current-system/sw/bin/op-ssh-sign";
     };
     delta.enable = true;
   };
@@ -287,10 +285,6 @@ in {
       {
         name = "fzf";
         src = pkgs.fishPlugins.fzf.src;
-      }
-      {
-        name = "sponge";
-        src = pkgs.fishPlugins.sponge.src;
       }
     ];
   };

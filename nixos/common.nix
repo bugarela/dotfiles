@@ -155,8 +155,6 @@
     gcc
     binutils
 
-    ecryptfs
-    ecryptfs-helper
     utillinux
     hicolor-icon-theme
     ripgrep

@@ -1,17 +1,15 @@
 { lib, stdenv, fetchFromGitHub, nodejs, rustPlatform, makeWrapper, jre, fetchurl, buildNpmPackage, pkgs }:
 
 let
-  quintVersion = "0.24.0";
+  quintVersion = "0.25.1";
   apalacheVersion = "0.47.2";
-  evaluatorVersion = "0.1.0";
+  evaluatorVersion = "0.2.0";
 
   quintSrc = fetchFromGitHub {
     owner = "informalsystems";
     repo = "quint";
-    # rev = "v${quintVersion}";
-    # FIXME: Using a temp revision now that has Cargo.lock and QUINT_HOME
-    rev = "879a91d04428eaeb9975bad1696a98db7d8c599f";
-    sha256 = "sha256-VZqu009otqgrOwU7l4LS8yHxeDI2/+JKAL+9L96j9/s=";
+    rev = "v${quintVersion}";
+    sha256 = "sha256-CYQesIoDlIGCKXIJ/hpZqOZBVd19Or5VEKVERchJz68=";
     fetchSubmodules = true;
   };
 
@@ -20,11 +18,11 @@ let
     name = "Quint CLI";
 
     buildInputs = with pkgs; [
-      nodejs_18
+      nodejs_20
     ];
 
     src = "${quintSrc}/quint";
-    npmDepsHash = "sha256-3IX0OeM9V+33kIDjjOSeIHVjpmGloeH++6xnz2msCQk=";
+    npmDepsHash = "sha256-FYNSr5B0/oJ4PbU/HUVqSdPG8kFvq4vRFnYwwdMf+jQ=";
     npmBuildScript = "compile";
 
     # dontNpmBuild = true;
@@ -46,7 +44,7 @@ let
     doCheck = false;
 
     useFetchCargoVendor = true;
-    cargoHash = "sha256-KxJTfG9ptS+jU/QicM/dx5kMZaBQ/JzR7kSpzxhrNBU="; 
+    cargoHash = "sha256-beWqUDaWWCbGL+V1LNtf35wZrIqWCCbFLYo5HCZF7FI=";
   };
 
   # Download Apalache. It runs on the JVM, so no need to build it from source.
@@ -90,9 +88,10 @@ in stdenv.mkDerivation rec {
   '';
 
   meta = with lib; {
-    description = "A modern executable specification language based on TLA+";
+    description = "Formal specification language with TLA+ semantics";
     homepage = "https://quint-lang.org";
     license = licenses.asl20;
+    mainProgram = "quint";
     platforms = lib.platforms.unix;
     maintainers = [ bugarela ];
   };
