@@ -47,6 +47,7 @@
 (package! copilot
   :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el" "dist")))
 (package! copilot-chat)
+(package! gptel)
 
 ;; Install from my fork to include heading level on the ids and avoid duplications
 (package! ox-html-stable-ids

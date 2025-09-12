@@ -37,6 +37,7 @@
     dpi = 160;
     videoDrivers = [ "amdgpu" ];
     deviceSection = ''Option "TearFree" "true"'';
+    upscaleDefaultCursor = true;
   };
 
   hardware.amdgpu = {

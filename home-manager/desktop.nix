@@ -1,7 +1,15 @@
-{ ... }: {
+{ pkgs, ... }: {
   imports = [ ./common.nix ];
 
   programs.mangohud.enable = true;
+
+  home.packages = [
+    pkgs.lutris
+    pkgs.bottles
+    pkgs.heroic
+    pkgs.wine
+    # pkgs.tuxguitar
+  ];
 
   programs.alacritty = {
     settings = {

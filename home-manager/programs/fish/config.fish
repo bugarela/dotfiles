@@ -21,6 +21,7 @@ function fish_user_key_bindings
 end
 
 alias o='devour xdg-open'
+alias y='xclip -selection clipboard'
 
 alias gcs='git commit -S'
 alias ggpush='git push origin (current_branch)'

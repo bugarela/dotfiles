@@ -21,7 +21,7 @@
           home-manager.extraSpecialArgs = { inherit inputs outputs; };
           home-manager.useUserPackages = true;
           home-manager.useGlobalPkgs = true;
-          home-manager.backupFileExtension = "backup2";
+          home-manager.backupFileExtension = "backup6";
           home-manager.users.gabriela = import ./home-manager/${name}.nix;
         }
       ];

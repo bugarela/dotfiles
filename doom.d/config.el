@@ -42,6 +42,9 @@
       org-agenda-files '("~/org" "~/org/todos" "~/org/roam/personal" "~/org/roam/informal" "~/org/roam/daily")
       org-directory "~/org/")
 
+;; (setq org-todo-keywords
+;;       '((sequence "TODO(t)" "NEXT(n)" "STRT(s)" "|" "DONE(d)" "HOLD(h)")))
+
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
@@ -481,13 +484,13 @@ Time-stamp: <>
 
 (setq org-roam-capture-templates
       '(
-        ("i" "informal" plain "%?" ;;(file "~/org/roam/work/gabriela/stuff.org")
+        ("i" "informal" plain "%?"
          :target (file+head "informal/gabriela/%<%Y%m%d%H%M%S>-${slug}.org"
                             "#+title: ${title}\n") :unnarrowed t)
-        ("u" "udesc" plain "%?" ;;(file "~/org/roam/work/gabriela/stuff.org")
+        ("u" "udesc" plain "%?"
          :target (file+head "udesc/%<%Y%m%d%H%M%S>-${slug}.org"
                             "#+title: ${title}\n") :unnarrowed t)
-        ("p" "personal" plain "%?" ;;(file "~/org/roam/work/gabriela/stuff.org")
+        ("p" "personal" plain "%?"
          :target (file+head "personal/%<%Y%m%d%H%M%S>-${slug}.org"
                             "#+title: ${title}\n") :unnarrowed t)
         ;; ("b" "research" plain (file "~/Documents/roam/study/templates/research.org")
@@ -907,5 +910,4 @@ with overruling parameters for `org-list-to-generic'."
 
 (setq org-latex-listings-options '(("numbers" "left")))
 (setq org-latex-src-block-backend 'listings)
-
 (setq ob-mermaid-cli-path "/etc/profiles/per-user/gabriela/bin/mmdc")

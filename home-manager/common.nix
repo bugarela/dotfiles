@@ -123,10 +123,6 @@ in {
     pkgs.pinentry
     pkgs.gh
 
-    pkgs.lutris
-    pkgs.wine
-    # pkgs.tuxguitar
-
     pkgs.megacmd
     pkgs.obs-studio
     pkgs.kdePackages.okular
@@ -169,10 +165,17 @@ in {
     pkgs.cargo
 
     pkgs.zed-editor
-
     pkgs.openai-whisper
+    pkgs.claude-code
+
     pkgs.parallel
     pkgs.presenterm
+
+    pkgs.element-desktop
+    pkgs.element-web
+
+    # Terminal PDF viewer
+    pkgs.tdf
   ];
 
   programs.emacs = {
@@ -258,10 +261,15 @@ in {
 
       ui = {
         pager = "${pkgs.delta}/bin/delta";
-        diff-editor = "${pkgs.meld}/bin/meld";
-        diff = {
-          format = "git";
-        };
+        # diff-editor = "${pkgs.meld}/bin/meld";
+        diff-formatter = ":git";
+      };
+
+      aliases = {
+        local = ["log" "-r" "remote_bookmarks().."];
+        f = ["git" "fetch"];
+        push = ["git" "push" "&&" "jj" "new"];
+        back = ["edit" "-r" "@-"];
       };
     };
   };
@@ -447,10 +455,12 @@ in {
   };
 
   home.pointerCursor = {
-    package = pkgs.qogir-theme;
-    name = "Qogir-dark";
-    size = 28;
-    x11.enable = false;
+    enable = true;
+    name = "Vimix-white-cursors";
+    package = pkgs.vimix-cursors;
+    size = 48;
+    gtk.enable = true;
+    x11.enable = true;
   };
 
   # Autoload nix shells
@@ -508,4 +518,11 @@ in {
   };
 
   programs.direnv.nix-direnv.enable = true;
+
+  xdg.mimeApps.defaultApplications = {
+    "application/pdf" = [
+      "okular.desktop"
+    ];
+    "x-scheme-handler/io.element.desktop" = pkgs.element-desktop.desktopItem.name;
+  };
 }
