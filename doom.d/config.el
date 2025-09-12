@@ -911,3 +911,4 @@ with overruling parameters for `org-list-to-generic'."
 (setq org-latex-listings-options '(("numbers" "left")))
 (setq org-latex-src-block-backend 'listings)
 (setq ob-mermaid-cli-path "/etc/profiles/per-user/gabriela/bin/mmdc")
+(setq standard-indent 2)

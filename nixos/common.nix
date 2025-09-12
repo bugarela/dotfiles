@@ -289,7 +289,7 @@
 
   services.udev.packages = [ pkgs.headsetcontrol ];
 
-  systemd.services.nix-daemon.serviceConfig.EnvironmentFile = "/etc/nixos/nix-daemon-environment";
+  # systemd.services.nix-daemon.serviceConfig.EnvironmentFile = "/etc/nixos/nix-daemon-environment";
 
   # https://nixos.wiki/wiki/Dropbox
   # systemd.user.services.dropbox = {

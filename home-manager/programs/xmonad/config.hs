@@ -136,7 +136,7 @@ myStartupHook = do
   spawnOnce "xsetroot -cursor_name left_ptr"
   spawnOnce "gromit-mpx &"
   spawnOnce "xset r rate 200 30"
-  spawnOnce "fish -c init-polybar"
+  spawnOnce "fish -C init-polybar"
   spawnOnce "nm-applet"
   spawnOnce "amixer -D default"
 
@@ -412,6 +412,27 @@ xmobarEscape = concatMap doubleLts
     doubleLts x = [x]
 
 myWorkspaces = ["www", "vid", "fm", "dev", "chat", "sys", "bg", "code", "misc"]
+moveToWorkspace :: String -> Int -> X ()
+moveToWorkspace appName workspace = do
+  ws <- gets windowset
+  let allWindows = W.allWindows ws  -- Get all windows
+  forM_ allWindows $ \w -> do
+    className <- runQuery className w
+    when (className == appName) $
+      windows (W.shiftWin (myWorkspaces !! workspace) w)
+
+moveStuff :: X ()
+moveStuff = do
+  moveToWorkspace "Slack" 4
+  moveToWorkspace "firefox" 0
+  moveToWorkspace "emacs" 7
+  moveToWorkspace "1Password" 6
+
+-- moveStuff =  runQuery (composeAll
+--     [ className =? "Slack" --> doShift (myWorkspaces !! 4)
+--     , className =? "firefox" --> doShift (myWorkspaces !! 0)
+--     , className =? "emacs" --> doShift (myWorkspaces !! 6)
+--     ]) windows
 
 myKeysP :: [(String, X ())]
 myKeysP =
@@ -457,6 +478,7 @@ myKeysP =
     ("M-C-s", killAllOtherCopies),
     -- Layouts
     ("M-<Tab>", sendMessage NextLayout), -- Switch to next layout
+    ("M-S-<Tab>", moveStuff),
     ("M-C-M1-<Up>", sendMessage Arrange),
     ("M-C-M1-<Down>", sendMessage DeArrange),
     ("M-f", sendMessage (MT.Toggle NBFULL) >> sendMessage ToggleStruts), -- Toggles noborder/full
