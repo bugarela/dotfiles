@@ -130,7 +130,7 @@ in {
     pkgs.mpv
     pkgs.ffmpeg
     # video editor
-    pkgs.openshot-qt
+    # pkgs.openshot-qt
 
     pkgs.zoom-us
 
@@ -150,7 +150,7 @@ in {
 
     pkgs.tree-sitter
 
-    pkgs.betterlockscreen
+    pkgs.i3lock-fancy
     pkgs.headsetcontrol
 
     pkgs.tlaplus18
@@ -270,6 +270,7 @@ in {
         f = ["git" "fetch"];
         push = ["git" "push" "&&" "jj" "new"];
         back = ["edit" "-r" "@-"];
+        md = ["diff" "-f" "main@origin" "-t" "@"];
       };
     };
   };
@@ -524,5 +525,11 @@ in {
       "okular.desktop"
     ];
     "x-scheme-handler/io.element.desktop" = pkgs.element-desktop.desktopItem.name;
+  };
+
+  services.screen-locker = {
+    enable = true;
+    lockCmd = "{pkgs.i3lock-fancy}/bin/i3lock-fancy";
+    inactiveInterval = 30; # minutes before locking (separate from screen off)
   };
 }

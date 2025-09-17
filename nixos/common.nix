@@ -134,8 +134,7 @@
 
   programs.fish.enable = true;
 
-  # Automount ecrypts
-  security.pam.enableEcryptfs = true;
+  programs.i3lock.enable = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
