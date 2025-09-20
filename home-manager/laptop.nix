@@ -8,7 +8,6 @@
           x = 10;
           y = 10;
         };
-        opacity = 1;
       };
 
       font = {
@@ -16,4 +15,6 @@
       };
     };
   };
+
+  home.pointerCursor.size = 36;
 }

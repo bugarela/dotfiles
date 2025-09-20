@@ -59,7 +59,7 @@ in {
           darkreader
           vimium
           onepassword-password-manager
-          metamask
+          # metamask
         ];
       };
     };

@@ -320,7 +320,6 @@ in {
         bold.style = "Regular";
         italic.family = "Iosevka";
         italic.style = "Regular";
-        size = 14.0;
       };
 
       colors = {
@@ -459,7 +458,6 @@ in {
     enable = true;
     name = "Vimix-white-cursors";
     package = pkgs.vimix-cursors;
-    size = 48;
     gtk.enable = true;
     x11.enable = true;
   };

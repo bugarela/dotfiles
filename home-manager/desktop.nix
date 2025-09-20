@@ -23,4 +23,6 @@
       font = { size = 14.0; };
     };
   };
+
+  home.pointerCursor.size = 48;
 }
