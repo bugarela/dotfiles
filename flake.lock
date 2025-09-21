@@ -36,10 +36,27 @@
         "type": "github"
       }
     },
+    "nixpkgs-nordvpn": {
+      "locked": {
+        "lastModified": 1757253104,
+        "narHash": "sha256-EKV8uDYaZHSv/HNs5JBDBOOnbklyD/Ee2OGJmt45PVo=",
+        "owner": "different-error",
+        "repo": "nixpkgs",
+        "rev": "8be68dd84c9a313ca1fa005d9f43b308f8954f6d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "different-error",
+        "ref": "nordvpn",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "home-manager": "home-manager",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "nixpkgs-nordvpn": "nixpkgs-nordvpn"
       }
     }
   },

@@ -127,7 +127,7 @@
     isNormalUser = true;
     description = "Gabriela Moreira";
     home = "/home/gabriela";
-    extraGroups = [ "wheel" "networkmanager" "docker" "video" "plugdev" "render" ];
+    extraGroups = [ "wheel" "networkmanager" "docker" "video" "plugdev" "render" "nordvpn" ];
   };
 
   users.extraUsers.gabriela = { shell = pkgs.fish; };
@@ -223,6 +223,13 @@
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
+  # Enable NordVPN service
+  services.nordvpn.enable = true;
+
+  # Disable documentation generation to avoid issues with external modules
+  documentation.nixos.enable = false;
+
+  # Old OpenVPN configuration (commented out in favor of native NordVPN package)
   # services.openvpn.servers = {
   #   nordVPN = {
   #     config = "config /home/gabriela/dotfiles/vpn/ovpn_udp/ca1560.nordvpn.com.udp.ovpn";
