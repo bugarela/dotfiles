@@ -5,6 +5,8 @@
   xsession.profileExtra = ''
     export DOOM_FONT_SIZE=32
     export DOOM_BIG_FONT_SIZE=42
+    export POLYBAR_DPI=192
+    export POLYBAR_PADDING_RIGHT=40
   '';
 
   # For shell-spawned applications like Polybar

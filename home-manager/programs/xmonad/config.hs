@@ -136,7 +136,7 @@ myStartupHook = do
   spawnOnce "xsetroot -cursor_name left_ptr"
   spawnOnce "gromit-mpx &"
   spawnOnce "xset r rate 200 30"
-  spawnOnce "fish -C init-polybar"
+  spawnOnce "/home/gabriela/dotfiles/home-manager/programs/xmonad/init-polybar.sh"
   spawnOnce "nm-applet"
   spawnOnce "amixer -D default"
 
@@ -425,14 +425,12 @@ moveStuff :: X ()
 moveStuff = do
   moveToWorkspace "Slack" 4
   moveToWorkspace "firefox" 0
+  moveToWorkspace "google-chrome" 0
   moveToWorkspace "emacs" 7
-  moveToWorkspace "1Password" 6
-
--- moveStuff =  runQuery (composeAll
---     [ className =? "Slack" --> doShift (myWorkspaces !! 4)
---     , className =? "firefox" --> doShift (myWorkspaces !! 0)
---     , className =? "emacs" --> doShift (myWorkspaces !! 6)
---     ]) windows
+  moveToWorkspace "1Password" 8
+  moveToWorkspace "megasync" 8
+  spawn "/home/gabriela/dotfiles/home-manager/programs/xmonad/init-polybar.sh"
+  spawn "xmonad --restart"
 
 myKeysP :: [(String, X ())]
 myKeysP =
