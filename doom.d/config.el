@@ -24,8 +24,10 @@
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 (setq doom-theme 'doom-moonlight)
-(setq doom-font (font-spec :family "Iosevka" :size 16))
-(setq doom-big-font (font-spec :family "Iosevka" :size 24))
+(setq doom-font (font-spec :family "Iosevka"
+                          :size (string-to-number (or (getenv "DOOM_FONT_SIZE") "16"))))
+(setq doom-big-font (font-spec :family "Iosevka"
+                              :size (string-to-number (or (getenv "DOOM_BIG_FONT_SIZE") "24"))))
 (setq doom-variable-pitch-font (font-spec :family "Iosevka" :size 20))
 
 ;; (push "~/nix-configs/.doom.d/themes/emacs-material-ocean" custom-theme-load-path)

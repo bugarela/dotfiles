@@ -1,6 +1,16 @@
 { pkgs, ... }: {
   imports = [ ./common.nix ];
 
+  # For X-spawned applications like Doom Emacs
+  xsession.profileExtra = ''
+    export DOOM_FONT_SIZE=32
+    export DOOM_BIG_FONT_SIZE=42
+  '';
+
+  # For shell-spawned applications like Polybar
+  home.sessionVariables.POLYBAR_DPI = "192";
+  home.sessionVariables.POLYBAR_PADDING_RIGHT = "40";
+
   programs.mangohud.enable = true;
 
   home.packages = [
