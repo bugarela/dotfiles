@@ -7,7 +7,7 @@
 
   # Xserver basic
   services.xserver = {
-    dpi = 80;
+    dpi = 124;
     videoDrivers = [ "mesa" ];
   };
 

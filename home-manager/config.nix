@@ -1,1 +1,0 @@
-/home/gabriela/nix-configs/home-manager/desktop.nix
