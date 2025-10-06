@@ -44,13 +44,13 @@
       org-agenda-files '("~/org" "~/org/todos" "~/org/roam/personal" "~/org/roam/informal" "~/org/roam/daily")
       org-directory "~/org/")
 
+
 ;; (setq org-todo-keywords
 ;;       '((sequence "TODO(t)" "NEXT(n)" "STRT(s)" "|" "DONE(d)" "HOLD(h)")))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
-
 
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
@@ -608,6 +608,8 @@ Time-stamp: <>
               ("C-TAB" . 'copilot-accept-completion-by-word)
               ("C-<tab>" . 'copilot-accept-completion-by-word)))
 
+(setq copilot-language-server "/home/gabriela/.npm/bin/copilot-language-server")
+
 ;; (use-package treesit-auto
 ;;   :config
 ;;   (global-treesit-auto-mode))
@@ -904,7 +906,6 @@ with overruling parameters for `org-list-to-generic'."
 (setq shell-file-name (executable-find
       "bash"))
 
-(setq copilot-language-server "/home/gabriela/.npm/bin/copilot-language-server")
 (setq LaTeX-command "xelatex")
 
 ;; Avoid issues with BEAMER: \end{frame} in org-mode beamer export

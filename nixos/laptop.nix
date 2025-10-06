@@ -7,7 +7,7 @@
 
   # Xserver basic
   services.xserver = {
-    dpi = 124;
+    dpi = 144;
     videoDrivers = [ "mesa" ];
   };
 
@@ -16,11 +16,11 @@
   services.acpid.enable = true;
   services.acpid.handlers = {
     brightness-up = {
-      action = "/run/current-system/sw/bin/light -A 30";
+      action = "/run/current-system/sw/bin/light -A 5";
       event = "video/brightnessup.*";
     };
     brightness-down = {
-      action = "/run/current-system/sw/bin/light -U 30";
+      action = "/run/current-system/sw/bin/light -U 5";
       event = "video/brightnessdown.*";
     };
   };

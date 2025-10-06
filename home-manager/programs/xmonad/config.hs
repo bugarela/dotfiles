@@ -130,7 +130,7 @@ myStartupHook = do
   spawnOnce "1password &"
   spawnOnce "setxkbmap -layout us -variant altgr-intl -option caps:swapescape &"
   setWMName "LG3D"
-  spawnOnce "firefox"
+  spawnOnce "google-chrome-stable"
   spawnOnce "slack"
   spawnOnce "flameshot"
   spawnOnce "xsetroot -cursor_name left_ptr"
@@ -425,8 +425,8 @@ moveStuff :: X ()
 moveStuff = do
   moveToWorkspace "Slack" 4
   moveToWorkspace "firefox" 0
-  moveToWorkspace "google-chrome" 0
-  moveToWorkspace "emacs" 7
+  moveToWorkspace "google-chrome-stable" 0
+  moveToWorkspace "Emacs" 7
   moveToWorkspace "1Password" 8
   moveToWorkspace "megasync" 8
   spawn "/home/gabriela/dotfiles/home-manager/programs/xmonad/init-polybar.sh"
