@@ -608,7 +608,7 @@ Time-stamp: <>
               ("C-TAB" . 'copilot-accept-completion-by-word)
               ("C-<tab>" . 'copilot-accept-completion-by-word)))
 
-(setq copilot-language-server "/home/gabriela/.npm/bin/copilot-language-server")
+(setq copilot-server-executable "/home/gabriela/.npm/bin/copilot-language-server")
 
 ;; (use-package treesit-auto
 ;;   :config
@@ -915,3 +915,5 @@ with overruling parameters for `org-list-to-generic'."
 (setq org-latex-src-block-backend 'listings)
 (setq ob-mermaid-cli-path "/etc/profiles/per-user/gabriela/bin/mmdc")
 (setq standard-indent 2)
+
+(setq mouse-wheel-tilt-scroll t)

@@ -3,7 +3,10 @@
 
   networking.hostName = "bugarela"; # Define your hostname.
 
-  services.libinput.touchpad.naturalScrolling = true;
+  services.libinput.touchpad = {
+    naturalScrolling = true;
+    accelSpeed = "+0.5";
+  };
 
   # Xserver basic
   services.xserver = {
