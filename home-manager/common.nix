@@ -170,6 +170,7 @@ in {
 
     pkgs.parallel
     pkgs.presenterm
+    pkgs.typst
 
     pkgs.element-desktop
     pkgs.element-web
