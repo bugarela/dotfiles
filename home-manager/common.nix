@@ -86,7 +86,6 @@ in {
 
     pkgs.inxi
     pkgs.pciutils
-    pkgs.glxinfo
     pkgs.lm_sensors
 
     (pkgs.aspellWithDicts (d: [ d.en d.pt_BR ]))
@@ -101,9 +100,9 @@ in {
     pkgs.vivaldi-ffmpeg-codecs
     pkgs.google-chrome
 
-    pkgs.tdesktop
+    pkgs.telegram-desktop
     pkgs.discord
-    pkgs.whatsapp-for-linux
+    pkgs.wasistlos # whatsapp
     pkgs.slack
     pkgs.zulip
     pkgs.signal-desktop
@@ -120,7 +119,7 @@ in {
     pkgs.nix-prefetch-git
 
     pkgs.pass
-    pkgs.pinentry
+    pkgs.pinentry-curses
     pkgs.gh
 
     pkgs.megacmd
@@ -220,6 +219,11 @@ in {
   # home.file.".npmrc".text = ''
   #   prefix=~/.npm
   # '';
+
+  home.file.".git/info/exclude".text =''
+    .env
+    **/.direnv
+  '';
 
   programs.git = {
     enable = true;
