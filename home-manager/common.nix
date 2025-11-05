@@ -22,6 +22,7 @@ let
   };
 
   wiremix = import ./programs/wiremix/default.nix {};
+  voice-record = import ./programs/voice-record/default.nix {};
 in {
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
@@ -55,6 +56,7 @@ in {
 
   home.packages = [
     wiremix
+    voice-record
 
     pkgs.ripgrep
     pkgs.bat
