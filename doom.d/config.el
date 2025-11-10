@@ -917,3 +917,7 @@ with overruling parameters for `org-list-to-generic'."
 (setq standard-indent 2)
 
 (setq mouse-wheel-tilt-scroll t)
+(require 'typst-ts-mode)
+(add-to-list 'auto-mode-alist '("\\.typ\\'" . typst-ts-mode))
+(setq typst-ts-grammar-location "/nix/store/arlq84nfhbqkfsh841mn45frva7rrig4-tree-sitter-typst-grammar-0.25.10")
+(setq  typst-ts-preview-function 'find-file-other-window)

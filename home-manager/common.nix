@@ -178,6 +178,9 @@ in {
 
     # Terminal PDF viewer
     pkgs.tdf
+    # Integrated language service for Typst
+    pkgs.tinymist
+    pkgs.tree-sitter-grammars.tree-sitter-typst
   ];
 
   programs.emacs = {

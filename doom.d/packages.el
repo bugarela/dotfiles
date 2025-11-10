@@ -59,6 +59,11 @@
 (package! tla-input
   :recipe (:host github :repo "bugarela/tla-input" :files ("*.el")))
 
+(package! typst-mode
+  :recipe (:host codeberg :repo "meow_king/typst-ts-mode" ))
+(package! typst-preview
+  :recipe (:host github :repo "havarddj/typst-preview.el"))
+
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;; (package! some-package)
 

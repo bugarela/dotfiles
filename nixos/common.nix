@@ -193,6 +193,7 @@
     iosevka
     etBook
     emacs-all-the-icons-fonts
+    inter
 
     nerd-fonts.droid-sans-mono
     nerd-fonts.mononoki
