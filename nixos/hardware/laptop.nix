@@ -19,6 +19,9 @@
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
+  # For hibernation
+  boot.resumeDevice = "/dev/dm-1";
+
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/9000d174-d85a-43ea-8cad-6a8c80736859";
       fsType = "ext4";

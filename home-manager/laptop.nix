@@ -1,4 +1,4 @@
-{ ... }: {
+{ pkgs, ... }: {
   imports = [ ./common.nix ];
 
   # For X-spawned applications like Doom Emacs
@@ -20,6 +20,10 @@
   home.sessionVariables.QT_AUTO_SCREEN_SCALE_FACTOR = "1";
   home.sessionVariables.GDK_SCALE = "1.5";
   home.sessionVariables.GDK_DPI_SCALE = "1.0";
+
+  home.packages = [
+    pkgs.powertop
+  ];
 
   programs.alacritty = {
     settings = {
