@@ -55,8 +55,15 @@
     powertop.enable = true;
   };
 
-  services.logind.lidSwitch = "hibernate";
+  services.logind.lidSwitch = "suspend";
   services.logind.lidSwitchExternalPower = "lock";
   services.logind.lidSwitchDocked = "ignore";
 
+  services.fprintd.enable = true;
+  security.pam.services = {
+    login.fprintAuth = true;
+    sudo.fprintAuth = true;
+    lightdm.fprintAuth = true;
+    polkit-1.fprintAuth = true;
+  };
 }
