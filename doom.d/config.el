@@ -91,8 +91,6 @@
 
 (server-start)
 (require 'org-tempo)
-;; (setq org-bullets-bullet-list '("› "))
-;; (add-hook 'org-mode-hook 'org-bullets-mode)
 
 ;; (setq org-gcal-recurring-events-mode 'nested)
 ;; (setq org-gcal-remove-api-cancelled-events t)
@@ -718,9 +716,6 @@ Time-stamp: <>
 (font-lock-add-keywords 'org-mode
                         '(("^ *\\([-]\\) "
                            (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
-(use-package org-bullets
-  :config
-  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 
 ;; (let* ((variable-tuple
 ;;         (cond ((x-list-fonts "ETBembo")         '(:font "ETBembo"))
@@ -921,3 +916,5 @@ with overruling parameters for `org-list-to-generic'."
 (add-to-list 'auto-mode-alist '("\\.typ\\'" . typst-ts-mode))
 (setq typst-ts-grammar-location "/nix/store/arlq84nfhbqkfsh841mn45frva7rrig4-tree-sitter-typst-grammar-0.25.10")
 (setq  typst-ts-preview-function 'find-file-other-window)
+
+(setq org-modern-star "replace")

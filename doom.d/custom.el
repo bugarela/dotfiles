@@ -5,7 +5,8 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(safe-local-variable-values
-   '((typst-preview--master-file
+   '((typst-ts-mode-compile-options . "--root ../..")
+     (typst-preview--master-file
       . "/home/gabriela/projects/quint-slides-typst/w3st.typ"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

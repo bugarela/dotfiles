@@ -131,6 +131,7 @@ in {
     pkgs.mpv
     pkgs.ffmpeg
     # video editor
+    pkgs.kdePackages.kdenlive
     # pkgs.openshot-qt
 
     pkgs.zoom-us

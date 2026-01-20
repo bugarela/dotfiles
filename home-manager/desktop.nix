@@ -21,6 +21,8 @@
     pkgs.heroic
     pkgs.wine
     # pkgs.tuxguitar
+
+    pkgs.ollama
   ];
 
   programs.alacritty = {
