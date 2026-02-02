@@ -45,8 +45,46 @@
       org-directory "~/org/")
 
 
-;; (setq org-todo-keywords
-;;       '((sequence "TODO(t)" "NEXT(n)" "STRT(s)" "|" "DONE(d)" "HOLD(h)")))
+(setq org-todo-keywords
+      '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")))
+
+;; Tags for inbox workflow
+(setq org-tag-alist '((:startgroup . nil)
+                      ("today" . ?t)
+                      ("next" . ?n)
+                      ("someday" . ?s)
+                      (:endgroup . nil)))
+
+;; Function to read agenda overview header file
+(defun my/agenda-overview-header ()
+  "Read the agenda overview file and return its contents for display."
+  (let ((file "~/MEGA/org/roam/personal/20260120102010-agenda_overview.org"))
+    (if (file-exists-p file)
+        (with-temp-buffer
+          (insert-file-contents file)
+          ;; Remove org-mode metadata lines (#+TITLE, etc.)
+          (goto-char (point-min))
+          (while (re-search-forward "^#\\+[A-Z_]+:.*\n" nil t)
+            (replace-match ""))
+          ;; Remove PROPERTIES drawers
+          (goto-char (point-min))
+          (while (re-search-forward ":PROPERTIES:\n\\(?:.*\n\\)*?:END:\n" nil t)
+            (replace-match ""))
+          (concat "\n" (string-trim (buffer-string)) "\n\n"))
+      "")))
+
+;; Custom agenda commands for inbox workflow
+(setq org-agenda-custom-commands
+      '(("o" "Overview"
+         ((tags-todo "today"
+                     ((org-agenda-overriding-header
+                       (concat (my/agenda-overview-header) "📅 Today\n---"))))
+          (tags-todo "next"
+                     ((org-agenda-overriding-header "\n📆 Next 5 Days\n---")))
+          (todo "TODO|NEXT"
+                ((org-agenda-overriding-header "\n📋 Other Tasks\n---")
+                 (org-agenda-skip-function
+                  '(org-agenda-skip-entry-if 'regexp ":today:\\|:next:"))))))))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.

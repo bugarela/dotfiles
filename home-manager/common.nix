@@ -274,14 +274,17 @@ in {
         pager = "${pkgs.delta}/bin/delta";
         # diff-editor = "${pkgs.meld}/bin/meld";
         diff-formatter = ":git";
+        default-command = ["log" "-n" "10"];
       };
+
 
       aliases = {
         local = ["log" "-r" "remote_bookmarks().."];
         f = ["git" "fetch"];
         push = ["git" "push" "&&" "jj" "new"];
         back = ["edit" "-r" "@-"];
-        md = ["diff" "-f" "main@origin" "-t" "@"];
+        md = ["diff" "-f" "trunk()" "-t" "@"];
+        rb = ["rebase" "-s" "base" "-d" "trunk()"];
       };
     };
   };
@@ -540,5 +543,14 @@ in {
     enable = true;
     lockCmd = "{pkgs.i3lock-fancy}/bin/i3lock-fancy";
     inactiveInterval = 30; # minutes before locking (separate from screen off)
+  };
+
+  programs.ssh = {
+    enable = true;
+    extraConfig = ''
+      Host *
+        ServerAliveInterval 60
+        ServerAliveCountMax 30
+   '';
   };
 }
