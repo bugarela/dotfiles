@@ -1,6 +1,13 @@
 { config, pkgs, lib, fetchFromGithub, ... }:
 
 let
+  treesit-grammars = pkgs.emacsPackages.treesit-grammars.with-grammars (grammars: with grammars; [
+    tree-sitter-typescript
+    tree-sitter-tsx
+    tree-sitter-javascript
+    tree-sitter-typst
+  ]);
+
   bg = "#3b224c";
   bgFade = "#5A3D6E";
   fg = "#CECECE";
@@ -44,6 +51,7 @@ in {
     EMACSDIR = "$HOME/.emacs.d";
     # DOOMLOCALDIR = "$HOME/._local";
     DIRENV_ALLOW_NIX = 1;
+    TREESIT_GRAMMAR_PATH = "${treesit-grammars}/lib";
   };
 
   # home.activation = {
@@ -181,7 +189,9 @@ in {
     pkgs.tdf
     # Integrated language service for Typst
     pkgs.tinymist
-    pkgs.tree-sitter-grammars.tree-sitter-typst
+
+    # Tree-sitter grammars for Emacs
+    treesit-grammars
   ];
 
   programs.emacs = {

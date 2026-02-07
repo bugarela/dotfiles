@@ -3,6 +3,13 @@
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
 
+;; Tree-sitter grammars from Nix
+(when-let ((grammar-path (getenv "TREESIT_GRAMMAR_PATH")))
+  (add-to-list 'treesit-extra-load-path grammar-path))
+;; Fallback: find grammars in nix store
+(dolist (dir (file-expand-wildcards "/nix/store/*-emacs-treesit-grammars/lib"))
+  (add-to-list 'treesit-extra-load-path dir))
+
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
@@ -626,7 +633,6 @@ Time-stamp: <>
   :hook (quint-mode . lsp))
 
 (add-hook 'typescript-ts-mode-hook 'prettier-mode)
-;; (add-hook 'typescript-ts-mode-hook 'lsp-mode)
 
 (defun my-haskell-mode-hook ()
   (hindent-mode)
