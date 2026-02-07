@@ -111,9 +111,10 @@
 (load-file "~/org/org-thtml/ox-thtml.el")
 (require 'ox-thtml)
 
-(require 'ox-html-stable-ids)
-(org-html-stable-ids-add)
-(setq org-html-stable-ids t)
+(after! ox-html
+  (require 'ox-html-stable-ids)
+  (org-html-stable-ids-add)
+  (setq org-html-stable-ids t))
 ;; (load-file "~/.emacs.d/private/local/tla-mode/tla-mode.el")
 ;; (load-file "~/.emacs.d/private/local/tla+-mode/tla+-mode.el")
 ;; (load-file "~/.emacs.d/private/local/tokens.el")
@@ -251,12 +252,12 @@
       (cond
        ((looking-at-p "null"))
        ((save-excursion (skip-chars-backward "[0-9.]") (looking-at json-mode-number-re))
-        -region (match-beginning 0) (match-end 0)))
-      (t (kill-region (car symbol) (cdr symbol)))))
-    ((< 0 (nth 0 syntax))
-     (goto-char (nth 1 syntax))
-     (kill-sexp))
-    (t nil)))
+        (kill-region (match-beginning 0) (match-end 0)))
+       (t (kill-region (car symbol) (cdr symbol)))))
+     ((< 0 (nth 0 syntax))
+      (goto-char (nth 1 syntax))
+      (kill-sexp))
+     (t nil))))
 
 (use-package! pinentry
   :init (setq epg-pinentry-mode `loopback)
