@@ -147,7 +147,7 @@
     fish
     vim
     helix
-    helix-gpt
+    # helix-gpt
     xclip
     home-manager
     gnupg

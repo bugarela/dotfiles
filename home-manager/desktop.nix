@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ pkgs, inputs, ... }: {
   imports = [ ./common.nix ];
 
   # For X-spawned applications like Doom Emacs
@@ -22,8 +22,17 @@
     pkgs.wine
     # pkgs.tuxguitar
 
-    pkgs.ollama
+    pkgs.opencode
   ];
+
+  services.ollama = {
+    enable = true;
+    package = inputs.nixpkgs-latest.legacyPackages.${pkgs.system}.ollama-vulkan;
+    environmentVariables = {
+      OLLAMA_FLASH_ATTENTION = "1";
+      OLLAMA_KV_CACHE_TYPE = "q8_0";
+    };
+  };
 
   programs.alacritty = {
     settings = {

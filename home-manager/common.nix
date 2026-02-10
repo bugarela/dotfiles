@@ -476,6 +476,7 @@ in {
       name = "rose-pine";
       package = pkgs.rose-pine-gtk-theme;
     };
+    gtk3.extraConfig.gtk-application-prefer-dark-theme = true;
   };
 
   home.pointerCursor = {

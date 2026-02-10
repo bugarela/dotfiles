@@ -3,6 +3,8 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    # Latest nixpkgs for bleeding-edge packages like ollama
+    nixpkgs-latest.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     # NordVPN PR branch - provides nordvpn package and module
     nixpkgs-nordvpn.url = "github:different-error/nixpkgs/nordvpn";
     # nur.url = "github:nix-community/NUR";
@@ -31,7 +33,7 @@
           home-manager.extraSpecialArgs = { inherit inputs outputs; };
           home-manager.useUserPackages = true;
           home-manager.useGlobalPkgs = true;
-          home-manager.backupFileExtension = "backup1";
+          home-manager.backupFileExtension = null;
           home-manager.users.gabriela = import ./home-manager/${name}.nix;
         }
         # Apply nordvpn overlay
