@@ -452,56 +452,12 @@
    org-ref-notes-directory org_notes
    org-ref-notes-function 'orb-edit-notes
    ))
-;; (use-package org-roam
-;;   :hook (org-load . org-roam-mode)
-;;   :commands (org-roam-buffer-toggle-display
-;;              org-roam-find-file
-;;              org-roam-graph
-;;              org-roam-insert
-;;              org-roam-switch-to-buffer
-;;              org-roam-dailies-date
-;;              org-roam-dailies-today
-;;              org-roam-dailies-tomorrow
-;;              org-roam-dailies-yesterday)
-;;   :preface
-;;   ;; Set this to nil so we can later detect whether the user has set a custom
-;;   ;; directory for it, and default to `org-directory' if they haven't.
-;;   (defvar org-roam-directory nil)
-;;   :init
-;;   :config
-;;   (setq org-roam-directory (expand-file-name (or org-roam-directory "roam")
-;;                                              org-directory)
-;;         org-roam-verbose nil  ; https://youtu.be/fn4jIlFwuLU
-;;         org-roam-buffer-no-delete-other-windows t ; make org-roam buffer sticky
-;;         org-roam-completion-system 'default
-;;         )
-
-;;   ;; Normally, the org-roam buffer doesn't open until you explicitly call
-;;   ;; `org-roam'. If `+org-roam-open-buffer-on-find-file' is non-nil, the
-;;   ;; org-roam buffer will be opened for you when you use `org-roam-find-file'
-;;   ;; (but not `find-file', to limit the scope of this behavior).
-;;   (add-hook 'find-file-hook
-;;             (defun +org-roam-open-buffer-maybe-h ()
-;;               (and +org-roam-open-buffer-on-find-file
-;;                    (memq 'org-roam-buffer--update-maybe post-command-hook)
-;;                    (not (window-parameter nil 'window-side)) ; don't proc for popups
-;;                    (not (eq 'visible (org-roam-buffer--visibility)))
-;;                    (with-current-buffer (window-buffer)
-;;                      (org-roam-buffer--get-create)))))
-
-;; Hide the mode line in the org-roam buffer, since it serves no purpose. This
-;; makes it easier to distinguish among other org buffers.
-;; (add-hook 'org-roam-buffer-prepare-hook #'hide-mode-line-mode))
 
 ;; Since the org module lazy loads org-protocol (waits until an org URL is
 ;; detected), we can safely chain `org-roam-protocol' to it.
 (use-package org-roam-protocol
   :after org-protocol)
 
-(use-package company-org-roam
-  :after org-roam
-  :config
-  (set-company-backend! 'org-mode '(company-org-roam company-yasnippet company-dabbrev)))
 
 (use-package org-roam-bibtex
   :after (org-roam)
@@ -577,7 +533,9 @@ Time-stamp: <>
 
 (add-to-list 'org-export-filter-italic-functions 'my-beamer-italic)
 
-(setq omnisharp-server-executable-path "/nix/store/sfd273zm599d13simay695b3xsmm3l45-omnisharp-roslyn-1.37.8/bin/omnisharp")
+;; Use omnisharp from PATH if available
+(when-let ((omnisharp-path (executable-find "omnisharp")))
+  (setq omnisharp-server-executable-path omnisharp-path))
 
 (defun dw/org-present-prepare-slide ()
   (org-overview)
@@ -595,16 +553,14 @@ Time-stamp: <>
   (setq header-line-format " ")
   (org-appear-mode -1)
   (org-display-inline-images)
-  (dw/org-present-prepare-slide)
-  (dw/kill-panel))
+  (dw/org-present-prepare-slide))
 
 (defun dw/org-present-quit-hook ()
   (setq-local face-remapping-alist '((default variable-pitch default)))
   (setq header-line-format nil)
   (org-present-small)
   (org-remove-inline-images)
-  (org-appear-mode 1)
-  (dw/start-panel))
+  (org-appear-mode 1))
 
 (defun dw/org-present-prev ()
   (interactive)
@@ -663,56 +619,6 @@ Time-stamp: <>
  `(mode-line ((t (:background nil))))
  `(fringe ((t (:background nil)))))
 
-;; ;; https://robert.kra.hn/posts/rust-emacs-setup/
-;; (use-package rustic
-;;   :ensure
-;;   :bind (:map rustic-mode-map
-;;               ("M-j" . lsp-ui-imenu)
-;;               ("M-?" . lsp-find-references)
-;;               ("C-c C-c l" . flycheck-list-errors)
-;;               ("C-c C-c a" . lsp-execute-code-action)
-;;               ("C-c C-c r" . lsp-rename)
-;;               ("C-c C-c q" . lsp-workspace-restart)
-;;               ("C-c C-c Q" . lsp-workspace-shutdown)
-;;               ("C-c C-c s" . lsp-rust-analyzer-status))
-;;   :config
-;;   ;; uncomment for less flashiness
-;;   ;; (setq lsp-eldoc-hook nil)
-;;   ;; (setq lsp-enable-symbol-highlighting nil)
-;;   ;; (setq lsp-signature-auto-activate nil)
-
-;;   ;; comment to disable rustfmt on save
-;;   (setq rustic-format-on-save t)
-;;   (add-hook 'rustic-mode-hook 'rk/rustic-mode-hook))
-
-;; (defun rk/rustic-mode-hook ()
-;;   ;; so that run C-c C-c C-r works without having to confirm, but don't try to
-;;   ;; save rust buffers that are not file visiting. Once
-;;   ;; https://github.com/brotzeit/rustic/issues/253 has been resolved this should
-;;   ;; no longer be necessary.
-;;   (when buffer-file-name
-;;     (setq-local buffer-save-without-query t))
-;;   (add-hook 'before-save-hook 'lsp-format-buffer nil t))
-;; ;; (use-package lsp-mode
-;; ;;   :ensure
-;; ;;   :commands lsp
-;; ;;   :custom
-;; ;;   ;; what to use when checking on-save. "check" is default, I prefer clippy
-;; ;;   (lsp-rust-analyzer-cargo-watch-command "clippy")
-;; ;;   (lsp-eldoc-render-all t)
-;; ;;   (lsp-idle-delay 0.6)
-;; ;;   ;; enable / disable the hints as you prefer:
-;; ;;   (lsp-inlay-hint-enable t)
-;; ;;   ;; These are optional configurations. See https://emacs-lsp.github.io/lsp-mode/page/lsp-rust-analyzer/#lsp-rust-analyzer-display-chaining-hints for a full list
-;; ;;   ;; (lsp-rust-analyzer-display-lifetime-elision-hints-enable "skip_trivial")
-;; ;;   (lsp-rust-analyzer-display-chaining-hints t)
-;; ;;   (lsp-rust-analyzer-display-lifetime-elision-hints-use-parameter-names nil)
-;; ;;   (lsp-rust-analyzer-display-closure-return-type-hints t)
-;; ;;   (lsp-rust-analyzer-display-parameter-hints t)
-;; ;;   (lsp-rust-analyzer-display-reborrow-hints t)
-;; ;;   :config
-;; ;;   (add-hook 'lsp-mode-hook 'lsp-ui-mode))
-
 (use-package lsp-ui
   :ensure
   :commands lsp-ui-mode
@@ -720,17 +626,6 @@ Time-stamp: <>
   (lsp-ui-peek-always-show t)
   (lsp-ui-sideline-show-hover t)
   (lsp-ui-doc-enable t))
-(use-package company
-  :ensure
-  :custom
-  (company-idle-delay 0.5) ;; how long to wait until popup
-  ;; (company-begin-commands nil) ;; uncomment to disable popup
-  :bind
-  (:map company-active-map
-        ("C-n". company-select-next)
-        ("C-p". company-select-previous)
-        ("M-<". company-select-first)
-        ("M->". company-select-last)))
 
 (use-package yasnippet
   :ensure
@@ -762,50 +657,7 @@ Time-stamp: <>
                         '(("^ *\\([-]\\) "
                            (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
 
-;; (let* ((variable-tuple
-;;         (cond ((x-list-fonts "ETBembo")         '(:font "ETBembo"))
-;;               ((x-list-fonts "Iosevka")         '(:font "Iosevka"))
-;;               ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
-;;               ((x-list-fonts "Verdana")         '(:font "Verdana"))
-;;               ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
-;;               (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
-;;        (base-font-color     (face-foreground 'default nil 'default))
-;;        (headline           `(:inherit default :weight bold :foreground ,base-font-color)))
-
-;;   (custom-theme-set-faces
-;;    'user
-;;    `(org-level-8 ((t (,@headline ,@variable-tuple))))
-;;    `(org-level-7 ((t (,@headline ,@variable-tuple))))
-;;    `(org-level-6 ((t (,@headline ,@variable-tuple))))
-;;    `(org-level-5 ((t (,@headline ,@variable-tuple))))
-;;    `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.1))))
-;;    `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.25))))
-;;    `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.5))))
-;;    `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.75))))
-;;    `(org-document-title ((t (,@headline ,@variable-tuple :height 2.0 :underline nil))))))
-
-;; (custom-theme-set-faces
-;;  'user
-;;  '(variable-pitch ((t (:family "ETBembo" :height 190 :weight thin))))
-;;  '(fixed-pitch ((t ( :family "Iosevka" :height 130)))))
-;; (add-hook 'org-mode-hook 'variable-pitch-mode)
-
 (add-hook 'org-mode-hook 'visual-line-mode)
-
-;; (custom-theme-set-faces
-;;  'user
-;;  '(org-block ((t (:inherit fixed-pitch))))
-;;  '(org-code ((t (:inherit (shadow fixed-pitch)))))
-;;  '(org-document-info ((t (:foreground "dark orange"))))
-;;  '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
-;;  '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
-;;  '(org-link ((t (:foreground "royal blue" :underline t))))
-;;  '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
-;;  '(org-property-value ((t (:inherit fixed-pitch))) t)
-;;  '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
-;;  '(org-table ((t (:inherit fixed-pitch :foreground "#83a598"))))
-;;  '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
-;;  '(org-verbatim ((t (:inherit (shadow fixed-pitch))))))
 
 (add-hook 'org-mode-hook #'org-inline-pdf-mode)
 (defun org-include-img-from-pdf (&rest _)
@@ -912,34 +764,6 @@ with overruling parameters for `org-list-to-generic'."
 (after! markdown-mode
   (setq markdown-fontify-code-blocks-natively t))
 
-                                        ; (use-package lsp-copilot
-                                        ;   :load-path "~/projects/lsp-copilot"
-                                        ;   :config
-                                        ;   (add-hook! '(
-                                        ;                tsx-ts-mode-hook
-                                        ;                js-ts-mode-hook
-                                        ;                typescript-mode-hook
-                                        ;                typescript-ts-mode-hook
-                                        ;                rjsx-mode-hook
-                                        ;                less-css-mode-hook
-                                        ;                web-mode-hook
-                                        ;                python-ts-mode-hook
-                                        ;                rust-mode-hook
-                                        ;                rustic-mode-hook
-                                        ;                rust-ts-mode-hook
-                                        ;                toml-ts-mode-hook
-                                        ;                conf-toml-mode-hook
-                                        ;                bash-ts-mode-hook
-                                        ;                quint-mode-hook
-                                        ;                ) #'lsp-copilot-mode))
-
-                                        ; (set-lookup-handlers! 'lsp-copilot-mode
-                                        ;   :definition '(lsp-copilot-find-definition :async t)
-                                        ;   :references '(lsp-copilot-find-references :async t)
-                                        ;   :implementations '(lsp-copilot-find-implementations :async t)
-                                        ;   :type-definition '(lsp-copilot-find-type-definition :async t)
-                                        ;   :documentation '(lsp-copilot-describe-thing-at-point :async t))
-
 (use-package ox-typst
   :after org)
 
@@ -959,7 +783,6 @@ with overruling parameters for `org-list-to-generic'."
 (setq mouse-wheel-tilt-scroll t)
 (require 'typst-ts-mode)
 (add-to-list 'auto-mode-alist '("\\.typ\\'" . typst-ts-mode))
-(setq typst-ts-grammar-location "/nix/store/arlq84nfhbqkfsh841mn45frva7rrig4-tree-sitter-typst-grammar-0.25.10")
-(setq  typst-ts-preview-function 'find-file-other-window)
+(setq typst-ts-preview-function 'find-file-other-window)
 
 (setq org-modern-star "replace")

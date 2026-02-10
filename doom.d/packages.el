@@ -5,7 +5,6 @@
 ;; on the command line, then restart Emacs for the changes to take effect -- or
 
 (package! pinentry)
-(package! company-org-roam)
 (package! org-roam-bibtex :recipe (:host github :repo "org-roam/org-roam-bibtex"))
 (package! org-present)
 (package! org-bullets)
@@ -21,18 +20,14 @@
 (package! fish-mode)
 (package! go-projectile)
 (package! org-d20)
-; (package! flx)
 (package! hlint-refactor)
 (package! hindent)
 (package! autothemer)
 (package! ox-typst)
 (package! prettier)
-; (package! treesit-auto)
 
 (package! scroll-on-jump)
 (package! ob-mermaid)
-; (package! ox-gfm)
-; (package! sidebar :recipe (:host github :repo "sebastiencs/sidebar.el"))
 
 (package! tla-mode :recipe (:host github :repo "valschneider/tla-mode"))
 
@@ -42,7 +37,6 @@
 (package! gitignore-mode
   :recipe (:host github :repo "magit/git-modes"
            :files ("gitignore-mode.el")))
-;; (package! pymupdf-mode :recipe (:host github :repo "dalanicolai/pymupdf-mode.el"))
 
 (package! copilot
   :recipe (:host github :repo "copilot-emacs/copilot.el" :files ("*.el" "dist")))
