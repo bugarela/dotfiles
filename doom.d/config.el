@@ -584,17 +584,17 @@ Time-stamp: <>
 (load-file "~/projects/quint/editor-plugins/emacs/quint-mode.el")
 (require 'quint-mode)
 (add-to-list 'auto-mode-alist '("\\.qnt" . quint-mode))
-(load-file "~/projects/quint/editor-plugins/emacs/lsp-quint.el")
-(use-package lsp-quint
-  :hook (quint-mode . lsp))
+;; Quint: use Eglot with quint-language-server (from npm or system).
+(after! eglot
+  (add-to-list 'eglot-server-programs '(quint-mode . ("quint-language-server" "--stdio"))))
+(add-hook 'quint-mode-hook 'eglot-ensure)
 
 (add-hook 'typescript-ts-mode-hook 'prettier-mode)
 
 (defun my-haskell-mode-hook ()
   (hindent-mode)
   ;; (add-hook 'before-save-hook 'hindent-reformat-buffer)
-  (lsp-deferred)
-  )
+  (eglot-ensure))
 (add-hook 'haskell-mode-hook 'my-haskell-mode-hook)
 
 ;; accept completion from copilot and fallback to company
@@ -619,13 +619,14 @@ Time-stamp: <>
  `(mode-line ((t (:background nil))))
  `(fringe ((t (:background nil)))))
 
-(use-package lsp-ui
-  :ensure
-  :commands lsp-ui-mode
-  :custom
-  (lsp-ui-peek-always-show t)
-  (lsp-ui-sideline-show-hover t)
-  (lsp-ui-doc-enable t))
+;; Eglot: no file watchers, rely on project root (Projectile/VC).
+(after! eglot
+  (setq eglot-autoshutdown t))
+
+;; Rust: Flycheck-only diagnostics (no Eglot/Flymake), keep Eglot for navigation/completion.
+(after! rust-mode
+  (setq-local flycheck-checker 'rust-cargo)
+  (setq-local eglot-stay-out-of '(flymake)))
 
 (use-package yasnippet
   :ensure
@@ -645,7 +646,6 @@ Time-stamp: <>
 
 (setq org-latex-pdf-process '("bash -c 'rm -f %b.log; pdflatex -interaction nonstopmode -output-directory %o %f; while (grep -e \"Rerun .* cross-references\" %o/%b.log > /dev/null); do rm -f %b.log; pdflatex -interaction nonstopmode -output-directory %o %f; done'"))
 
-(setq lsp-completion-provider :capf)
 (setq org-cite-export-processors nil);;'((t . (csl "~/MEGA/org/roam/udesc/exported-org-files/abntex2.cls"))))
 (setq org-export-allow-bind-keywords t)
 (require 'ox-extra)
