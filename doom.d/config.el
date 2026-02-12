@@ -584,10 +584,27 @@ Time-stamp: <>
 (load-file "~/projects/quint/editor-plugins/emacs/quint-mode.el")
 (require 'quint-mode)
 (add-to-list 'auto-mode-alist '("\\.qnt" . quint-mode))
-;; Quint: use Eglot with quint-language-server (from npm or system).
-(after! eglot
-  (add-to-list 'eglot-server-programs '(quint-mode . ("quint-language-server" "--stdio"))))
-(add-hook 'quint-mode-hook 'eglot-ensure)
+
+;; Quint: Eglot + quint-language-server. Register and start only after eglot is loaded.
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               (cons 'quint-mode
+                     (lambda (&optional _interactive)
+                       (if (executable-find "quint-language-server")
+                           '("quint-language-server" "--stdio")
+                         '("npx" "-y" "@informalsystems/quint-language-server" "--stdio")))))
+  (add-hook 'quint-mode-hook #'my/quint-eglot-ensure))
+
+(defun my/quint-eglot-ensure ()
+  "Start Eglot for Quint, deferred so buffer and server list are ready."
+  (when buffer-file-name
+    (run-with-idle-timer
+     0 nil
+     (lambda ()
+       (when (and (buffer-live-p (current-buffer))
+                  (derived-mode-p 'quint-mode)
+                  (not (eglot--managed-p (current-buffer))))
+         (eglot-ensure))))))
 
 (add-hook 'typescript-ts-mode-hook 'prettier-mode)
 
