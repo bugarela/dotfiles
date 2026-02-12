@@ -623,6 +623,15 @@ Time-stamp: <>
 (after! eglot
   (setq eglot-autoshutdown t))
 
+;; Strip :cancel-on-quit from jsonrpc-request (eglot passes it but jsonrpc no longer accepts it).
+(with-eval-after-load 'jsonrpc
+  (defun my/jsonrpc-request-strip-cancel-on-quit (orig connection method params &rest args)
+    (let ((filtered
+           (cl-loop for (k v) on args by #'cddr
+                    unless (eq k :cancel-on-quit) collect k and collect v)))
+      (apply orig connection method params filtered)))
+  (advice-add #'jsonrpc-request :around #'my/jsonrpc-request-strip-cancel-on-quit))
+
 ;; Rust: Flycheck-only diagnostics (no Eglot/Flymake), keep Eglot for navigation/completion.
 (after! rust-mode
   (setq-local flycheck-checker 'rust-cargo)
