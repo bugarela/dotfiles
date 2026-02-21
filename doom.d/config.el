@@ -10,7 +10,6 @@
 (dolist (dir (file-expand-wildcards "/nix/store/*-emacs-treesit-grammars/lib"))
   (add-to-list 'treesit-extra-load-path dir))
 
-
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
 
@@ -30,16 +29,18 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-moonlight)
+;; (setq doom-theme 'doom-moonlight)
+
+(push (expand-file-name "themes" doom-user-dir) custom-theme-load-path)
+(push (expand-file-name "themes" doom-user-dir) load-path)
+(setq doom-theme 'doom-bugarela)
+ 
 (setq doom-font (font-spec :family "Iosevka"
                           :size (string-to-number (or (getenv "DOOM_FONT_SIZE") "16"))))
 (setq doom-big-font (font-spec :family "Iosevka"
                               :size (string-to-number (or (getenv "DOOM_BIG_FONT_SIZE") "24"))))
 (setq doom-variable-pitch-font (font-spec :family "Iosevka" :size 20))
 
-;; (push "~/nix-configs/.doom.d/themes/emacs-material-ocean" custom-theme-load-path)
-;; (push "~/nix-configs/.doom.d/themes/emacs-material-ocean" load-path)
-;; (load-theme 'material-ocean t)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -122,13 +123,6 @@
   (require 'ox-html-stable-ids)
   (org-html-stable-ids-add)
   (setq org-html-stable-ids t))
-;; (load-file "~/.emacs.d/private/local/tla-mode/tla-mode.el")
-;; (load-file "~/.emacs.d/private/local/tla+-mode/tla+-mode.el")
-;; (load-file "~/.emacs.d/private/local/tokens.el")
-;; (load-file "~/.emacs.d/private/local/literature.el")
-;; (load-file "~/.emacs.d/private/local/ob-haskell.el")
-;; (load-file "~/.emacs.d/private/local/ob-go.el")
-;; (add-to-list 'load-path "~/.emacs.d/private" "~/.emacs.d/tla-tools")
 
 (setq shell-file-name (executable-find "bash"))
 
@@ -138,8 +132,6 @@
 (server-start)
 (require 'org-tempo)
 
-;; (setq org-gcal-recurring-events-mode 'nested)
-;; (setq org-gcal-remove-api-cancelled-events t)
 (setq org-agenda-time-grid (quote ((daily today require-timed)
                                    (700
                                     800
@@ -167,7 +159,6 @@
             (let ((filename (buffer-file-name (current-buffer))))
               (when (and filename (string= "trello" (file-name-extension filename)))
                 (org-trello-mode)))))
-;; (use-package org-gcal :ensure t)
 
 (add-to-list 'org-babel-load-languages '(ledger . t))
 (with-eval-after-load 'ox-latex
