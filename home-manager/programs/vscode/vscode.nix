@@ -126,7 +126,4 @@
         }
       ];
   };
-
-  home.file.".vscode/extensions/.obsolete".text = "";
-  home.file.".vscode/extensions/.obsolete".executable = false;
 }

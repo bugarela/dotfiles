@@ -20,6 +20,7 @@ let
   cyan = "#23acdd";
   white = "#f0f0f0";
   orange = "#D678B5";
+  cursor = "#a586ba";
 
   pkgs2405 = import (builtins.fetchTarball {
     url = "https://github.com/NixOS/nixpkgs/archive/refs/tags/24.05.tar.gz";
@@ -353,7 +354,7 @@ in {
         };
         cursor = {
           text = "#0E1415";
-          cursor = bgFade;
+          cursor = cursor;
         };
         normal = {
           black = black;
