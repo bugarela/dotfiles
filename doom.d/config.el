@@ -86,11 +86,11 @@
       '(("o" "Overview"
          ((tags-todo "today"
                      ((org-agenda-overriding-header
-                       (concat (my/agenda-overview-header) "📅 Today\n---"))))
+                       (concat (my/agenda-overview-header) "Today"))))
           (tags-todo "next"
-                     ((org-agenda-overriding-header "\n📆 Next 5 Days\n---")))
+                     ((org-agenda-overriding-header "Next 5 Days")))
           (todo "TODO|NEXT"
-                ((org-agenda-overriding-header "\n📋 Other Tasks\n---")
+                ((org-agenda-overriding-header "Other Tasks")
                  (org-agenda-skip-function
                   '(org-agenda-skip-entry-if 'regexp ":today:\\|:next:"))))))))
 
@@ -261,7 +261,6 @@
   :init (setq epg-pinentry-mode `loopback)
   (pinentry-start))
 
-
 (with-eval-after-load 'evil
   (scroll-on-jump-advice-add evil-undo)
   (scroll-on-jump-advice-add evil-redo)
@@ -318,12 +317,6 @@
   )
 (add-hook 'go-mode-hook 'my-go-mode-hook)
 
-;; (require 'tla-mode)
-;; (use-package tla-mode :mode "\.tla$")
-;; (use-package tla-tools :mode "\.tla$")
-;; (require 'tla+-mode)
-;; (setq tla+-tlatools-path "$HOME/tla2tools.jar")
-
 (defun my-dnd-func (event)
   (interactive "e")
   (goto-char (nth 1 (event-start event)))
@@ -359,7 +352,6 @@
       (insert (format "[[%s]]\n" fname)))
      (t
       (error "I am not equipped for dnd on %s" payload)))))
-
 
 (define-key org-mode-map (kbd "<drag-n-drop>") 'my-dnd-func)
 (define-key org-mode-map (kbd "<C-drag-n-drop>") 'my-dnd-func)
@@ -448,7 +440,6 @@
 ;; detected), we can safely chain `org-roam-protocol' to it.
 (use-package org-roam-protocol
   :after org-protocol)
-
 
 (use-package org-roam-bibtex
   :after (org-roam)
@@ -617,10 +608,6 @@ Time-stamp: <>
 
 (setq copilot-server-executable "/home/gabriela/.npm/bin/copilot-language-server")
 
-;; (use-package treesit-auto
-;;   :config
-;;   (global-treesit-auto-mode))
-
 (add-to-list 'default-frame-alist '(internal-border-width . 20))
 (custom-set-faces
  `(vertical-border ((t (:background nil))))
@@ -767,11 +754,6 @@ with overruling parameters for `org-list-to-generic'."
                 :cboff "[ ] "
                 :cbtrans "[-] ")))
     (org-list-to-generic list (org-combine-plists defaults params))))
-
-;; (straight-use-package 'use-package)
-;; (use-package tla-input
-;;   :straight (:host github :repo "bugarela/tla-input")
-;;   :hook ((tla-mode . setup-tla-input)))
 
 (require 'tla-input)
 (add-hook 'tla-mode-hook 'setup-tla-input)
