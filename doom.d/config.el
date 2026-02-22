@@ -60,7 +60,8 @@
 (setq org-tag-alist '((:startgroup . nil)
                       ("today" . ?t)
                       ("next" . ?n)
-                      ("someday" . ?s)
+                      ("soon" . ?s)
+                      ("someday" . ?d)
                       (:endgroup . nil)))
 
 ;; Function to read agenda overview header file
@@ -98,15 +99,18 @@
 ;; Custom agenda commands for inbox workflow
 (setq org-agenda-custom-commands
       '(("o" "Overview"
-         ((tags-todo "today"
-                     ((org-agenda-overriding-header
-                       (concat (my/agenda-overview-title) (my/agenda-overview-header) "Today\n"))))
+         ((todo "WAIT|HOLD|LOOP"
+                ((org-agenda-overriding-header (concat (my/agenda-overview-title) (my/agenda-overview-header) "Ongoing Things\n"))))
+          (tags-todo "today"
+                     ((org-agenda-overriding-header "Today\n")))
           (tags-todo "next"
                      ((org-agenda-overriding-header "Next 5 Days\n")))
+          (tags-todo "soon"
+                     ((org-agenda-overriding-header "Next 2 Weeks\n")))
           (todo "TODO|NEXT"
                 ((org-agenda-overriding-header "Other Tasks\n")
                  (org-agenda-skip-function
-                  '(org-agenda-skip-entry-if 'regexp ":today:\\|:next:"))))))))
+                  '(org-agenda-skip-entry-if 'regexp ":today:\\|:next:\\|:soon:"))))))))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -299,6 +303,7 @@
        :desc "Yank relative path" "y" #'(lambda () (interactive) (kill-new (file-relative-name buffer-file-name (projectile-project-root))))
        :desc "Delete JSON value" "k" #'json-delete-value
        :desc "Cite with org-ref" "c" #'org-ref-insert-link
+       :desc "Open Majustu" "j" #'majutsu
        ; :desc "Zoom transient state" "z" #'+hydra/text-zoom/body
        ; :desc "BibTeX transient state" "b" #'org-ref-bibtex-hydra/body
        :desc "Org preset" "p" #'org-present))

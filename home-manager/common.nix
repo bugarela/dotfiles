@@ -142,6 +142,8 @@ in {
     # video editor
     pkgs.kdePackages.kdenlive
     # pkgs.openshot-qt
+    # raw editor
+    pkgs.art
 
     pkgs.zoom-us
 
@@ -531,6 +533,7 @@ in {
         background = "#111111";
         foreground = "#EEEEEE";
       };
+      mouse_right_action = "do_action";
     };
   };
 
@@ -548,7 +551,7 @@ in {
 
   xdg.mimeApps.defaultApplications = {
     "application/pdf" = [
-      "okular.desktop"
+      "zathura.desktop"
     ];
     "x-scheme-handler/io.element.desktop" = pkgs.element-desktop.desktopItem.name;
   };
@@ -566,5 +569,21 @@ in {
         ServerAliveInterval 60
         ServerAliveCountMax 30
    '';
+  };
+
+  programs.zathura = {
+    enable = true;
+    options = {
+      font = "monospace normal 14";
+      statusbar-h-padding = 12;
+      statusbar-v-padding = 4;
+      default-bg = bg;
+      default-fg = fg;
+      statusbar-bg = bg;
+      statusbar-fg = fg;
+      inputbar-bg = bgFade;
+      inputbar-fg = fg;
+      highlight-color = "rgba(165, 134, 186, 0.58)";
+    };
   };
 }
