@@ -170,6 +170,8 @@ in {
     pkgs.imagemagick
     pkgs.pdf2svg
     pkgs.mermaid-cli
+    pkgs.rofimoji
+    pkgs.xdotool
 
     pkgs.brightnessctl
     pkgs.rustc
@@ -429,13 +431,13 @@ in {
       };
 
       "prompt, entry" = {
-        padding = mkLiteral "3px";
+        padding = mkLiteral "4px";
         text-color = mkLiteral fg;
       };
 
       "element" = { 
         border-radius = mkLiteral "2px";
-        padding = mkLiteral "4px";
+        padding = mkLiteral "6px";
       };
 
       "element selected" = {
@@ -447,7 +449,7 @@ in {
         background-color = mkLiteral fg;
         text-color = mkLiteral bg;
         border-radius = mkLiteral "2px";
-        padding = mkLiteral "3px";
+        padding = mkLiteral "4px";
       };
     };  
   };

@@ -81,16 +81,30 @@
           (concat "\n" (string-trim (buffer-string)) "\n\n"))
       "")))
 
+(defun my/agenda-overview-title ()
+  "Return a centered 'Agenda Overview' title for the agenda buffer."
+  (let ((title "Agenda Overview")
+        (width (frame-width)))
+    (concat "\n"
+            (make-string (max 0 (floor (- (/ width 2) (/ (length title) 2)))) ? )
+            title
+            "\n\n")))
+
+(defun my/org-agenda-overview-zen ()
+  "Open agenda overview with zen mode (centered, large text). Zen turns off when you quit the agenda."
+  (interactive)
+  (org-agenda nil "o"))
+
 ;; Custom agenda commands for inbox workflow
 (setq org-agenda-custom-commands
       '(("o" "Overview"
          ((tags-todo "today"
                      ((org-agenda-overriding-header
-                       (concat (my/agenda-overview-header) "Today"))))
+                       (concat (my/agenda-overview-title) (my/agenda-overview-header) "Today\n"))))
           (tags-todo "next"
-                     ((org-agenda-overriding-header "Next 5 Days")))
+                     ((org-agenda-overriding-header "Next 5 Days\n")))
           (todo "TODO|NEXT"
-                ((org-agenda-overriding-header "Other Tasks")
+                ((org-agenda-overriding-header "Other Tasks\n")
                  (org-agenda-skip-function
                   '(org-agenda-skip-entry-if 'regexp ":today:\\|:next:"))))))))
 
@@ -279,6 +293,7 @@
 (global-set-key (kbd "<269025093>") "λ")
 (map! :leader
       (:prefix-map ("a" . "custom")
+       :desc "Agenda overview (zen)" "o" #'my/org-agenda-overview-zen
        :desc "Find definition" "d" #'xref-find-definitions-other-window
        :desc "Open spec" "s" #'projectile-find-implementation-or-test-other-window
        :desc "Yank relative path" "y" #'(lambda () (interactive) (kill-new (file-relative-name buffer-file-name (projectile-project-root))))

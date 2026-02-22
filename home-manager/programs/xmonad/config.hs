@@ -442,7 +442,8 @@ myKeysP =
     -- Open my preferred terminal
     ("M-<Return>", spawn (myTerminal)),
     -- Run Prompt
-    ("M-d", spawn "rofi -show drun -font \"Iosevka Fixed SS12 12\""),
+    ("M-d", spawn "rofi -show drun -font \"Iosevka Fixed SS12 16\""),
+    ("M-e", spawn "rofimoji --action type --selector-args=\"-font 'Iosevka Fixed SS12 18'\""),
     ("M-p", spawn "rofi-pass -font \"Iosevka Fixed SS12 12\""),
     ("M-S-l", spawn "i3lock-fancy"),
     -- , ("M-d", spawn "dmenu_run -i -nf '#BBBBBB' -nb '#0c0c0c' -sb '#2f1e2e' -sf '#EEEEEE' -fn 'monospace-10' -p 'run:'")
