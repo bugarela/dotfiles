@@ -3,8 +3,8 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    # Latest nixpkgs for bleeding-edge packages like ollama
-    nixpkgs-latest.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    # Latest nixpkgs for bleeding-edge packages like ollama (master branch)
+    nixpkgs-latest.url = "github:nixos/nixpkgs";
     # NordVPN PR branch - provides nordvpn package and module
     nixpkgs-nordvpn.url = "github:different-error/nixpkgs/nordvpn";
     # nur.url = "github:nix-community/NUR";
@@ -23,6 +23,17 @@
         nordvpn = nixpkgs-nordvpn.legacyPackages.${final.system}.nordvpn;
       };
 
+      # Override claude-code to latest npm version
+      claudeCodeOverlay = final: prev: {
+        claude-code = prev.claude-code.overrideAttrs (old: rec {
+          version = "2.1.70";
+          src = prev.fetchurl {
+            url = "https://registry.npmjs.org/@anthropic-ai/claude-code/-/claude-code-${version}.tgz";
+            hash = "sha256-YGPF83dBBfYlAZftP9wLpPZPx2y8Q9jSmX12gvB5Z9I=";
+          };
+        });
+      };
+
       commonModules = name: [
         ./nixos/common.nix
         ./nixos/${name}.nix
@@ -33,11 +44,11 @@
           home-manager.extraSpecialArgs = { inherit inputs outputs; };
           home-manager.useUserPackages = true;
           home-manager.useGlobalPkgs = true;
-          home-manager.backupFileExtension = null;
+          home-manager.backupFileExtension = "backup10";
           home-manager.users.gabriela = import ./home-manager/${name}.nix;
         }
-        # Apply nordvpn overlay
-        { nixpkgs.overlays = [ nordvpnOverlay ]; }
+        # Apply overlays
+        { nixpkgs.overlays = [ nordvpnOverlay claudeCodeOverlay ]; }
       ];
       mkSystem = name: cfg:
         nixpkgs.lib.nixosSystem {

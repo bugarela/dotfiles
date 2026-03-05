@@ -1,4 +1,4 @@
-{ config, pkgs, lib, fetchFromGithub, ... }:
+{ config, pkgs, lib, inputs, fetchFromGithub, ... }:
 
 let
   treesit-grammars = pkgs.emacsPackages.treesit-grammars.with-grammars (grammars: with grammars; [
@@ -31,6 +31,8 @@ let
 
   wiremix = import ./programs/wiremix/default.nix {};
   voice-record = import ./programs/voice-record/default.nix {};
+  mic-stream = import ./programs/mic-stream/default.nix {};
+  note-taker = import ./programs/note-taker/default.nix {};
 in {
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
@@ -66,6 +68,8 @@ in {
   home.packages = [
     wiremix
     voice-record
+    mic-stream
+    note-taker
 
     pkgs.ripgrep
     pkgs.bat
@@ -78,7 +82,7 @@ in {
     pkgs.xdotool
     pkgs.lxrandr
     pkgs.pscircle
-    pkgs.neofetch
+    pkgs.fastfetch
     pkgs.lxappearance
     pkgs.evince
     pkgs.gimp
@@ -154,7 +158,7 @@ in {
 
     pkgs.ledger-live-desktop
 
-    pkgs.pulseeffects-legacy
+    # pkgs.pulseeffects-legacy
 
     # Required by emacs copilot
     pkgs.nodejs_22
@@ -189,6 +193,23 @@ in {
 
     pkgs.element-desktop
     pkgs.element-web
+    (let
+      pkgsLatest = inputs.nixpkgs-latest.legacyPackages.${pkgs.system};
+    in pkgs.symlinkJoin {
+      name = "cinny-desktop";
+      paths = [ pkgsLatest.cinny-desktop ];
+      buildInputs = [ pkgs.makeWrapper ];
+      postBuild = ''
+        wrapProgram $out/bin/cinny \
+          --add-flags "--disable-features=AudioServiceSandbox" \
+          --prefix GST_PLUGIN_SYSTEM_PATH_1_0 : "${pkgs.lib.makeSearchPathOutput "lib" "lib/gstreamer-1.0" (with pkgs.gst_all_1; [
+            gstreamer
+            gst-plugins-base
+            gst-plugins-good
+            gst-plugins-bad
+          ] ++ [ pkgs.pipewire ])}"
+      '';
+    })
 
     # Terminal PDF viewer
     pkgs.tdf
@@ -459,14 +480,15 @@ in {
   services.picom = {
     # package = picom-fork;
     enable = true;
-    backend = "glx";
+    backend = "egl";
+    vSync = false;
     shadow = true;
     fade = true;
     fadeDelta = 2;
     shadowOpacity = 0.65;
     settings = {
       corner-radius = 10;
-      experimentalBackends = true;
+      use-damage = false;
       # blur = { method = "dual_kawase"; };
     };
   };
@@ -533,7 +555,6 @@ in {
         background = "#111111";
         foreground = "#EEEEEE";
       };
-      mouse_right_action = "do_action";
     };
   };
 

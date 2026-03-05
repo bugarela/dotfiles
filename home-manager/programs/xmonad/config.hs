@@ -122,7 +122,6 @@ myStartupHook :: X ()
 myStartupHook = do
   spawnOnce "sh /home/gabriela/.screenlayout/paradise.sh"
   spawnOnce "nitrogen --restore &"
-  spawnOnce "picom --experimental-backends &"
   spawnOnce "volumeicon &"
   spawnOnce "trayer --edge bottom --align right --widthtype request --padding 6 --SetDockType true --SetPartialStrut true --expand true --monitor 0 --transparent true --alpha 0 --tint 0x0c0c0c  --height 16 &"
   spawnOnce "emacs &"
