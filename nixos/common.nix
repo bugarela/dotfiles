@@ -60,6 +60,7 @@
     };
     displayManager.lightdm = {
       enable = true;
+      background = /home/gabriela/dotfiles/wallpaper.jpg;
       greeters.slick = {
         enable = true;
         theme.name = "Adwaita-dark";
@@ -162,7 +163,7 @@
     gcc
     binutils
 
-    utillinux
+    util-linux
     hicolor-icon-theme
     ripgrep
     coreutils
@@ -199,7 +200,7 @@
     font-awesome_5
     papirus-icon-theme
     iosevka
-    etBook
+    et-book
     emacs-all-the-icons-fonts
     inter
 

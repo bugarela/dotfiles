@@ -120,7 +120,7 @@ windowCount = gets $ Just . show . length . W.integrate' . W.stack . W.workspace
 
 myStartupHook :: X ()
 myStartupHook = do
-  spawnOnce "sh /home/gabriela/.screenlayout/paradise.sh && /home/gabriela/dotfiles/home-manager/programs/xmonad/init-polybar.sh"
+  spawnOnce "sh /home/gabriela/.screenlayout/paradise.sh && bash /home/gabriela/dotfiles/home-manager/programs/xmonad/init-polybar.sh"
   spawnOnce "nitrogen --restore &"
   spawnOnce "volumeicon &"
   spawnOnce "trayer --edge bottom --align right --widthtype request --padding 6 --SetDockType true --SetPartialStrut true --expand true --monitor 0 --transparent true --alpha 0 --tint 0x0c0c0c  --height 16 &"
@@ -303,7 +303,7 @@ myScratchPads =
     spawnDiscord = "discord"
     findDiscord = className =? "discord"
     spawnMega = "megasync"
-    findMega = className =? "megasync"
+    findMega = className =? "MEGAsync"
 
 mySpacing :: Integer -> l a -> XMonad.Layout.LayoutModifier.ModifiedLayout Spacing l a
 mySpacing i = spacingRaw False (Border i i i i) True (Border i i i i) True
@@ -420,6 +420,14 @@ moveToWorkspace appName workspace = do
     when (className == appName) $
       windows (W.shiftWin (myWorkspaces !! workspace) w)
 
+moveToNSP :: String -> X ()
+moveToNSP appName = do
+  ws <- gets windowset
+  forM_ (W.allWindows ws) $ \w -> do
+    cn <- runQuery className w
+    when (cn == appName) $
+      windows (W.shiftWin "NSP" w)
+
 moveStuff :: X ()
 moveStuff = do
   moveToWorkspace "Slack" 4
@@ -427,6 +435,7 @@ moveStuff = do
   moveToWorkspace "google-chrome-stable" 0
   moveToWorkspace "Emacs" 7
   moveToWorkspace "1Password" 8
+  moveToNSP "MEGAsync"
   spawn "/home/gabriela/dotfiles/home-manager/programs/xmonad/init-polybar.sh"
   spawn "xmonad --restart"
 

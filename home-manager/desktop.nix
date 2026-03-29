@@ -27,7 +27,7 @@
 
   services.ollama = {
     enable = true;
-    package = inputs.nixpkgs-latest.legacyPackages.${pkgs.system}.ollama-vulkan;
+    package = inputs.nixpkgs-latest.legacyPackages.${pkgs.stdenv.hostPlatform.system}.ollama-vulkan;
     environmentVariables = {
       OLLAMA_FLASH_ATTENTION = "1";
       OLLAMA_KV_CACHE_TYPE = "q8_0";

@@ -77,7 +77,7 @@ in {
     pkgs.autorandr
     pkgs.tree
     pkgs.libgccjit
-    pkgs.xorg.xwininfo
+    pkgs.xwininfo
     pkgs.xmobar
     pkgs.xdotool
     pkgs.lxrandr
@@ -194,7 +194,7 @@ in {
     pkgs.element-desktop
     pkgs.element-web
     (let
-      pkgsLatest = inputs.nixpkgs-latest.legacyPackages.${pkgs.system};
+      pkgsLatest = inputs.nixpkgs-latest.legacyPackages.${pkgs.stdenv.hostPlatform.system};
     in pkgs.symlinkJoin {
       name = "cinny-desktop";
       paths = [ pkgsLatest.cinny-desktop ];
@@ -269,8 +269,8 @@ in {
 
   programs.git = {
     enable = true;
-    userName = "bugarela";
-    userEmail = "gabrielamoreira05@gmail.com";
+    settings.user.name = "bugarela";
+    settings.user.email = "gabrielamoreira05@gmail.com";
     signing = {
       key =
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK9j0vEeUJi5vv++eeMOWkIYjGy8ED7s3M4FHY7YOzXH";
@@ -278,7 +278,11 @@ in {
       format = "ssh";
       signer = "/run/current-system/sw/bin/op-ssh-sign";
     };
-    delta.enable = true;
+  };
+
+  programs.delta = {
+    enable = true;
+    enableGitIntegration = true;
   };
 
   programs.jujutsu = {
@@ -585,11 +589,13 @@ in {
 
   programs.ssh = {
     enable = true;
-    extraConfig = ''
-      Host *
-        ServerAliveInterval 60
-        ServerAliveCountMax 30
-   '';
+    enableDefaultConfig = false;
+    matchBlocks."*" = {
+      extraOptions = {
+        ServerAliveInterval = "60";
+        ServerAliveCountMax = "30";
+      };
+    };
   };
 
   programs.zathura = {
