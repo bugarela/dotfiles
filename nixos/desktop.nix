@@ -58,5 +58,11 @@
       true; # Open ports in the firewall for Steam Remote Play
     dedicatedServer.openFirewall =
       true; # Open ports in the firewall for Source Dedicated Server
+    package = pkgs.steam.override {
+      extraEnv = {
+        GDK_SCALE = "2";
+        GDK_DPI_SCALE = "0.75";
+      };
+    };
   };
 }
