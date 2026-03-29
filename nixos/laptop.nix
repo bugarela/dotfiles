@@ -1,3 +1,4 @@
+{ pkgs, ... }:
 {
   imports = [ ./hardware/laptop.nix ];
 
@@ -11,19 +12,18 @@
   # Xserver basic
   services.xserver = {
     dpi = 144;
-    videoDrivers = [ "mesa" ];
   };
 
   # Backlight control
-  programs.light.enable = true;
+  hardware.acpilight.enable = true;
   services.acpid.enable = true;
   services.acpid.handlers = {
     brightness-up = {
-      action = "/run/current-system/sw/bin/light -A 5";
+      action = "/run/current-system/sw/bin/xbacklight -inc 5";
       event = "video/brightnessup.*";
     };
     brightness-down = {
-      action = "/run/current-system/sw/bin/light -U 5";
+      action = "/run/current-system/sw/bin/xbacklight -dec 5";
       event = "video/brightnessdown.*";
     };
   };
@@ -55,9 +55,22 @@
     powertop.enable = true;
   };
 
-  services.logind.lidSwitch = "suspend";
-  services.logind.lidSwitchExternalPower = "lock";
-  services.logind.lidSwitchDocked = "ignore";
+  services.logind.settings.Login = {
+    lidSwitch = "suspend";
+    lidSwitchExternalPower = "lock";
+    lidSwitchDocked = "ignore";
+  };
+
+  systemd.services.lock-before-sleep = {
+    description = "Lock screen before sleep";
+    before = [ "sleep.target" ];
+    wantedBy = [ "sleep.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      Environment = "XDG_SEAT_PATH=/org/freedesktop/DisplayManager/Seat0";
+      ExecStart = "${pkgs.lightdm}/bin/dm-tool lock";
+    };
+  };
 
   services.fprintd.enable = true;
   security.pam.services = {
@@ -65,5 +78,6 @@
     sudo.fprintAuth = true;
     lightdm.fprintAuth = true;
     polkit-1.fprintAuth = true;
+    "_1password".fprintAuth = true;
   };
 }

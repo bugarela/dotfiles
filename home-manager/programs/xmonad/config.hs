@@ -452,7 +452,7 @@ myKeysP =
     ("M-d", spawn "rofi -show drun -font \"Iosevka Fixed SS12 16\""),
     ("M-e", spawn "rofimoji --action type --selector-args=\"-font 'Iosevka Fixed SS12 18'\""),
     ("M-p", spawn "rofi-pass -font \"Iosevka Fixed SS12 12\""),
-    ("M-S-l", spawn "i3lock-fancy"),
+    ("M-S-l", spawn "env XDG_SEAT_PATH=/org/freedesktop/DisplayManager/Seat0 dm-tool lock"),
     -- , ("M-d", spawn "dmenu_run -i -nf '#BBBBBB' -nb '#0c0c0c' -sb '#2f1e2e' -sf '#EEEEEE' -fn 'monospace-10' -p 'run:'")
     -- , ("M-d", shellPrompt dtXPConfig)   -- Shell Prompt
 

@@ -167,7 +167,6 @@ in {
 
     pkgs.tree-sitter
 
-    pkgs.i3lock-fancy
     pkgs.headsetcontrol
 
     pkgs.tlaplus18
@@ -581,9 +580,24 @@ in {
     "x-scheme-handler/io.element.desktop" = pkgs.element-desktop.desktopItem.name;
   };
 
+  systemd.user.services.polkit-agent = {
+    Unit = {
+      Description = "Polkit authentication agent";
+      After = [ "graphical-session.target" ];
+    };
+    Service = {
+      Type = "simple";
+      ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
+      Restart = "on-failure";
+    };
+    Install = {
+      WantedBy = [ "graphical-session.target" ];
+    };
+  };
+
   services.screen-locker = {
     enable = true;
-    lockCmd = "${pkgs.i3lock-fancy}/bin/i3lock-fancy";
+    lockCmd = "env XDG_SEAT_PATH=/org/freedesktop/DisplayManager/Seat0 ${pkgs.lightdm}/bin/dm-tool lock";
     inactiveInterval = 15;
   };
 

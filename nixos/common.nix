@@ -136,14 +136,13 @@
     isNormalUser = true;
     description = "Gabriela Moreira";
     home = "/home/gabriela";
-    extraGroups = [ "wheel" "networkmanager" "docker" "video" "plugdev" "render" "nordvpn" ];
+    extraGroups = [ "wheel" "networkmanager" "docker" "video" "plugdev" "render" "nordvpn" "onepassword" ];
   };
 
   users.extraUsers.gabriela = { shell = pkgs.fish; };
 
   programs.fish.enable = true;
 
-  programs.i3lock.enable = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
