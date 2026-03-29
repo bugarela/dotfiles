@@ -120,7 +120,7 @@ windowCount = gets $ Just . show . length . W.integrate' . W.stack . W.workspace
 
 myStartupHook :: X ()
 myStartupHook = do
-  spawnOnce "sh /home/gabriela/.screenlayout/paradise.sh"
+  spawnOnce "sh /home/gabriela/.screenlayout/paradise.sh && /home/gabriela/dotfiles/home-manager/programs/xmonad/init-polybar.sh"
   spawnOnce "nitrogen --restore &"
   spawnOnce "volumeicon &"
   spawnOnce "trayer --edge bottom --align right --widthtype request --padding 6 --SetDockType true --SetPartialStrut true --expand true --monitor 0 --transparent true --alpha 0 --tint 0x0c0c0c  --height 16 &"
@@ -135,7 +135,6 @@ myStartupHook = do
   spawnOnce "xsetroot -cursor_name left_ptr"
   spawnOnce "gromit-mpx &"
   spawnOnce "xset r rate 200 30"
-  spawnOnce "/home/gabriela/dotfiles/home-manager/programs/xmonad/init-polybar.sh"
   spawnOnce "nm-applet"
   spawnOnce "amixer -D default"
 
@@ -283,6 +282,7 @@ myScratchPads =
     NS "spotify" spawnSpotify findSpotify manageScratch,
     NS "telegram" spawnTelegram findTelegram manageScratch,
     NS "discord" spawnDiscord findDiscord manageScratch,
+    NS "mega" spawnMega findMega manageScratch,
     NS "side-terminal" spawnSideTerm findSideTerm (insertPosition Below Newer <> nonFloating)
   ]
   where
@@ -302,6 +302,8 @@ myScratchPads =
     findTelegram = className =? "TelegramDesktop"
     spawnDiscord = "discord"
     findDiscord = className =? "discord"
+    spawnMega = "megasync"
+    findMega = className =? "megasync"
 
 mySpacing :: Integer -> l a -> XMonad.Layout.LayoutModifier.ModifiedLayout Spacing l a
 mySpacing i = spacingRaw False (Border i i i i) True (Border i i i i) True
@@ -377,8 +379,6 @@ myManageHook :: XMonad.Query (Data.Monoid.Endo WindowSet)
 myManageHook =
   composeAll
     [ className =? "Slack" --> doShift (myWorkspaces !! 4),
-      title =? "megasync" --> doF W.swapDown,
-      className =? "megasync" --> doF W.swapDown,
       (className =? "firefox" <&&> resource =? "Dialog") --> doFloat -- Float Firefox Dialog
     ]
     <+> insertPosition Below Newer <> namedScratchpadManageHook myScratchPads
@@ -427,7 +427,6 @@ moveStuff = do
   moveToWorkspace "google-chrome-stable" 0
   moveToWorkspace "Emacs" 7
   moveToWorkspace "1Password" 8
-  moveToWorkspace "megasync" 8
   spawn "/home/gabriela/dotfiles/home-manager/programs/xmonad/init-polybar.sh"
   spawn "xmonad --restart"
 
@@ -503,6 +502,7 @@ myKeysP =
     ("M-C-c", namedScratchpadAction myScratchPads "spotify"),
     ("M-C-t", namedScratchpadAction myScratchPads "telegram"),
     ("M-C-d", namedScratchpadAction myScratchPads "discord"),
+    ("M-S-m", namedScratchpadAction myScratchPads "mega"),
     ("M-;", namedScratchpadAction myScratchPads "side-terminal" >> windows W.swapDown),
 
     -- Apps

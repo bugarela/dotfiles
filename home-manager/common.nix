@@ -479,7 +479,7 @@ in {
 
   services.picom = {
     # package = picom-fork;
-    enable = true;
+    enable = false;
     backend = "egl";
     vSync = false;
     shadow = true;
@@ -579,8 +579,8 @@ in {
 
   services.screen-locker = {
     enable = true;
-    lockCmd = "{pkgs.i3lock-fancy}/bin/i3lock-fancy";
-    inactiveInterval = 30; # minutes before locking (separate from screen off)
+    lockCmd = "${pkgs.i3lock-fancy}/bin/i3lock-fancy";
+    inactiveInterval = 15;
   };
 
   programs.ssh = {

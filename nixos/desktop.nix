@@ -48,7 +48,6 @@
     opencl.enable = true;  
   };
 
-  services.picom.vSync = true;
 
   hardware.xpadneo.enable = true;
 

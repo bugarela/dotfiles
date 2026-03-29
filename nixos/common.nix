@@ -58,7 +58,15 @@
       xfce.enable = true;
       xterm.enable = false;
     };
-    displayManager.lightdm.enable = true;
+    displayManager.lightdm = {
+      enable = true;
+      greeters.slick = {
+        enable = true;
+        theme.name = "Adwaita-dark";
+        iconTheme.name = "Adwaita";
+        font.name = "Iosevka 14";
+      };
+    };
   };
 
   services.displayManager = { defaultSession = "xfce"; };
