@@ -23,13 +23,27 @@
         nordvpn = nixpkgs-nordvpn.legacyPackages.${final.system}.nordvpn;
       };
 
-      # Override claude-code to latest npm version
+      # Override claude-code to latest npm version.
+      # Use fetchzip (not fetchurl): unpacked src uses a recursive (NAR) FOD hash, not the raw .tgz hash.
+      # overrideAttrs alone keeps the previous `npmDeps` FOD (still tied to old src/name); rebuild it explicitly.
       claudeCodeOverlay = final: prev: {
         claude-code = prev.claude-code.overrideAttrs (old: rec {
-          version = "2.1.70";
-          src = prev.fetchurl {
+          version = "2.1.92";
+          pname = old.pname or "claude-code";
+          name = "${pname}-${version}";
+          src = prev.fetchzip {
             url = "https://registry.npmjs.org/@anthropic-ai/claude-code/-/claude-code-${version}.tgz";
-            hash = "sha256-YGPF83dBBfYlAZftP9wLpPZPx2y8Q9jSmX12gvB5Z9I=";
+            hash = "sha256-CLLCtVK3TeXFZ8wBnRRHNc2MoUt7lTdMJwz8sZHpkFM=";
+          };
+          npmDepsHash = "sha256-izy3dQProZIdUF5Z11fvGQOm/TBcWGhDK8GvNs8gG5E=";
+          npmDeps = final.fetchNpmDeps {
+            inherit src;
+            name = "${name}-npm-deps";
+            hash = npmDepsHash;
+            postPatch = old.postPatch;
+            prePatch = old.prePatch or "";
+            patches = old.patches or [ ];
+            patchFlags = old.patchFlags or [ ];
           };
         });
       };

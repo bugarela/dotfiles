@@ -482,8 +482,6 @@ in {
 
   services.picom = {
     enable = true;
-    backend = "egl";
-    vSync = true;
     shadow = true;
     shadowOpacity = 0.65;
     fade = false;

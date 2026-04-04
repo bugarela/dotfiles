@@ -27,7 +27,9 @@
 
   services.ollama = {
     enable = true;
-    package = inputs.nixpkgs-latest.legacyPackages.${pkgs.stdenv.hostPlatform.system}.ollama-vulkan;
+    # Gemma 4 is broken on the Vulkan backend (garbled text, missing thinking); ROCm/HIP is the right path for RX 9070 XT.
+    # If ROCm does not see the GPU, temporarily use ollama-vulkan with OLLAMA_VULKAN = "0" (CPU-only, correct output).
+    package = inputs.nixpkgs-latest.legacyPackages.${pkgs.stdenv.hostPlatform.system}.ollama-rocm;
     environmentVariables = {
       OLLAMA_FLASH_ATTENTION = "1";
       OLLAMA_KV_CACHE_TYPE = "q8_0";
@@ -48,4 +50,9 @@
   };
 
   home.pointerCursor.size = 48;
+
+  # TearFree is enabled at the X level (nixos/desktop.nix), so picom vSync
+  # would conflict. xrender backend needed — glx/egl cause a black screen on RDNA 4.
+  services.picom.backend = "xrender";
+  services.picom.vSync = false;
 }

@@ -41,4 +41,7 @@
   };
 
   home.pointerCursor.size = 42;
+
+  services.picom.backend = "egl";
+  services.picom.vSync = true;
 }
