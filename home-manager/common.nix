@@ -481,18 +481,15 @@ in {
   };
 
   services.picom = {
-    # package = picom-fork;
-    enable = false;
+    enable = true;
     backend = "egl";
-    vSync = false;
+    vSync = true;
     shadow = true;
-    fade = true;
-    fadeDelta = 2;
     shadowOpacity = 0.65;
+    fade = false;
     settings = {
       corner-radius = 10;
       use-damage = false;
-      # blur = { method = "dual_kawase"; };
     };
   };
 
