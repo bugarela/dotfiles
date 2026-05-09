@@ -182,6 +182,8 @@
     alsa-utils
 
     gsmartcontrol
+
+    lilypond
   ];
 
   # Fonts
@@ -200,6 +202,7 @@
     papirus-icon-theme
     iosevka
     et-book
+    lora  # serif for org-mode prose (mixed-pitch)
     emacs-all-the-icons-fonts
     inter
 

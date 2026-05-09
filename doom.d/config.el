@@ -134,8 +134,9 @@
 ;; they are implemented.
 (setq user-full-name "Gabriela Moreira")
 
-(load-file "~/org/org-thtml/ox-thtml.el")
-(require 'ox-thtml)
+(after! ox-html
+  (load-file "~/org/org-thtml/ox-thtml.el")
+  (require 'ox-thtml))
 
 (after! ox-html
   (require 'ox-html-stable-ids)
@@ -144,11 +145,32 @@
 
 (setq shell-file-name (executable-find "bash"))
 
+(after! mixed-pitch
+  (setq mixed-pitch-set-height t)
+  (set-face-attribute 'variable-pitch nil :family "Lora" :height 1.1))
+
+(add-hook 'org-mode-hook #'mixed-pitch-mode)
+(add-hook 'org-mode-hook (lambda ()
+  (flyspell-mode -1)
+  (corfu-mode -1)))
+
 (setq mouse-wheel-scroll-amount '(4))
 (setq mouse-wheel-progressive-speed nil)
 
 (server-start)
 (require 'org-tempo)
+
+(defun my/org-reload ()
+  "Revert all org agenda buffers from disk and refresh agenda."
+  (interactive)
+  (dolist (file (org-agenda-files))
+    (when-let ((buf (find-buffer-visiting file)))
+      (with-current-buffer buf
+        (revert-buffer t t t))))
+  (org-roam-db-sync)
+  (when (fboundp 'org-agenda-redo-all)
+    (org-agenda-redo-all t))
+  (message "Org reloaded."))
 
 (setq org-agenda-time-grid (quote ((daily today require-timed)
                                    (700
@@ -778,6 +800,9 @@ with overruling parameters for `org-list-to-generic'."
 (require 'tla-input)
 (add-hook 'tla-mode-hook 'setup-tla-input)
 
+(use-package! lilypond-mode
+  :mode ("\\.ly\\'" "\\.ily\\'"))
+
 (add-to-list 'auto-mode-alist '("\\.mdx" . markdown-mode))
 
 (after! markdown-mode
@@ -805,3 +830,6 @@ with overruling parameters for `org-list-to-generic'."
 (setq typst-ts-preview-function 'find-file-other-window)
 
 (setq org-modern-star "replace")
+
+(after! writegood-mode
+  (remove-hook 'text-mode-hook #'writegood-mode))

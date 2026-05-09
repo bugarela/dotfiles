@@ -117,7 +117,6 @@ in {
 
     pkgs.telegram-desktop
     pkgs.discord
-    pkgs.wasistlos # whatsapp
     pkgs.slack
     pkgs.zulip
     pkgs.signal-desktop
@@ -270,6 +269,7 @@ in {
     enable = true;
     settings.user.name = "bugarela";
     settings.user.email = "gabrielamoreira05@gmail.com";
+    settings.url."git@github.com:".insteadOf = "https://github.com/";
     signing = {
       key =
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK9j0vEeUJi5vv++eeMOWkIYjGy8ED7s3M4FHY7YOzXH";

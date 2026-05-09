@@ -4,6 +4,7 @@
 ;; To install a package with Doom you must declare them here and run 'doom sync'
 ;; on the command line, then restart Emacs for the changes to take effect -- or
 
+(package! mixed-pitch)
 (package! pinentry)
 (package! org-roam-bibtex :recipe (:host github :repo "org-roam/org-roam-bibtex"))
 (package! org-present)
@@ -59,6 +60,8 @@
   :recipe (:host github :repo "havarddj/typst-preview.el"))
 
 (package! majutsu :recipe (:host github :repo "0WD0/majutsu"))
+(package! lilypond-mode
+  :recipe (:host github :repo "emacsmirror/lilypond" :files ("elisp/*.el")))
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;; (package! some-package)
