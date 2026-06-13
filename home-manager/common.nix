@@ -33,28 +33,26 @@ let
   voice-record = import ./programs/voice-record/default.nix {};
   mic-stream = import ./programs/mic-stream/default.nix {};
   note-taker = import ./programs/note-taker/default.nix {};
+  # Pass the system pkgs (useGlobalPkgs) so the WebKitGTK/mesa stack matches the
+  # running system — otherwise the GPU/DMABUF render path falls back to slow CPU
+  # rendering (laggy webview). See the comment in its default.nix.
+  note-taker-gui = import ./programs/note-taker-gui/default.nix { inherit pkgs; };
 
+  # Thin wrapper around xsecurelock. xsecurelock locks the *current* X session
+  # in place (no VT switch / new X server), so it doesn't cause the GPU context
+  # loss that crashed Chrome under the old `dm-tool lock` greeter. It also blocks
+  # until the user authenticates, so xss-lock holds a single instance for the
+  # whole lock duration — no lockfile/sleep-infinity hacks, no double-locking.
   lockScript = pkgs.writeShellScript "lock-screen" ''
     # Don't lock if camera is in use (Zoom, Google Meet, etc.)
     if ${pkgs.psmisc}/bin/fuser /dev/video* > /dev/null 2>&1; then
       exit 0
     fi
 
-    # Prevent concurrent instances. xss-lock re-fires our locker every 15 min
-    # of idle because dm-tool lock exits immediately, causing it to reset the
-    # idle timer. The lockfile ensures only one instance runs at a time.
-    LOCKFILE="/tmp/screen-locker-active"
-    [ -e "$LOCKFILE" ] && exit 0
-    echo $$ > "$LOCKFILE"
-    trap "rm -f $LOCKFILE" EXIT INT TERM HUP
-
-    # Lock the session
-    env XDG_SEAT_PATH=/org/freedesktop/DisplayManager/Seat0 ${pkgs.lightdm}/bin/dm-tool lock
-
-    # Block until xss-lock sends SIGTERM (fires on screensaver deactivation
-    # or logind Unlock signal when the user authenticates). The trap above
-    # cleans up the lockfile so future idle timeouts can lock again.
-    sleep infinity
+    export XSECURELOCK_BLANK_TIMEOUT=15
+    export XSECURELOCK_SHOW_DATETIME=1
+    export XSECURELOCK_SHOW_HOSTNAME=0
+    exec ${pkgs.xsecurelock}/bin/xsecurelock
   '';
 in {
   # Let Home Manager install and manage itself.
@@ -93,6 +91,7 @@ in {
     voice-record
     mic-stream
     note-taker
+    note-taker-gui
 
     pkgs.ripgrep
     pkgs.bat
@@ -206,7 +205,10 @@ in {
 
     pkgs.zed-editor
     pkgs.openai-whisper
-    pkgs.claude-code
+    (import inputs.nixpkgs-latest {
+      inherit (pkgs.stdenv.hostPlatform) system;
+      config.allowUnfree = true;
+    }).claude-code
 
     pkgs.parallel
     pkgs.presenterm

@@ -61,16 +61,9 @@
     lidSwitchDocked = "ignore";
   };
 
-  systemd.services.lock-before-sleep = {
-    description = "Lock screen before sleep";
-    before = [ "sleep.target" ];
-    wantedBy = [ "sleep.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      Environment = "XDG_SEAT_PATH=/org/freedesktop/DisplayManager/Seat0";
-      ExecStart = "${pkgs.lightdm}/bin/dm-tool lock";
-    };
-  };
+  # No explicit lock-before-sleep service: xss-lock (-s $XDG_SESSION_ID) holds a
+  # logind sleep inhibitor and locks via xsecurelock before suspend. lidSwitch
+  # (suspend) and lidSwitchExternalPower (lock) both route through that path.
 
   services.fprintd.enable = true;
   security.pam.services = {
@@ -79,5 +72,6 @@
     lightdm.fprintAuth = true;
     polkit-1.fprintAuth = true;
     "_1password".fprintAuth = true;
+    xsecurelock.fprintAuth = true;
   };
 }

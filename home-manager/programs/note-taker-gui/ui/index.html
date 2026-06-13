@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>note-taker-gui</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="blob blob-a"></div>
+    <div class="blob blob-b"></div>
+    <div class="blob blob-c"></div>
+
+    <header class="titlebar" data-tauri-drag-region>
+      <span class="brand" data-tauri-drag-region>Gabriela's note taker</span>
+      <div class="titlebar-right">
+        <span id="camera-pill" class="pill pill-hidden">camera on</span>
+        <button id="hide-btn" class="icon-btn" title="hide (Super+Ctrl+N)">&minus;</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <button id="record-btn" class="record-btn">
+          <span class="rec-dot"></span>
+          <span id="record-label">Start recording</span>
+        </button>
+        <div class="sidebar-head">Notes</div>
+        <div id="notes-list" class="notes-list"></div>
+      </aside>
+
+      <main class="main">
+        <div id="main-header" class="main-header hidden">
+          <div class="mh-text">
+            <h1 id="note-title">Note</h1>
+            <span id="note-meta" class="note-meta"></span>
+          </div>
+          <div class="mh-actions">
+            <button id="summarize-btn" class="summarize-btn">Summarize</button>
+          </div>
+        </div>
+
+        <div id="main-body" class="main-body">
+          <div id="empty-state" class="empty-state">
+            <div class="empty-card">
+              <h2>Nothing open yet</h2>
+              <p>Pick a note from the left, or press <strong>Start recording</strong> to capture a new one.</p>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="main.js"></script>
+  </body>
+</html>

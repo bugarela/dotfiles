@@ -306,6 +306,10 @@
   };
   security.polkit.enable = true;
 
+  # PAM service used by xsecurelock to authenticate the unlock. Without this
+  # file xsecurelock cannot verify the password and the screen can't be unlocked.
+  security.pam.services.xsecurelock = {};
+
   services.udev.packages = [ pkgs.headsetcontrol ];
 
   # systemd.services.nix-daemon.serviceConfig.EnvironmentFile = "/etc/nixos/nix-daemon-environment";

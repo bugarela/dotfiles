@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "note-taker-gui",
+  "version": "0.1.0",
+  "identifier": "systems.informal.notetakergui",
+  "build": {
+    "frontendDist": "../ui",
+    "beforeBuildCommand": "",
+    "beforeDevCommand": ""
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "title": "Gabriela's note taker",
+        "label": "main",
+        "width": 920,
+        "height": 680,
+        "minWidth": 560,
+        "minHeight": 420,
+        "resizable": true,
+        "decorations": false,
+        "transparent": false,
+        "visible": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": ["icons/icon.png"]
+  }
+}

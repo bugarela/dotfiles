@@ -1,0 +1,8 @@
+# Rust build output (dev-shell `cargo tauri dev` / `cargo build`)
+src-tauri/target/
+# Tauri codegen output
+src-tauri/gen/
+# nix-build result symlinks
+result*
+# dev-shell flake lock (not used by the main home-manager build)
+flake.lock

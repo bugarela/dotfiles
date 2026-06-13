@@ -138,6 +138,7 @@ myStartupHook = do
   spawnOnce "xset s 900 900"
   spawnOnce "nm-applet"
   spawnOnce "amixer -D default"
+  spawnOnce "note-taker-gui &"
 
 myColorizer :: Window -> Bool -> X (String, String)
 myColorizer =
@@ -285,7 +286,8 @@ myScratchPads =
     NS "discord" spawnDiscord findDiscord manageScratch,
     NS "mega" spawnMega findMega manageScratch,
     NS "side-terminal" spawnSideTerm findSideTerm (insertPosition Below Newer <> nonFloating),
-    NS "claude-usage" spawnClaudeUsage findClaudeUsage manageScratch
+    NS "claude-usage" spawnClaudeUsage findClaudeUsage manageScratch,
+    NS "notetaker" spawnNoteTaker findNoteTaker manageScratch
   ]
   where
     manageScratch = customFloating $ W.RationalRect l t w h
@@ -308,6 +310,8 @@ myScratchPads =
     findMega = className =? "MEGAsync"
     spawnClaudeUsage = "google-chrome --app=https://claude.ai/settings/usage"
     findClaudeUsage = resource =? "claude.ai__settings_usage"
+    spawnNoteTaker = "note-taker-gui"
+    findNoteTaker = title =? "Gabriela's note taker"
 
 mySpacing :: Integer -> l a -> XMonad.Layout.LayoutModifier.ModifiedLayout Spacing l a
 mySpacing i = spacingRaw False (Border i i i i) True (Border i i i i) True
@@ -383,7 +387,8 @@ myManageHook :: XMonad.Query (Data.Monoid.Endo WindowSet)
 myManageHook =
   composeAll
     [ className =? "Slack" --> doShift (myWorkspaces !! 4),
-      (className =? "firefox" <&&> resource =? "Dialog") --> doFloat -- Float Firefox Dialog
+      (className =? "firefox" <&&> resource =? "Dialog") --> doFloat, -- Float Firefox Dialog
+      title =? "Gabriela's note taker" --> doShift "NSP" -- Born hidden on scratchpad ws; M-C-n toggles it
     ]
     <+> insertPosition Below Newer <> namedScratchpadManageHook myScratchPads
 
@@ -456,7 +461,7 @@ myKeysP =
     ("M-d", spawn "rofi -show drun -font \"Iosevka Fixed SS12 16\""),
     ("M-e", spawn "rofimoji --action type --selector-args=\"-font 'Iosevka Fixed SS12 18'\""),
     ("M-p", spawn "rofi-pass -font \"Iosevka Fixed SS12 12\""),
-    ("M-S-l", spawn "env XDG_SEAT_PATH=/org/freedesktop/DisplayManager/Seat0 dm-tool lock"),
+    ("M-S-l", spawn "loginctl lock-session"),
     -- , ("M-d", spawn "dmenu_run -i -nf '#BBBBBB' -nb '#0c0c0c' -sb '#2f1e2e' -sf '#EEEEEE' -fn 'monospace-10' -p 'run:'")
     -- , ("M-d", shellPrompt dtXPConfig)   -- Shell Prompt
 
@@ -518,6 +523,7 @@ myKeysP =
     ("M-S-m", namedScratchpadAction myScratchPads "mega"),
     ("M-;", namedScratchpadAction myScratchPads "side-terminal" >> windows W.swapDown),
     ("M-C-u", namedScratchpadAction myScratchPads "claude-usage"),
+    ("M-C-n", namedScratchpadAction myScratchPads "notetaker"),
 
     -- Apps
     ("M-u", spawn "pavucontrol"),
