@@ -78,4 +78,20 @@ function fish_prompt
     echo -e -n -s $prompt_color ' $ ' $normal
 end
 
+function __zellij_tab_update --on-event fish_prompt
+    if set -q ZELLIJ
+        set -l dir (basename (git rev-parse --show-toplevel 2>/dev/null; or pwd))
+        zellij action rename-tab $dir
+    end
+end
+
+function __zellij_tab_preexec --on-event fish_preexec
+    if set -q ZELLIJ
+        set -l dir (basename (git rev-parse --show-toplevel 2>/dev/null; or pwd))
+        if string match -qr "^claude" $argv
+            zellij action rename-tab "Claude - $dir"
+        end
+    end
+end
+
 jj util completion fish | source

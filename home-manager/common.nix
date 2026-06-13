@@ -33,6 +33,29 @@ let
   voice-record = import ./programs/voice-record/default.nix {};
   mic-stream = import ./programs/mic-stream/default.nix {};
   note-taker = import ./programs/note-taker/default.nix {};
+
+  lockScript = pkgs.writeShellScript "lock-screen" ''
+    # Don't lock if camera is in use (Zoom, Google Meet, etc.)
+    if ${pkgs.psmisc}/bin/fuser /dev/video* > /dev/null 2>&1; then
+      exit 0
+    fi
+
+    # Prevent concurrent instances. xss-lock re-fires our locker every 15 min
+    # of idle because dm-tool lock exits immediately, causing it to reset the
+    # idle timer. The lockfile ensures only one instance runs at a time.
+    LOCKFILE="/tmp/screen-locker-active"
+    [ -e "$LOCKFILE" ] && exit 0
+    echo $$ > "$LOCKFILE"
+    trap "rm -f $LOCKFILE" EXIT INT TERM HUP
+
+    # Lock the session
+    env XDG_SEAT_PATH=/org/freedesktop/DisplayManager/Seat0 ${pkgs.lightdm}/bin/dm-tool lock
+
+    # Block until xss-lock sends SIGTERM (fires on screensaver deactivation
+    # or logind Unlock signal when the user authenticates). The trap above
+    # cleans up the lockfile so future idle timeouts can lock again.
+    sleep infinity
+  '';
 in {
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
@@ -592,8 +615,9 @@ in {
 
   services.screen-locker = {
     enable = true;
-    lockCmd = "env XDG_SEAT_PATH=/org/freedesktop/DisplayManager/Seat0 ${pkgs.lightdm}/bin/dm-tool lock";
+    lockCmd = "${lockScript}";
     inactiveInterval = 15;
+    xautolock.enable = false;
   };
 
   programs.ssh = {

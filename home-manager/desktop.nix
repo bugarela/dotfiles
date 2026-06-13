@@ -26,7 +26,7 @@
   ];
 
   services.ollama = {
-    enable = true;
+    enable = false;
     # Gemma 4 is broken on the Vulkan backend (garbled text, missing thinking); ROCm/HIP is the right path for RX 9070 XT.
     # If ROCm does not see the GPU, temporarily use ollama-vulkan with OLLAMA_VULKAN = "0" (CPU-only, correct output).
     package = inputs.nixpkgs-latest.legacyPackages.${pkgs.stdenv.hostPlatform.system}.ollama-rocm;

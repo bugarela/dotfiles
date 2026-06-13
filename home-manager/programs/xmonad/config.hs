@@ -135,6 +135,7 @@ myStartupHook = do
   spawnOnce "xsetroot -cursor_name left_ptr"
   spawnOnce "gromit-mpx &"
   spawnOnce "xset r rate 200 30"
+  spawnOnce "xset s 900 900"
   spawnOnce "nm-applet"
   spawnOnce "amixer -D default"
 
@@ -283,7 +284,8 @@ myScratchPads =
     NS "telegram" spawnTelegram findTelegram manageScratch,
     NS "discord" spawnDiscord findDiscord manageScratch,
     NS "mega" spawnMega findMega manageScratch,
-    NS "side-terminal" spawnSideTerm findSideTerm (insertPosition Below Newer <> nonFloating)
+    NS "side-terminal" spawnSideTerm findSideTerm (insertPosition Below Newer <> nonFloating),
+    NS "claude-usage" spawnClaudeUsage findClaudeUsage manageScratch
   ]
   where
     manageScratch = customFloating $ W.RationalRect l t w h
@@ -304,6 +306,8 @@ myScratchPads =
     findDiscord = className =? "discord"
     spawnMega = "megasync"
     findMega = className =? "MEGAsync"
+    spawnClaudeUsage = "google-chrome --app=https://claude.ai/settings/usage"
+    findClaudeUsage = resource =? "claude.ai__settings_usage"
 
 mySpacing :: Integer -> l a -> XMonad.Layout.LayoutModifier.ModifiedLayout Spacing l a
 mySpacing i = spacingRaw False (Border i i i i) True (Border i i i i) True
@@ -513,6 +517,7 @@ myKeysP =
     ("M-C-d", namedScratchpadAction myScratchPads "discord"),
     ("M-S-m", namedScratchpadAction myScratchPads "mega"),
     ("M-;", namedScratchpadAction myScratchPads "side-terminal" >> windows W.swapDown),
+    ("M-C-u", namedScratchpadAction myScratchPads "claude-usage"),
 
     -- Apps
     ("M-u", spawn "pavucontrol"),
