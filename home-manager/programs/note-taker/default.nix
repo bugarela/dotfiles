@@ -150,7 +150,12 @@ pkgs.writeShellApplication {
 
   runtimeInputs = [ python pkgs.pipewire pkgs.ffmpeg ];
 
+  # exec so this process *is* python (not a bash parent of it): the GUI stops
+  # recording by sending SIGINT to the spawned PID, and it must land on python so
+  # its KeyboardInterrupt handler flushes the transcript and shuts down ffmpeg.
+  # Without exec, SIGINT only kills the bash wrapper and python orphans to init,
+  # left running Whisper VAD + ffmpeg at high CPU forever.
   text = ''
-    python3 ${script}
+    exec python3 ${script}
   '';
 }

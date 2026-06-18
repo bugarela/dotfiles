@@ -38,21 +38,62 @@ let
   # rendering (laggy webview). See the comment in its default.nix.
   note-taker-gui = import ./programs/note-taker-gui/default.nix { inherit pkgs; };
 
-  # Thin wrapper around xsecurelock. xsecurelock locks the *current* X session
-  # in place (no VT switch / new X server), so it doesn't cause the GPU context
-  # loss that crashed Chrome under the old `dm-tool lock` greeter. It also blocks
-  # until the user authenticates, so xss-lock holds a single instance for the
-  # whole lock duration — no lockfile/sleep-infinity hacks, no double-locking.
+  # Saver used by xsecurelock: paint the wallpaper into the window xsecurelock
+  # hands us ($XSCREENSAVER_WINDOW). mpv renders a still image cleanly into a
+  # given window id and is already installed; --panscan=1 fills each monitor
+  # while keeping aspect (no distortion), so it adapts to single- and dual-screen
+  # without pre-rendering anything.
+  lockSaver = pkgs.writeShellScript "lock-saver" ''
+    exec ${pkgs.mpv}/bin/mpv \
+      --no-config --no-audio --really-quiet --force-window=yes \
+      --loop-file=inf --image-display-duration=inf \
+      --no-input-default-bindings --input-conf=/dev/null \
+      --osc=no --cursor-autohide=no --no-input-cursor \
+      --panscan=1.0 --keepaspect=yes \
+      --wid="$XSCREENSAVER_WINDOW" \
+      /home/gabriela/dotfiles/wallpaper.jpg
+  '';
+
+  # xsecurelock locks the *current* X session in place (no VT switch / new X
+  # server), so it doesn't cause the GPU context loss that crashed Chrome under
+  # the old `dm-tool lock` greeter, and it blocks until the user authenticates so
+  # xss-lock holds exactly one instance — no lockfile/sleep hacks, no
+  # double-locking. It authenticates through PAM, so the laptop fingerprint
+  # (pam_fprintd) works alongside the password.
+  #
+  # While locked we stop picom (it composited xsecurelock's windows into the
+  # blinking we saw) and pause dunst (so notifications don't paint over the lock
+  # screen); both are restored on unlock regardless of how the lock ends.
   lockScript = pkgs.writeShellScript "lock-screen" ''
+    export PATH=${lib.makeBinPath [
+      pkgs.xsecurelock pkgs.systemd pkgs.dunst pkgs.coreutils pkgs.psmisc
+    ]}:$PATH
+
     # Don't lock if camera is in use (Zoom, Google Meet, etc.)
-    if ${pkgs.psmisc}/bin/fuser /dev/video* > /dev/null 2>&1; then
+    if fuser /dev/video* > /dev/null 2>&1; then
       exit 0
     fi
 
-    export XSECURELOCK_BLANK_TIMEOUT=15
+    restore() {
+      systemctl --user start picom 2>/dev/null || true
+      dunstctl set-paused false 2>/dev/null || true
+    }
+    trap restore EXIT
+
+    dunstctl set-paused true 2>/dev/null || true
+    systemctl --user stop picom 2>/dev/null || true
+
+    export XSECURELOCK_SAVER=${lockSaver}
+    export XSECURELOCK_BLANK_TIMEOUT=120
     export XSECURELOCK_SHOW_DATETIME=1
     export XSECURELOCK_SHOW_HOSTNAME=0
-    exec ${pkgs.xsecurelock}/bin/xsecurelock
+    export XSECURELOCK_PASSWORD_PROMPT=cursor
+
+    # Run in the background and forward xss-lock's SIGTERM (sent on logind unlock)
+    # so the screen always tears down cleanly and `restore` runs.
+    xsecurelock & lockpid=$!
+    trap 'kill "$lockpid" 2>/dev/null' INT TERM HUP
+    wait "$lockpid"
   '';
 in {
   # Let Home Manager install and manage itself.
