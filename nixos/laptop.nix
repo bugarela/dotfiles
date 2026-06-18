@@ -64,14 +64,4 @@
   # No explicit lock-before-sleep service: xss-lock (-s $XDG_SESSION_ID) holds a
   # logind sleep inhibitor and locks via xsecurelock before suspend. lidSwitch
   # (suspend) and lidSwitchExternalPower (lock) both route through that path.
-
-  services.fprintd.enable = true;
-  security.pam.services = {
-    login.fprintAuth = true;
-    sudo.fprintAuth = true;
-    lightdm.fprintAuth = true;
-    polkit-1.fprintAuth = true;
-    "_1password".fprintAuth = true;
-    xsecurelock.fprintAuth = true;
-  };
 }

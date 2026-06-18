@@ -306,9 +306,34 @@
   };
   security.polkit.enable = true;
 
-  # PAM service used by xsecurelock to authenticate the unlock. Without this
-  # file xsecurelock cannot verify the password and the screen can't be unlocked.
-  security.pam.services.xsecurelock = {};
+  # Fingerprint authentication via fprintd. The PAM services below enable
+  # fingerprint auth alongside the password wherever PAM is used (login, sudo,
+  # the display manager, polkit, 1Password and the xsecurelock unlock). On
+  # machines without a fingerprint reader this is harmless — fprintd simply has
+  # no enrolled prints and PAM falls through to the password.
+  #
+  # The xsecurelock PAM service is also required for xsecurelock to authenticate
+  # the unlock at all. Without it xsecurelock cannot verify the password and the
+  # screen can't be unlocked.
+  services.fprintd.enable = true;
+  security.pam.services = {
+    login.fprintAuth = true;
+    sudo.fprintAuth = true;
+    lightdm.fprintAuth = true;
+    polkit-1.fprintAuth = true;
+    "_1password".fprintAuth = true;
+    xsecurelock.fprintAuth = true;
+  };
+
+  # OBS Studio's virtual camera needs the v4l2loopback kernel module to expose
+  # itself as a /dev/video* device that other apps (Zoom, browsers, ...) can use.
+  # exclusive_caps=1 makes the loopback advertise itself only as a capture
+  # device, which is what apps expect; card_label names it in device pickers.
+  boot.extraModulePackages = [ config.boot.kernelPackages.v4l2loopback ];
+  boot.kernelModules = [ "v4l2loopback" ];
+  boot.extraModprobeConfig = ''
+    options v4l2loopback devices=1 video_nr=9 card_label="OBS Virtual Camera" exclusive_caps=1
+  '';
 
   services.udev.packages = [ pkgs.headsetcontrol ];
 

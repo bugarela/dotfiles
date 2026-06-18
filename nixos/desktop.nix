@@ -49,6 +49,52 @@
   };
 
 
+  # The desktop's USB fingerprint reader is a Chipsailing CS9711 (2541:0236),
+  # which stock libfprint does not support (fprintd reports NoSuchDevice).
+  # Override libfprint with the community fork that adds a match-on-host driver
+  # for this chip. Scoped to the desktop so the laptop keeps its stock, fully
+  # supported libfprint. Note: enrollment needs ~15 touches and the driver is
+  # experimental — see https://github.com/archeYR/libfprint-CS9711
+  # Use the archeYR cs9711-rebase branch: the CS9711 driver rebased onto
+  # libfprint 1.94.10, which matches the stock nixpkgs version and the API the
+  # current fprintd expects (so no version or dependency hacks are needed beyond
+  # the sigfm build deps below).
+  nixpkgs.overlays = [
+    (final: prev: {
+      libfprint = prev.libfprint.overrideAttrs (oldAttrs: {
+        version = "1.94.10-cs9711";
+        src = final.fetchFromGitHub {
+          owner = "archeYR";
+          repo = "libfprint-CS9711";
+          rev = "02b285c9703c38d308fbe47a3c566ef1e7f883ca"; # cs9711-rebase
+          sha256 = "sha256-QGrBNqbRNqLZIURI66xkenlQamNW+DQU4WS+CLN4zM8=";
+        };
+        # The sigfm matcher (match-on-host) pulls in opencv; doctest/cmake are
+        # needed for its build configuration.
+        nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [
+          final.opencv
+          final.cmake
+          final.doctest
+        ];
+        # The sigfm test binary links against -ldoctest, but nixpkgs' doctest is
+        # header-only and ships no link library, so the build fails at link time.
+        # Drop the test executable — only the driver itself is needed.
+        postPatch = (oldAttrs.postPatch or "") + ''
+          substituteInPlace libfprint/sigfm/meson.build \
+            --replace-fail "sigfm_tests = executable('sigfm-tests', ['./tests.cpp'], dependencies: [doctest, opencv], link_with: [libsigfm])" ""
+        '';
+      });
+    })
+  ];
+
+  # The CS9711 reader is unreliable under USB autosuspend (default 2s timeout),
+  # which causes "Open failed: USB error ... Input/Output Error" when fprintd
+  # tries to claim it, plus occasional "can't set config #1, error -71" on
+  # enumeration. Pin the device powered-on so it stays claimable.
+  services.udev.extraRules = ''
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="2541", ATTR{idProduct}=="0236", ATTR{power/control}="on", ATTR{power/autosuspend}="-1"
+  '';
+
   hardware.xpadneo.enable = true;
 
   programs.steam = {
