@@ -95,6 +95,29 @@ let
     trap 'kill "$lockpid" 2>/dev/null' INT TERM HUP
     wait "$lockpid"
   '';
+
+  # Temporarily hold off the idle auto-lock ("caffeine"). The screen only locks
+  # on the X screensaver idle timer (xss-lock watches it, xset q shows 900s), so
+  # toggling `xset s` off/on is enough — nothing auto-suspends on idle here, so no
+  # logind inhibitor is needed.
+  #   caffeine        -> toggle: stay awake, or restore if already on
+  #   caffeine off    -> restore the normal 15-min timeout
+  #   caffeine 90m    -> stay awake for a fixed span, then restore itself
+  # The restore value mirrors xss-lock.service's `xset s 900 600` ExecStartPre.
+  caffeine = pkgs.writeShellScriptBin "caffeine" ''
+    export PATH=${lib.makeBinPath [ pkgs.xorg.xset pkgs.libnotify pkgs.coreutils ]}:$PATH
+    state="''${XDG_RUNTIME_DIR:-/tmp}/caffeine.on"
+
+    on()  { xset s off;     touch "$state"; notify-send -a caffeine "☕ Caffeine on"  "Auto-lock disabled"; }
+    off() { xset s 900 600; rm -f "$state"; notify-send -a caffeine "😴 Caffeine off" "Auto-lock restored (15 min)"; }
+
+    case "''${1:-toggle}" in
+      on)     on ;;
+      off)    off ;;
+      toggle) if [ -e "$state" ]; then off; else on; fi ;;
+      *)      on; trap off EXIT INT TERM HUP; sleep "$1" ;;
+    esac
+  '';
 in {
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
@@ -133,6 +156,7 @@ in {
     mic-stream
     note-taker
     note-taker-gui
+    caffeine
 
     pkgs.ripgrep
     pkgs.bat
@@ -376,7 +400,7 @@ in {
       };
 
       ui = {
-        pager = "${pkgs.delta}/bin/delta";
+        pager = ["${pkgs.delta}/bin/delta" "--navigate"];
         # diff-editor = "${pkgs.meld}/bin/meld";
         diff-formatter = ":git";
         default-command = ["log" "-n" "10"];
@@ -547,7 +571,7 @@ in {
   };
 
   services.picom = {
-    enable = true;
+    enable = false;
     shadow = true;
     shadowOpacity = 0.65;
     fade = false;
