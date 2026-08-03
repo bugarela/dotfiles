@@ -96,20 +96,23 @@ let
     wait "$lockpid"
   '';
 
-  # Temporarily hold off the idle auto-lock ("caffeine"). The screen only locks
-  # on the X screensaver idle timer (xss-lock watches it, xset q shows 900s), so
-  # toggling `xset s` off/on is enough — nothing auto-suspends on idle here, so no
-  # logind inhibitor is needed.
+  # Temporarily hold off the idle auto-lock ("caffeine"). xss-lock locks on the X
+  # ScreenSaver "activate" event, which fires from BOTH the screensaver idle timer
+  # (xset s, 900s) AND DPMS blanking (xset dpms, 600s). Disabling only `xset s`
+  # isn't enough — DPMS at 10min still trips the lock — so we turn off both, and
+  # restore both on the way out. Nothing auto-suspends on idle here (logind
+  # IdleAction=ignore), so no logind inhibitor is needed.
   #   caffeine        -> toggle: stay awake, or restore if already on
-  #   caffeine off    -> restore the normal 15-min timeout
+  #   caffeine off    -> restore the normal timeouts
   #   caffeine 90m    -> stay awake for a fixed span, then restore itself
-  # The restore value mirrors xss-lock.service's `xset s 900 600` ExecStartPre.
+  # Restore values mirror the baseline: `xset s 900 600` (xss-lock.service's
+  # ExecStartPre) and DPMS 600/600/600.
   caffeine = pkgs.writeShellScriptBin "caffeine" ''
     export PATH=${lib.makeBinPath [ pkgs.xorg.xset pkgs.libnotify pkgs.coreutils ]}:$PATH
     state="''${XDG_RUNTIME_DIR:-/tmp}/caffeine.on"
 
-    on()  { xset s off;     touch "$state"; notify-send -a caffeine "☕ Caffeine on"  "Auto-lock disabled"; }
-    off() { xset s 900 600; rm -f "$state"; notify-send -a caffeine "😴 Caffeine off" "Auto-lock restored (15 min)"; }
+    on()  { xset s off -dpms;                    touch "$state"; notify-send -a caffeine "☕ Caffeine on"  "Auto-lock & screen blanking disabled"; }
+    off() { xset s 900 600; xset dpms 600 600 600; rm -f "$state"; notify-send -a caffeine "😴 Caffeine off" "Auto-lock restored"; }
 
     case "''${1:-toggle}" in
       on)     on ;;
@@ -229,6 +232,7 @@ in {
     pkgs.vlc
     pkgs.mpv
     pkgs.ffmpeg
+    pkgs.audacity
     # video editor
     pkgs.kdePackages.kdenlive
     # pkgs.openshot-qt
@@ -274,6 +278,7 @@ in {
       inherit (pkgs.stdenv.hostPlatform) system;
       config.allowUnfree = true;
     }).claude-code
+    inputs.nixpkgs-latest.legacyPackages.${pkgs.stdenv.hostPlatform.system}.codex
 
     pkgs.parallel
     pkgs.presenterm
