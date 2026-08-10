@@ -22,7 +22,7 @@
     pkgs.wine
     # pkgs.tuxguitar
 
-    pkgs.opencode
+    inputs.nixpkgs-latest.legacyPackages.${pkgs.stdenv.hostPlatform.system}.opencode
   ];
 
   services.ollama = {

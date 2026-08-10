@@ -22,6 +22,14 @@ let
   orange = "#D678B5";
   cursor = "#a586ba";
 
+  # Bleeding-edge nixpkgs, used for the fast-moving agent CLIs below. Imported
+  # (rather than taken from legacyPackages) so allowUnfree applies — claude-code
+  # and github-copilot-cli are both unfree.
+  pkgsLatest = import inputs.nixpkgs-latest {
+    inherit (pkgs.stdenv.hostPlatform) system;
+    config.allowUnfree = true;
+  };
+
   pkgs2405 = import (builtins.fetchTarball {
     url = "https://github.com/NixOS/nixpkgs/archive/refs/tags/24.05.tar.gz";
     sha256 = "1lr1h35prqkd1mkmzriwlpvxcb34kmhc9dnr48gkm8hh089hifmx";
@@ -274,11 +282,10 @@ in {
 
     pkgs.zed-editor
     pkgs.openai-whisper
-    (import inputs.nixpkgs-latest {
-      inherit (pkgs.stdenv.hostPlatform) system;
-      config.allowUnfree = true;
-    }).claude-code
-    inputs.nixpkgs-latest.legacyPackages.${pkgs.stdenv.hostPlatform.system}.codex
+    pkgsLatest.claude-code
+    pkgsLatest.codex
+    # GitHub Copilot CLI, provides `copilot`
+    pkgsLatest.github-copilot-cli
 
     pkgs.parallel
     pkgs.presenterm
@@ -286,9 +293,7 @@ in {
 
     pkgs.element-desktop
     pkgs.element-web
-    (let
-      pkgsLatest = inputs.nixpkgs-latest.legacyPackages.${pkgs.stdenv.hostPlatform.system};
-    in pkgs.symlinkJoin {
+    (pkgs.symlinkJoin {
       name = "cinny-desktop";
       paths = [ pkgsLatest.cinny-desktop ];
       buildInputs = [ pkgs.makeWrapper ];
