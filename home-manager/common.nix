@@ -106,21 +106,21 @@ let
 
   # Temporarily hold off the idle auto-lock ("caffeine"). xss-lock locks on the X
   # ScreenSaver "activate" event, which fires from BOTH the screensaver idle timer
-  # (xset s, 900s) AND DPMS blanking (xset dpms, 600s). Disabling only `xset s`
-  # isn't enough — DPMS at 10min still trips the lock — so we turn off both, and
+  # (xset s, 1800s) AND DPMS blanking (xset dpms, 1800s). Disabling only `xset s`
+  # isn't enough — DPMS blanking still trips the lock — so we turn off both, and
   # restore both on the way out. Nothing auto-suspends on idle here (logind
   # IdleAction=ignore), so no logind inhibitor is needed.
   #   caffeine        -> toggle: stay awake, or restore if already on
   #   caffeine off    -> restore the normal timeouts
   #   caffeine 90m    -> stay awake for a fixed span, then restore itself
-  # Restore values mirror the baseline: `xset s 900 600` (xss-lock.service's
-  # ExecStartPre) and DPMS 600/600/600.
+  # Restore values mirror the baseline: `xset s 1800` (xss-lock.service's
+  # ExecStartPre) and DPMS 1800/1800/1800 (set in xmonad's startup hook).
   caffeine = pkgs.writeShellScriptBin "caffeine" ''
     export PATH=${lib.makeBinPath [ pkgs.xorg.xset pkgs.libnotify pkgs.coreutils ]}:$PATH
     state="''${XDG_RUNTIME_DIR:-/tmp}/caffeine.on"
 
     on()  { xset s off -dpms;                    touch "$state"; notify-send -a caffeine "☕ Caffeine on"  "Auto-lock & screen blanking disabled"; }
-    off() { xset s 900 600; xset dpms 600 600 600; rm -f "$state"; notify-send -a caffeine "😴 Caffeine off" "Auto-lock restored"; }
+    off() { xset s 1800 1800; xset dpms 1800 1800 1800; rm -f "$state"; notify-send -a caffeine "😴 Caffeine off" "Auto-lock restored"; }
 
     case "''${1:-toggle}" in
       on)     on ;;
@@ -420,7 +420,9 @@ in {
       aliases = {
         local = ["log" "-r" "remote_bookmarks().."];
         f = ["git" "fetch"];
-        push = ["git" "push" "&&" "jj" "new"];
+        # aliases are argv prefixes, not shell, so chaining needs `util exec`.
+        # "$@" forwards any extra flags to the push.
+        push = ["util" "exec" "--" "sh" "-c" ''jj git push "$@" && jj new'' "jj-push"];
         back = ["edit" "-r" "@-"];
         d = ["describe" "-m"];
         bd = ["describe" "@-" "-m"];
@@ -520,8 +522,14 @@ in {
     settings = {
       theme = "booberry";
       font-family = "Iosevka";
-      font-style = "Regular";
       font-size = 18;
+      # alacritty pins every face to Regular; match it so bold-heavy TUIs
+      # (zellij's frames/tab bar) don't render heavier here than there.
+      font-style = "Regular";
+      font-style-bold = "Regular";
+      font-style-italic = "Regular";
+      font-style-bold-italic = "Regular";
+      font-synthetic-style = false;
       scrollback-limit = 10000000;
       background-opacity = 1.0;
     };
@@ -740,7 +748,7 @@ in {
   services.screen-locker = {
     enable = true;
     lockCmd = "${lockScript}";
-    inactiveInterval = 15;
+    inactiveInterval = 30;
     xautolock.enable = false;
   };
 

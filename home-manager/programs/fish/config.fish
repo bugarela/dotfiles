@@ -78,20 +78,45 @@ function fish_prompt
     echo -e -n -s $prompt_color ' $ ' $normal
 end
 
-function __zellij_tab_update --on-event fish_prompt
-    if set -q ZELLIJ
-        set -l dir (basename (git rev-parse --show-toplevel 2>/dev/null; or pwd))
-        zellij action rename-tab $dir
+# `zellij action rename-tab` renames the *focused* tab, so a shell in a
+# background tab would rename whatever tab you're looking at. Resolve this
+# shell's own tab id from $ZELLIJ_PANE_ID and always rename with `-t`.
+function __zellij_my_tab_id
+    if not set -q __zellij_tab_id
+        set -g __zellij_tab_id (zellij action list-panes -t -j \
+            | jq -r --argjson p $ZELLIJ_PANE_ID \
+                'map(select(.is_plugin == false and .id == $p)) | .[0].tab_id')
+    end
+    echo $__zellij_tab_id
+end
+
+function __zellij_rename_tab
+    if set -q ZELLIJ; and set -q ZELLIJ_PANE_ID
+        set -l tab (__zellij_my_tab_id)
+        test -n "$tab"; and zellij action rename-tab -t $tab $argv[1]
     end
 end
 
+function __zellij_dir_name
+    basename (git rev-parse --show-toplevel 2>/dev/null; or pwd)
+end
+
+function __zellij_tab_update --on-variable PWD
+    __zellij_rename_tab (__zellij_dir_name)
+end
+
 function __zellij_tab_preexec --on-event fish_preexec
-    if set -q ZELLIJ
-        set -l dir (basename (git rev-parse --show-toplevel 2>/dev/null; or pwd))
-        if string match -qr "^claude" $argv
-            zellij action rename-tab "Claude - $dir"
-        end
+    if string match -qr "^claude" $argv
+        __zellij_rename_tab "Claude - "(__zellij_dir_name)
     end
 end
+
+function __zellij_tab_postexec --on-event fish_postexec
+    if string match -qr "^claude" $argv
+        __zellij_rename_tab (__zellij_dir_name)
+    end
+end
+
+__zellij_tab_update
 
 jj util completion fish | source
