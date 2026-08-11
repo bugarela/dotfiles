@@ -433,6 +433,10 @@ in {
   programs.fish = {
     enable = true;
     interactiveShellInit = builtins.readFile ./programs/fish/config.fish;
+    functions = {
+      # open files in the running emacs daemon without blocking the shell
+      e = ''emacsclient -n -a "" $argv'';
+    };
     plugins = [
       {
         name = "plugin-git";
