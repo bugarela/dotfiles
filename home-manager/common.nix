@@ -422,6 +422,8 @@ in {
         f = ["git" "fetch"];
         push = ["git" "push" "&&" "jj" "new"];
         back = ["edit" "-r" "@-"];
+        bd = ["describe" "@-" "-m"];
+        d = ["describe" "-m"];
         md = ["diff" "-f" "trunk()" "-t" "@"];
         rb = ["rebase" "-s" "base" "-d" "trunk()"];
       };
