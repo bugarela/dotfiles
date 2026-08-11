@@ -422,8 +422,8 @@ in {
         f = ["git" "fetch"];
         push = ["git" "push" "&&" "jj" "new"];
         back = ["edit" "-r" "@-"];
-        bd = ["describe" "@-" "-m"];
         d = ["describe" "-m"];
+        bd = ["describe" "@-" "-m"];
         md = ["diff" "-f" "trunk()" "-t" "@"];
         rb = ["rebase" "-s" "base" "-d" "trunk()"];
       };
@@ -511,6 +511,47 @@ in {
           white = "#FFFFFF";
         };
       };
+    };
+  };
+
+  programs.ghostty = {
+    enable = true;
+
+    settings = {
+      theme = "booberry";
+      font-family = "Iosevka";
+      font-style = "Regular";
+      font-size = 18;
+      scrollback-limit = 10000000;
+      background-opacity = 1.0;
+    };
+
+    # same palette as the alacritty config above
+    themes.booberry = {
+      background = bg;
+      foreground = fg;
+      cursor-color = cursor;
+      cursor-text = "#0E1415";
+      selection-background = bgFade;
+      selection-foreground = fg;
+      palette = [
+        "0=${black}"
+        "1=${red}"
+        "2=${green}"
+        "3=${yellow}"
+        "4=${blue}"
+        "5=${magenta}"
+        "6=${cyan}"
+        "7=${white}"
+        "8=#777777"
+        "9=#f36868"
+        "10=#88db3f"
+        "11=#f0bf7a"
+        "12=#6f8fdb"
+        "13=#e987e9"
+        "14=#4ac9e2"
+        "15=#FFFFFF"
+      ];
     };
   };
 

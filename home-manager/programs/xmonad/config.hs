@@ -448,6 +448,16 @@ moveStuff = do
   spawn "/home/gabriela/dotfiles/home-manager/programs/xmonad/init-polybar.sh"
   spawn "xmonad --restart"
 
+-- Toggled layouts (M-<Space>, M-G, ...) and WindowArranger state are stored per
+-- workspace and survive a restart, so a workspace can get stuck in "everything I
+-- open here is floating/odd-sized" with no way back. This puts one workspace back
+-- to a known state: default layout, no arranged geometry, nothing floating.
+resetWorkspace :: X ()
+resetWorkspace = do
+  sendMessage DeArrange
+  asks config >>= setLayout . layoutHook
+  sinkAll
+
 myKeysP :: [(String, X ())]
 myKeysP =
   -- Xmonad
@@ -476,6 +486,7 @@ myKeysP =
     ("M-S-G", sendMessage (T.Toggle "gridGaps")), -- Toggles my 'big gaps' layout
     ("M-<Delete>", withFocused $ windows . W.sink), -- Push floating window back to tile
     ("M-S-<Delete>", sinkAll), -- Push ALL floating windows to tile
+    ("M-S-<Space>", resetWorkspace), -- Un-stick a workspace: default layout, nothing floating/arranged
 
     -- Windows navigation
     ("M-m", windows W.focusMaster), -- Move focus to the master window
