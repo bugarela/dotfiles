@@ -228,7 +228,7 @@
 
   # Open ports in the firewall.
   networking.firewall = {
-    allowedTCPPorts = [ 443 4443 7000 17500 ];
+    allowedTCPPorts = [ 443 4443 7000 17500 38637 ];
     allowedUDPPorts = [ 17500 ];
   };
   # networking.firewall.allowedUDPPorts = [ ... ];
