@@ -96,6 +96,55 @@
   (interactive)
   (org-agenda nil "o"))
 
+(defun my/org-agenda-scheduled ()
+  "Open the \"Scheduled (next month)\" agenda.
+
+`org-agenda-get-scheduled' runs its `SCHEDULED:' search with NOERROR nil on
+purpose, so when org's element cache disagrees with a buffer's text -- which
+happens after agenda files are written from outside Emacs -- the whole command
+dies with `search-failed'.  Rebuild the caches and retry once, rather than
+resetting up front: a reset costs a full cold parse of every agenda file."
+  (interactive)
+  (condition-case nil
+      (org-agenda nil "s")
+    (search-failed
+     (message "Stale org element cache; rebuilding and retrying...")
+     (org-element-cache-reset 'all)
+     (org-agenda nil "s"))))
+
+(defun my/agenda-deadline-label ()
+  "Return a deadline label for the entry at point, or nil when it has no deadline."
+  (save-match-data
+    (let ((deadline (org-get-deadline-time (point))))
+      (and deadline (format-time-string "[DEADLINE %b %e]" deadline)))))
+
+(defun my/org-agenda-append-deadline-labels ()
+  "Append `my/agenda-deadline-label' after the item text of each agenda line.
+The label is inserted before any right-aligned tags, which are then realigned.
+Meant for `org-agenda-finalize-hook'."
+  (let ((inhibit-read-only t))
+    (save-excursion
+      (goto-char (point-min))
+      (while (not (eobp))
+        (let* ((marker (org-get-at-bol 'org-hd-marker))
+               (label (and marker
+                           (org-with-point-at marker
+                             (my/agenda-deadline-label)))))
+          (when label
+            (end-of-line)
+            ;; Land right after the headline text: before the tags, and before
+            ;; the alignment padding in front of them.
+            (when (re-search-backward "[ \t]+:[[:alnum:]_@#%:]+:[ \t]*$"
+                                      (line-beginning-position) t)
+              (goto-char (match-beginning 0)))
+            (skip-chars-backward " \t")
+            (let ((props (copy-sequence
+                          (text-properties-at (max (point-min) (1- (point)))))))
+              (insert (apply #'propertize (concat " " label)
+                             (plist-put props 'face 'org-upcoming-deadline))))))
+        (forward-line 1))
+      (org-agenda-align-tags))))
+
 ;; Custom agenda commands for inbox workflow
 (setq org-agenda-custom-commands
       '(("o" "Overview"
@@ -110,7 +159,38 @@
           (todo "TODO|NEXT"
                 ((org-agenda-overriding-header "Other Tasks\n")
                  (org-agenda-skip-function
-                  '(org-agenda-skip-entry-if 'regexp ":today:\\|:next:\\|:soon:"))))))))
+                  '(org-agenda-skip-entry-if 'regexp ":today:\\|:next:\\|:soon:"))))))
+        ("s" "Scheduled (next month)"
+         ((agenda ""
+                  ((org-agenda-overriding-header "Scheduled\n")
+                   (org-agenda-span 31)
+                   (org-agenda-start-day "today")
+                   (org-agenda-entry-types '(:scheduled))
+                   (org-agenda-show-all-dates t)
+                   (org-agenda-time-grid nil)
+                   (org-agenda-skip-scheduled-if-done t)
+                   ;; Everything here is scheduled by construction, so the
+                   ;; "Scheduled: " leader is noise.  Overdue items keep their
+                   ;; "Sched.NNx: " marker.
+                   (org-agenda-scheduled-leaders '("" "Sched.%2dx: "))
+                   ;; Drop %c: the category is the roam daily's file name, which
+                   ;; is itself a date and reads as if it were the due date.
+                   (org-agenda-prefix-format '((agenda . " %i %?-12t% s")))))
+          (todo "TODO|NEXT"
+                ((org-agenda-overriding-header "\nUnscheduled\n")
+                 (org-agenda-skip-function
+                  '(org-agenda-skip-entry-if 'scheduled 'deadline)))))
+         ;; General settings: finalize runs once for the whole series, so the
+         ;; deadline labels have to be hooked in here rather than per block.
+         ((org-agenda-finalize-hook
+           (cons #'my/org-agenda-append-deadline-labels
+                 org-agenda-finalize-hook))
+          ;; quint-loop.org is the loop board: 900 lines, no planning lines at
+          ;; all, so it can never contribute to this view.
+          (org-agenda-files
+           (seq-remove (lambda (f)
+                         (equal (file-name-nondirectory f) "quint-loop.org"))
+                       (org-agenda-files)))))))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -166,7 +246,13 @@
   (dolist (file (org-agenda-files))
     (when-let ((buf (find-buffer-visiting file)))
       (with-current-buffer buf
-        (revert-buffer t t t))))
+        (revert-buffer t t t)
+        ;; Reverting with PRESERVE-MODES skips `org-mode' re-init, so the
+        ;; element cache is never rebuilt for the replaced text.  A stale
+        ;; cache makes `org-agenda-get-scheduled' fail with
+        ;; "Search failed: \\<SCHEDULED: *<...".
+        (when (fboundp 'org-element-cache-reset)
+          (org-element-cache-reset)))))
   (org-roam-db-sync)
   (when (fboundp 'org-agenda-redo-all)
     (org-agenda-redo-all t))
@@ -320,6 +406,7 @@
 (map! :leader
       (:prefix-map ("a" . "custom")
        :desc "Agenda overview (zen)" "o" #'my/org-agenda-overview-zen
+       :desc "Scheduled (next month)" "a" #'my/org-agenda-scheduled
        :desc "Find definition" "d" #'xref-find-definitions-other-window
        :desc "Open spec" "s" #'projectile-find-implementation-or-test-other-window
        :desc "Yank relative path" "y" #'(lambda () (interactive) (kill-new (file-relative-name buffer-file-name (projectile-project-root))))
