@@ -30,6 +30,14 @@ let
     config.allowUnfree = true;
   };
 
+  # Chrome/Vivaldi 152 can crash renderer tabs when pasting clipboard payloads
+  # that include Chromium's private/custom web formats (for example the
+  # chromium/x-web-custom-data target produced by copies from rich web editors).
+  # Keep normal text/html/image clipboard support, but disable the newer custom
+  # and unsanitized format paths so paste falls back to standard formats.
+  chromiumClipboardWorkaround =
+    "--disable-features=ClipboardCustomFormat,ClipboardUnsanitizedFormats,SelectiveClipboardFormatRead";
+
   pkgs2405 = import (builtins.fetchTarball {
     url = "https://github.com/NixOS/nixpkgs/archive/refs/tags/24.05.tar.gz";
     sha256 = "1lr1h35prqkd1mkmzriwlpvxcb34kmhc9dnr48gkm8hh089hifmx";
@@ -165,6 +173,21 @@ in {
     '';
   };
 
+  # Zellij's default tab bar is one row tall. With pane frames hidden, the shell
+  # starts immediately below it; give the tab-bar plugin a second (blank) row so
+  # there is visual padding without restoring pane borders.
+  xdg.configFile."zellij/layouts/padded.kdl".text = ''
+    layout {
+        pane size=2 borderless=true {
+            plugin location="tab-bar"
+        }
+        pane
+        pane size=1 borderless=true {
+            plugin location="status-bar"
+        }
+    }
+  '';
+
   # home.activation = {
   #   installDoomEmacs = ''
   #     if [ ! -d "$HOME/emacs" ]; then
@@ -221,9 +244,9 @@ in {
     pkgs.spotify
     pkgs.pulsemixer
 
-    pkgs.vivaldi
+    (pkgs.vivaldi.override { commandLineArgs = chromiumClipboardWorkaround; })
     pkgs.vivaldi-ffmpeg-codecs
-    pkgs.google-chrome
+    (pkgs.google-chrome.override { commandLineArgs = chromiumClipboardWorkaround; })
 
     pkgs.telegram-desktop
     pkgs.discord
@@ -583,6 +606,7 @@ in {
       ui.pane_frames.hide_session_name = true;
       scrollback_editor = "hx";
       show_startup_tips = false;
+      default_layout = "padded";
       keybinds.shared.bind = {
         _args = [ "Alt ;" ];
         ToggleFocusFullscreen = {};

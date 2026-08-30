@@ -50,9 +50,27 @@ let
     ".claude/commands"
     "loop"
   ];
+
+  # Pi keeps auth.json/settings.json/sessions in ~/.pi/agent, so do not own the
+  # whole directory. Own the config subdirectories we author instead, matching
+  # the Claude setup: adding or removing Pi skills, agents, extension files, or
+  # whole extension bundles in private-dotfiles needs no Nix edit or rebuild.
+  piDirs = [
+    ".pi/agent/extensions"
+    ".pi/agent/skills"
+    ".pi/agent/agents"
+  ];
+
+  piLink = p: {
+    name = p;
+    value = {
+      source = config.lib.file.mkOutOfStoreSymlink "${private}/home/${p}";
+      force = true;
+    };
+  };
 in
 {
-  home.file = lib.listToAttrs (map link dirs);
+  home.file = lib.listToAttrs ((map link dirs) ++ (map piLink piDirs));
 
   # A missing clone would leave every link above dangling, which shows up as a
   # slash-command that appears in the menu and then fails. Checked at activation
