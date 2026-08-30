@@ -83,6 +83,17 @@
           substituteInPlace libfprint/sigfm/meson.build \
             --replace-fail "sigfm_tests = executable('sigfm-tests', ['./tests.cpp'], dependencies: [doctest, opencv], link_with: [libsigfm])" ""
         '';
+        # The suite runs post-install via ninjaCheckPhase, which calls `meson test`
+        # with meson's 30s default timeout and no way to pass flags through. Several
+        # driver and virtual-device tests exceed that on a loaded builder (they fail
+        # as TIMEOUT, never as Fail), so call meson test directly with more headroom.
+        installCheckPhase = ''
+          runHook preInstallCheck
+
+          meson test --no-rebuild --print-errorlogs --timeout-multiplier 10
+
+          runHook postInstallCheck
+        '';
       });
     })
   ];

@@ -14,7 +14,7 @@ in pkgs.mkShell {
     pkgs.python3
     # tree-sitter
     # Dev env
-    pkgs.nodePackages.typescript-language-server
-    pkgs.nodePackages.prettier
+    pkgs.typescript-language-server
+    pkgs.prettier
   ];
 }

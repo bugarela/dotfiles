@@ -287,6 +287,7 @@ in {
     pkgsLatest.codex
     # GitHub Copilot CLI, provides `copilot`
     pkgsLatest.github-copilot-cli
+    pkgsLatest.pi-coding-agent
 
     pkgs.parallel
     pkgs.presenterm
