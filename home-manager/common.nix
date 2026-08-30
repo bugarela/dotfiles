@@ -154,6 +154,17 @@ in {
     TREESIT_GRAMMAR_PATH = "${treesit-grammars}/lib";
   };
 
+  xdg.configFile."flameshot/flameshot.ini" = {
+    force = true;
+    text = ''
+      [General]
+      captureActiveMonitor=true
+      contrastOpacity=188
+      savePath=/home/gabriela/Pictures
+      useX11LegacyScreenshot=true
+    '';
+  };
+
   # home.activation = {
   #   installDoomEmacs = ''
   #     if [ ! -d "$HOME/emacs" ]; then

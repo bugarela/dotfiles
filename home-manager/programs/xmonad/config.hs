@@ -540,8 +540,12 @@ myKeysP =
     -- Apps
     ("M-u", spawn "pavucontrol"),
     ("<XF86Tools>", spawn "pavucontrol"),
-    ("Print", spawn "flameshot full"),
-    ("C-Print", spawn "scrot -e 'mv $f /tmp/ && gimp /tmp/$f"),
+    -- Screenshots. Keep all Print bindings on Flameshot; the old scrot/scrotd
+    -- bindings either shadowed this key or referenced commands that are not
+    -- installed, making the Print key appear broken.
+    ("<Print>", spawn "flameshot gui"),
+    ("S-<Print>", spawn "flameshot full -c"),
+    ("C-<Print>", spawn "flameshot full -p ~/Pictures"),
     ("M-S-s", spawn "flameshot gui"),
     ("M-S-p", spawn "killall picom"),
     -- Emacs (CTRL-e followed by a key)
@@ -567,8 +571,7 @@ myKeysP =
     ("<XF86Search>", safeSpawn "vivaldi" ["https://www.google.com/"]),
     ("<XF86Mail>", runOrRaise "geary" (resource =? "thunderbird")),
     ("<XF86Calculator>", runOrRaise "gcalctool" (resource =? "gcalctool")),
-    ("<XF86Eject>", spawn "toggleeject"),
-    ("<Print>", spawn "scrotd 0")
+    ("<XF86Eject>", spawn "toggleeject")
   ]
     -- Appending search engine prompts to keybindings list.
     -- Look at "search engines" section of this config for values for "k".
