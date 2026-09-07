@@ -30,6 +30,10 @@ let
     config.allowUnfree = true;
   };
 
+  netlify-cli-latest = pkgsLatest.writeShellScriptBin "netlify" ''
+    exec ${pkgsLatest.nodejs_24}/bin/npm exec --yes --package netlify-cli@27.5.0 -- netlify "$@"
+  '';
+
   # Chrome/Vivaldi 152 can crash renderer tabs when pasting clipboard payloads
   # that include Chromium's private/custom web formats (for example the
   # chromium/x-web-custom-data target produced by copies from rich web editors).
@@ -322,6 +326,7 @@ in {
     # GitHub Copilot CLI, provides `copilot`
     pkgsLatest.github-copilot-cli
     pkgsLatest.pi-coding-agent
+    netlify-cli-latest
 
     pkgs.parallel
     pkgs.presenterm
