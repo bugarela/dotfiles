@@ -725,17 +725,17 @@ Time-stamp: <>
   (eglot-ensure))
 (add-hook 'haskell-mode-hook 'my-haskell-mode-hook)
 
-;; accept completion from copilot and fallback to company
-(use-package! copilot
-  :hook (prog-mode . copilot-mode)
-  :bind (:map copilot-completion-map
-              ("<tab>" . 'copilot-accept-completion)
-              ("<backtab>" . 'copilot-accept-completion)
-              ("TAB" . 'copilot-accept-completion)
-              ("C-TAB" . 'copilot-accept-completion-by-word)
-              ("C-<tab>" . 'copilot-accept-completion-by-word)))
+;; Copilot disabled. Uncomment to re-enable inline completion in prog-mode.
+;; (use-package! copilot
+;;   :hook (prog-mode . copilot-mode)
+;;   :bind (:map copilot-completion-map
+;;               ("<tab>" . 'copilot-accept-completion)
+;;               ("<backtab>" . 'copilot-accept-completion)
+;;               ("TAB" . 'copilot-accept-completion)
+;;               ("C-TAB" . 'copilot-accept-completion-by-word)
+;;               ("C-<tab>" . 'copilot-accept-completion-by-word)))
 
-(setq copilot-server-executable "/home/gabriela/.npm/bin/copilot-language-server")
+;; (setq copilot-server-executable "/home/gabriela/.npm/bin/copilot-language-server")
 
 (add-to-list 'default-frame-alist '(internal-border-width . 20))
 (custom-set-faces
