@@ -58,6 +58,13 @@ let
   # rendering (laggy webview). See the comment in its default.nix.
   note-taker-gui = import ./programs/note-taker-gui/default.nix { inherit pkgs; };
 
+  # `pkgs.sable` is only the web dist -- see the header of this default.nix for
+  # why the desktop window is assembled here instead.
+  sable-desktop = import ./programs/sable-desktop/default.nix {
+    inherit pkgs;
+    browserFlags = [ chromiumClipboardWorkaround ];
+  };
+
   # Saver used by xsecurelock: paint the wallpaper into the window xsecurelock
   # hands us ($XSCREENSAVER_WINDOW). mpv renders a still image cleanly into a
   # given window id and is already installed; --panscan=1 fills each monitor
@@ -257,6 +264,7 @@ in {
     pkgs.slack
     pkgs.zulip
     pkgs.signal-desktop
+    sable-desktop
 
     pkgs.flameshot
     pkgs.peek
