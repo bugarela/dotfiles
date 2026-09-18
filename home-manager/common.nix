@@ -58,6 +58,28 @@ let
   # rendering (laggy webview). See the comment in its default.nix.
   note-taker-gui = import ./programs/note-taker-gui/default.nix { inherit pkgs; };
 
+  # Quint Studio ships only as an AppImage, from a closed-beta URL -- so both
+  # the URL and the packaging live in private-dotfiles, and only this reference
+  # is public. Imported by absolute path, which works for the same reason the
+  # out-of-store links in programs/claude do: this rebuild is --impure, and a
+  # pure evaluation could not read outside the flake either way.
+  #
+  # Same reason as note-taker-gui for passing the system pkgs: its WebKit talks
+  # to the running GPU stack. claude-code comes from the same pin as the
+  # interactive `claude` below, so the agent Studio drives is the agent I use.
+  #
+  # A missing clone degrades to "not installed" rather than failing the whole
+  # rebuild -- programs/claude already warns about it at activation, and one
+  # warning is enough.
+  quintStudioModule =
+    "${config.home.homeDirectory}/private-dotfiles/home-manager/programs/quint-studio";
+  quint-studio = lib.optional (builtins.pathExists quintStudioModule) (
+    import quintStudioModule {
+      inherit pkgs;
+      claude-code = pkgsLatest.claude-code;
+    }
+  );
+
   # `pkgs.sable` is only the web dist -- see the header of this default.nix for
   # why the desktop window is assembled here instead.
   sable-desktop = import ./programs/sable-desktop/default.nix {
@@ -365,7 +387,9 @@ in {
 
     # Tree-sitter grammars for Emacs
     treesit-grammars
-  ];
+  ]
+  # Empty when private-dotfiles is not cloned; see its binding above.
+  ++ quint-studio;
 
   programs.emacs = {
     enable = true;
