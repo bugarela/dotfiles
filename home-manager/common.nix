@@ -206,18 +206,21 @@ in {
     '';
   };
 
-  # Zellij's default tab bar is one row tall. With pane frames hidden, the shell
-  # starts immediately below it; give the tab-bar plugin a second (blank) row so
-  # there is visual padding without restoring pane borders.
+  # One row of chrome instead of three: compact-bar carries the tabs *and* the
+  # mode indicator, so tab-bar + status-bar are both gone. The keybinding hints
+  # the status bar used to occupy a permanent row for now live in a pop-up
+  # tooltip, bound below to Alt+g (the bar renders it as a clickable hint too).
+  # size=1: the band sits directly above the pane frame, no padding row. The
+  # bar only ever paints its own line, so a taller pane would just leave a
+  # terminal-coloured gap between the band and the content.
   xdg.configFile."zellij/layouts/padded.kdl".text = ''
     layout {
-        pane size=2 borderless=true {
-            plugin location="tab-bar"
+        pane size=1 borderless=true {
+            plugin location="zellij:compact-bar" {
+                tooltip "Alt g"
+            }
         }
         pane
-        pane size=1 borderless=true {
-            plugin location="status-bar"
-        }
     }
   '';
 
@@ -641,29 +644,110 @@ in {
     enableFishIntegration = true;
     settings = {
       ui.pane_frames.hide_session_name = true;
+      ui.pane_frames.rounded_corners = true;
+      # zellij always draws a divider between tiled panes -- it survives both
+      # `pane_frames false` and pane_frame_style "none" (which is a no-op in
+      # 0.45, identical to the "titles" default). On its own that divider reads
+      # as a stray line, so "full" boxes each pane and makes it part of a frame
+      # instead. The cost is that a lone pane gets a box too; there's no
+      # built-in way to vary this by pane count (swap layouts reject
+      # `borderless` on a node with `children`).
+      pane_frame_style = "full";
+      # Drops the powerline wedges the bar draws around the active tab, so the
+      # ribbons are flat blocks in line with everything else.
+      simplified_ui = true;
       scrollback_editor = "hx";
       show_startup_tips = false;
       default_layout = "padded";
-      keybinds.shared.bind = {
-        _args = [ "Alt ;" ];
-        ToggleFocusFullscreen = {};
-        MoveFocusOrTab = ["Right"];
-      }; 
       theme = "booberry";
-      themes.booberry = {
-          fg = fg;
-          bg = bgFade;
-          black = black;
-          red = red;
-          green = green;
-          yellow = yellow;
-          blue = blue;
-          magenta = magenta;
-          cyan = cyan;
-          white = white;
-          orange = orange;
+      # The 16-colour theme format only lets zellij guess which colour goes
+      # where. This is the per-UI-component format instead, so the bar is a
+      # deliberate band in bgFade and only the active tab carries contrast.
+      #
+      # The emphasis_* slots are the trap: on text components zellij uses them
+      # as *foreground* accents (the mode name, the tooltip hint key), but on
+      # ribbons and chips it paints them as *backgrounds* for alternate tab
+      # states -- which is where the stray cyan block behind inactive tabs came
+      # from. So ribbons get band-coloured emphases and stay flat.
+      themes.booberry = let
+        # the bar band, darker than the terminal background so it reads as a
+        # distinct strip rather than a lighter stripe laid over the screen
+        barBg = black;
+        accents = {
+          emphasis_0 = orange;
+          emphasis_1 = blue;
+          emphasis_2 = magenta;
+          emphasis_3 = yellow;
+        };
+        onBand = {
+          emphasis_0 = barBg;
+          emphasis_1 = barBg;
+          emphasis_2 = barBg;
+          emphasis_3 = barBg;
+        };
+        onWhite = {
+          emphasis_0 = white;
+          emphasis_1 = white;
+          emphasis_2 = white;
+          emphasis_3 = white;
+        };
+      in {
+        # the bar band itself, and plain text inside plugin UIs
+        text_unselected = accents // { base = fg; background = barBg; };
+        text_selected = onBand // { base = white; background = barBg; };
+        # tabs: the active one is a white block, inactive ones are plain text
+        # sitting on the band with no block of their own
+        ribbon_unselected = onBand // { base = fg; background = barBg; };
+        ribbon_selected = onWhite // { base = black; background = white; };
+        # session-manager / configuration / plugin-manager listings
+        table_title = accents // { base = green; background = bg; };
+        table_cell_unselected = accents // { base = fg; background = bg; };
+        table_cell_selected = accents // { base = white; background = bgFade; };
+        list_unselected = accents // { base = fg; background = bg; };
+        list_selected = accents // { base = white; background = bgFade; };
+        # the frames that do get drawn: floating panes, fullscreen, search
+        frame_selected = accents // { base = magenta; background = bg; };
+        frame_highlight = accents // { base = orange; background = bg; };
+        exit_code_success = accents // { base = green; background = bg; };
+        exit_code_error = accents // { base = red; background = bg; };
+        multiplayer_user_colors = {
+          player_1 = magenta;
+          player_2 = blue;
+          player_3 = green;
+          player_4 = yellow;
+          player_5 = orange;
+          player_6 = cyan;
+          player_7 = white;
+          player_8 = cursor;
+          player_9 = black;
+          player_10 = fg;
+        };
       };
     };
+    # Keybinds live here rather than in `settings` because KDL allows repeated
+    # `bind` nodes and a Nix attrset does not.
+    #
+    # Alt+g toggles compact-bar's keybinding tooltip. The payload is the zellij
+    # *client id* -- the bar is per-client, and it only reacts to a message
+    # carrying its own id. "1" is the first client attached to a session, so
+    # this works for the usual one-terminal case; a second client attached to
+    # the same session would need its own id and won't get the tooltip.
+    extraConfig = ''
+      keybinds {
+          shared {
+              bind "Alt ;" {
+                  MoveFocusOrTab "Right"
+                  ToggleFocusFullscreen
+              }
+              bind "Alt g" {
+                  MessagePlugin "compact-bar" {
+                      name "toggle_tooltip"
+                      payload "1"
+                  }
+              }
+          }
+      }
+    '';
   };
 
   programs.autorandr.enable = true;
