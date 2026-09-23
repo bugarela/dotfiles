@@ -12,6 +12,10 @@
 , browser ? pkgs.chromium
   # Extra flags for the host browser, e.g. the Chromium clipboard workaround.
 , browserFlags ? [ ]
+  # Must stay fixed: the origin (scheme+host+port) keys localStorage and
+  # IndexedDB, where the Matrix session and crypto store live. A new port is a
+  # new origin, i.e. a logged-out client. Changing this logs you out once.
+, port ? 41847
 }:
 
 let
@@ -31,37 +35,31 @@ let
         ! (exec 3<>"/dev/tcp/127.0.0.1/$1") 2>/dev/null
       }
 
-      port=""
-      for _ in $(seq 1 100); do
-        candidate=$(( 20000 + RANDOM % 20000 ))
-        if port_free "$candidate"; then
-          port="$candidate"
-          break
-        fi
-      done
-      if [ -z "$port" ]; then
-        echo "sable-desktop: no free loopback port found" >&2
-        exit 1
-      fi
+      port=${toString port}
 
       # Serve over http://127.0.0.1 rather than file://. localhost is a secure
       # context, so the service worker, notifications and getUserMedia/WebRTC
       # all work; under file:// the service worker refuses to register and the
       # call stack is dead on arrival. --page-fallback keeps client-side routes
       # working when the app reloads on a deep link.
-      static-web-server \
-        --host 127.0.0.1 \
-        --port "$port" \
-        --root "$dist" \
-        --page-fallback "$dist/index.html" \
-        --log-level error &
-      server=$!
-      trap 'kill "$server" 2>/dev/null || true' EXIT
+      # If the port is taken, assume another sable-desktop is already serving
+      # it: Chromium will hand this launch to that instance's window anyway,
+      # since both share the same --user-data-dir.
+      if port_free "$port"; then
+        static-web-server \
+          --host 127.0.0.1 \
+          --port "$port" \
+          --root "$dist" \
+          --page-fallback "$dist/index.html" \
+          --log-level error &
+        server=$!
+        trap 'kill "$server" 2>/dev/null || true' EXIT
 
-      for _ in $(seq 1 200); do
-        if ! port_free "$port"; then break; fi
-        sleep 0.05
-      done
+        for _ in $(seq 1 200); do
+          if ! port_free "$port"; then break; fi
+          sleep 0.05
+        done
+      fi
 
       # Its own --user-data-dir, so the Matrix session and encryption keys live
       # apart from the daily browser and survive across launches.
