@@ -287,7 +287,8 @@ myScratchPads =
     NS "discord" spawnDiscord findDiscord manageScratch,
     NS "mega" spawnMega findMega manageScratch,
     NS "side-terminal" spawnSideTerm findSideTerm (insertPosition Below Newer <> nonFloating),
-    NS "claude-usage" spawnClaudeUsage findClaudeUsage manageScratch,
+    NS "claude-usage" spawnClaudeUsage findClaudeUsage (manageHalf 0.05),
+    NS "chatgpt-usage" spawnChatGPTUsage findChatGPTUsage (manageHalf 0.505),
     NS "notetaker" spawnNoteTaker findNoteTaker manageScratch
   ]
   where
@@ -297,6 +298,8 @@ myScratchPads =
         w = 0.9
         t = 0.95 - h
         l = 0.95 - w
+    -- Half-width version of manageScratch, so two usage pages fit side by side
+    manageHalf l = customFloating $ W.RationalRect l 0.05 0.445 0.9
     spawnTerm = myTerminal ++ " -t scratch"
     findTerm = title =? "scratch"
     spawnSideTerm = myTerminal ++ " -t sidescratch"
@@ -311,6 +314,8 @@ myScratchPads =
     findMega = className =? "MEGAsync"
     spawnClaudeUsage = "google-chrome --app=https://claude.ai/settings/usage"
     findClaudeUsage = resource =? "claude.ai__settings_usage"
+    spawnChatGPTUsage = "google-chrome --app='https://chatgpt.com/settings/usage?tab=overview'"
+    findChatGPTUsage = resource =? "chatgpt.com__settings_usage"
     spawnNoteTaker = "note-taker-gui"
     findNoteTaker = title =? "Gabriela's note taker"
 
@@ -534,7 +539,7 @@ myKeysP =
     ("M-C-d", namedScratchpadAction myScratchPads "discord"),
     ("M-S-m", namedScratchpadAction myScratchPads "mega"),
     ("M-;", namedScratchpadAction myScratchPads "side-terminal" >> windows W.swapDown),
-    ("M-C-u", namedScratchpadAction myScratchPads "claude-usage"),
+    ("M-C-u", namedScratchpadAction myScratchPads "claude-usage" >> namedScratchpadAction myScratchPads "chatgpt-usage"),
     ("M-C-n", namedScratchpadAction myScratchPads "notetaker"),
 
     -- Apps

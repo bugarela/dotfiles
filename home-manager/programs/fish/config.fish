@@ -105,14 +105,26 @@ function __zellij_tab_update --on-variable PWD
     __zellij_rename_tab (__zellij_dir_name)
 end
 
+# Tab label for an agent command line, or nothing if it isn't one. `pi` must be
+# a whole word, so `ping` and `pip` don't count.
+function __zellij_agent_label
+    if string match -qr "^claude" -- $argv[1]
+        echo Claude
+    else if string match -qr '^pi(\s|$)' -- $argv[1]
+        echo Pi
+    end
+end
+
 function __zellij_tab_preexec --on-event fish_preexec
-    if string match -qr "^claude" $argv
-        __zellij_rename_tab "Claude - "(__zellij_dir_name)
+    set -l agent (__zellij_agent_label $argv[1])
+    if test -n "$agent"
+        __zellij_rename_tab "$agent - "(__zellij_dir_name)
     end
 end
 
 function __zellij_tab_postexec --on-event fish_postexec
-    if string match -qr "^claude" $argv
+    set -l agent (__zellij_agent_label $argv[1])
+    if test -n "$agent"
         __zellij_rename_tab (__zellij_dir_name)
     end
 end

@@ -65,8 +65,8 @@ let
   # pure evaluation could not read outside the flake either way.
   #
   # Same reason as note-taker-gui for passing the system pkgs: its WebKit talks
-  # to the running GPU stack. claude-code comes from the same pin as the
-  # interactive `claude` below, so the agent Studio drives is the agent I use.
+  # to the running GPU stack. claude-code is not packaged with it: Studio runs
+  # the `claude` on PATH, so the agent it drives is the agent I use.
   #
   # A missing clone degrades to "not installed" rather than failing the whole
   # rebuild -- programs/claude already warns about it at activation, and one
@@ -74,10 +74,7 @@ let
   quintStudioModule =
     "${config.home.homeDirectory}/private-dotfiles/home-manager/programs/quint-studio";
   quint-studio = lib.optional (builtins.pathExists quintStudioModule) (
-    import quintStudioModule {
-      inherit pkgs;
-      claude-code = pkgsLatest.claude-code;
-    }
+    import quintStudioModule { inherit pkgs; }
   );
 
   # `pkgs.sable` is only the web dist -- see the header of this default.nix for
@@ -514,6 +511,11 @@ in {
     functions = {
       # open files in the running emacs daemon without blocking the shell
       e = ''emacsclient -n -a "" $argv'';
+      # Quint Studio from the dev channel's latest AppImage, built on demand
+      quint-studio-dev = ''
+        nix shell -f ~/private-dotfiles/home-manager/programs/quint-studio \
+          --argstr channel dev "" -c quint-studio $argv
+      '';
     };
     plugins = [
       {
@@ -641,8 +643,15 @@ in {
 
   programs.zellij = {
     enable = true;
+    # 0.45.1 for `scroll_mode_sync` below; pinned nixpkgs is still on 0.45.0.
+    package = pkgsLatest.zellij;
     enableFishIntegration = true;
     settings = {
+      # Since 0.45.0, scrolling up with the mouse enters Scroll mode, and
+      # compact-bar pops its tooltip on any mode change -- so every wheel scroll
+      # opened a Scroll tooltip that stuck around until you left Scroll mode.
+      # This keeps mouse scrolling in Normal mode; Alt+g still opens the tooltip.
+      scroll_mode_sync = false;
       ui.pane_frames.hide_session_name = true;
       ui.pane_frames.rounded_corners = true;
       # zellij always draws a divider between tiled panes -- it survives both

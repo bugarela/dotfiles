@@ -41,6 +41,28 @@
                               :size (string-to-number (or (getenv "DOOM_BIG_FONT_SIZE") "24"))))
 (setq doom-variable-pitch-font (font-spec :family "Iosevka" :size 20))
 
+;; ivy-posframe misbehaves in three ways, all from posframe caching its child
+;; frame and copying state from the buffer it was opened over:
+;; - it copies that buffer's `text-scale-mode' amount, so in zen (text-scale 2)
+;;   the popup is huge;
+;; - it takes the parent frame's font once at creation and keeps reusing that
+;;   frame, so opening it under `doom-big-font-mode' leaves it big for good;
+;; - if ivy exits without running its cleanup, the frame stays on screen as an
+;;   empty dark box.
+(after! ivy-posframe
+  (setq posframe-text-scale-factor-function (lambda (_) 0)
+        ;; the frame `font' parameter wants a name, not a font-spec
+        ivy-posframe-font (font-xlfd-name doom-font))
+  (defun my/ivy-posframe-reset ()
+    "Throw away cached posframes so the next one is built fresh."
+    (interactive)
+    (posframe-delete-all))
+  (add-hook 'doom-big-font-mode-hook #'my/ivy-posframe-reset)
+  (add-hook 'writeroom-mode-hook #'my/ivy-posframe-reset)
+  (add-hook 'minibuffer-exit-hook
+            (defun my/ivy-posframe-hide-h ()
+              (posframe-hide ivy-posframe-buffer))))
+
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
