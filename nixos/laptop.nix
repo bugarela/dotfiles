@@ -12,6 +12,11 @@
   # Xserver basic
   services.xserver = {
     dpi = 144;
+    # Diagnostic workaround for Xorg's glamor/iris abort after resume.
+    # CPU-based Xorg drawing may be slower; applications can still use the GPU.
+    deviceSection = ''
+      Option "AccelMethod" "none"
+    '';
   };
 
   # Backlight control
@@ -56,12 +61,13 @@
   };
 
   services.logind.settings.Login = {
-    lidSwitch = "suspend";
-    lidSwitchExternalPower = "lock";
-    lidSwitchDocked = "ignore";
+    HandleLidSwitch = "suspend";
+    HandleLidSwitchExternalPower = "lock";
+    HandleLidSwitchDocked = "ignore";
   };
 
   # No explicit lock-before-sleep service: xss-lock (-s $XDG_SESSION_ID) holds a
-  # logind sleep inhibitor and locks via xsecurelock before suspend. lidSwitch
-  # (suspend) and lidSwitchExternalPower (lock) both route through that path.
+  # logind sleep inhibitor and locks via xsecurelock before suspend.
+  # HandleLidSwitch (suspend) and HandleLidSwitchExternalPower (lock) both route
+  # through that path.
 }
