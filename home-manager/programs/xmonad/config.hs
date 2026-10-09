@@ -42,7 +42,7 @@ import XMonad.Actions.WithAll (killAll, sinkAll)
 import XMonad.Hooks.DynamicLog (PP (..), dynamicLogWithPP, shorten, wrap, xmobarColor, xmobarPP)
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.ManageDocks (ToggleStruts (..), avoidStruts, docksEventHook, manageDocks)
-import XMonad.Hooks.ManageHelpers (doFullFloat, isFullscreen)
+import XMonad.Hooks.ManageHelpers (doCenterFloat, doFullFloat, isFullscreen)
 import XMonad.Hooks.ServerMode
 import XMonad.Hooks.SetWMName
 import XMonad.Hooks.WorkspaceHistory
@@ -389,12 +389,51 @@ myShowWNameTheme =
       swn_color = "#FFFFFF"
     }
 
+-- Authentication must not be buried by floating scratchpads or startup apps.
+-- Match the actual (lowercase) 1Password WM_CLASS, as well as older versions.
+is1Password :: Query Bool
+is1Password = className =? "1password" <||> className =? "1Password"
+
+isSystemAuthPrompt :: Query Bool
+isSystemAuthPrompt =
+  className =? "Gcr-prompter"
+    <||> className =? "Gnome-keyring-prompt"
+    <||> className =? "Polkit-gnome-authentication-agent-1"
+
+-- Inspected the SSH authorization popup: its title is exactly "1Password",
+-- with NORMAL window type and no transient parent. "Lock Screen — 1Password"
+-- is the regular app window; it must stay tiled even while locked.
+is1PasswordPrompt :: Query Bool
+is1PasswordPrompt =
+  is1Password <&&>
+    (title =? "1Password"
+      <||> title =? "Unlock 1Password"
+      <||> title =? "Quick Access — 1Password")
+
+isAuthPrompt :: Query Bool
+isAuthPrompt = isSystemAuthPrompt <||> is1PasswordPrompt
+
+-- Restack in explicit priority order: ordinary windows < 1Password prompts
+-- < system authentication. Never promote the regular 1Password window just
+-- because it is floating, and never change keyboard focus here.
+raiseAuthPrompts :: X ()
+raiseAuthPrompts = do
+  ws <- gets windowset
+  let visibleWindows = concatMap (W.integrate' . W.stack . W.workspace)
+        (W.current ws : W.visible ws)
+      raiseMatching query = forM_ visibleWindows $ \w -> do
+        matches <- runQuery query w
+        when matches $ withDisplay $ \d -> io $ raiseWindow d w
+  raiseMatching is1PasswordPrompt
+  raiseMatching isSystemAuthPrompt
+
 myManageHook :: XMonad.Query (Data.Monoid.Endo WindowSet)
 myManageHook =
   composeAll
     [ className =? "Slack" --> doShift (myWorkspaces !! 4),
       (className =? "firefox" <&&> resource =? "Dialog") --> doFloat, -- Float Firefox Dialog
-      title =? "Gabriela's note taker" --> doShift "NSP" -- Born hidden on scratchpad ws; M-C-n toggles it
+      title =? "Gabriela's note taker" --> doShift "NSP", -- Born hidden on scratchpad ws; M-C-n toggles it
+      isAuthPrompt --> (doCenterFloat <+> insertPosition Above Newer)
     ]
     <+> insertPosition Below Newer <> namedScratchpadManageHook myScratchPads
 
@@ -618,6 +657,6 @@ main = do
               borderWidth = myBorderWidth,
               normalBorderColor = myNormColor,
               focusedBorderColor = myFocusColor,
-              logHook = workspaceHistoryHook
+              logHook = workspaceHistoryHook >> raiseAuthPrompts
             }
           `additionalKeysP` myKeysP
