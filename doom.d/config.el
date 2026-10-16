@@ -207,11 +207,11 @@ Meant for `org-agenda-finalize-hook'."
          ((org-agenda-finalize-hook
            (cons #'my/org-agenda-append-deadline-labels
                  org-agenda-finalize-hook))
-          ;; quint-loop.org is the loop board: 900 lines, no planning lines at
+          ;; quint-kitchen.org is the kitchen board: large, with no planning lines at
           ;; all, so it can never contribute to this view.
           (org-agenda-files
            (seq-remove (lambda (f)
-                         (equal (file-name-nondirectory f) "quint-loop.org"))
+                         (equal (file-name-nondirectory f) "quint-kitchen.org"))
                        (org-agenda-files)))))))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line

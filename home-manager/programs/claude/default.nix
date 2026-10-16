@@ -7,14 +7,14 @@
 # worked would make that miserable.
 #
 # Directories are linked WHOLE wherever we own the whole directory, so adding a
-# skill file, an agent, or a script under ~/loop needs no rebuild at all. Nix
+# skill file, an agent, or a script under ~/kitchen needs no rebuild at all. Nix
 # cannot do better than this: enumerating a directory it does not own
 # (builtins.readDir, or home.file's recursive = true) means reading outside the
 # flake, which a pure evaluation refuses. Whole-directory links are the only way
 # to get folder granularity.
 #
 # A rebuild is therefore needed only when a whole new *directory* appears.
-# Adding a command, a skill, an agent or a loop script does not need one.
+# Adding a command, a skill, an agent or a kitchen script does not need one.
 #
 # Nothing private is in this file — only paths.
 { config, lib, ... }:
@@ -48,7 +48,12 @@ let
     ".claude/skills"
     ".claude/agents"
     ".claude/commands"
-    "loop"
+    "kitchen"
+  ];
+
+  # Individual private files beside Claude's runtime-owned state.
+  files = [
+    ".claude/CLAUDE.md"
   ];
 
   # Pi keeps auth.json/settings.json/sessions in ~/.pi/agent, so do not own the
@@ -70,7 +75,7 @@ let
   };
 in
 {
-  home.file = lib.listToAttrs ((map link dirs) ++ (map piLink piDirs));
+  home.file = lib.listToAttrs ((map link (dirs ++ files)) ++ (map piLink piDirs));
 
   # A missing clone would leave every link above dangling, which shows up as a
   # slash-command that appears in the menu and then fails. Checked at activation
@@ -80,7 +85,7 @@ in
       if [ ! -d "${private}" ]; then
         echo ""
         echo "  WARNING: ${private} is not cloned."
-        echo "  The Claude skills, commands and ~/loop all just linked to nothing."
+        echo "  The Claude skills, commands and ~/kitchen all just linked to nothing."
         echo "    git clone <private-dotfiles> ${private}"
         echo ""
       fi
