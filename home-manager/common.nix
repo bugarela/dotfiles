@@ -77,12 +77,37 @@ let
     import quintStudioModule { inherit pkgs; }
   );
 
+  # Timer for the studio merge notifier in private-dotfiles. Same arrangement
+  # and same missing-clone degradation as Quint Studio above.
+  studioMergesModule =
+    "${config.home.homeDirectory}/private-dotfiles/home-manager/programs/studio-merges";
+  hasStudioMerges = builtins.pathExists studioMergesModule;
+  studioMerges = import studioMergesModule {
+    inherit pkgs;
+    inherit (config.home) homeDirectory;
+  };
+
   # `pkgs.sable` is only the web dist -- see the header of this default.nix for
   # why the desktop window is assembled here instead.
   sable-desktop = import ./programs/sable-desktop/default.nix {
     inherit pkgs;
     browserFlags = [ chromiumClipboardWorkaround ];
   };
+
+  # TickTick's UI is 20% bigger than the host's normal scale. The factor is worked
+  # out at launch because --force-device-scale-factor replaces the scale Electron
+  # would pick, and the laptop sets GDK_SCALE=1.5 while the desktop leaves it unset.
+  ticktick = pkgs.ticktick.overrideAttrs (old: {
+    postFixup = (old.postFixup or "") + ''
+      mv $out/bin/ticktick $out/bin/.ticktick-scaled
+      cat > $out/bin/ticktick <<EOF
+      #!${pkgs.runtimeShell}
+      scale=\$(${pkgs.gawk}/bin/awk -v s="\''${GDK_SCALE:-1}" 'BEGIN { print s * 1.2 }')
+      exec $out/bin/.ticktick-scaled --force-device-scale-factor="\$scale" "\$@"
+      EOF
+      chmod +x $out/bin/ticktick
+    '';
+  });
 
   # Saver used by xsecurelock: paint the wallpaper into the window xsecurelock
   # hands us ($XSCREENSAVER_WINDOW). mpv renders a still image cleanly into a
@@ -154,7 +179,7 @@ let
   # Restore values mirror the baseline: `xset s 1800` (xss-lock.service's
   # ExecStartPre) and DPMS 1800/1800/1800 (set in xmonad's startup hook).
   caffeine = pkgs.writeShellScriptBin "caffeine" ''
-    export PATH=${lib.makeBinPath [ pkgs.xorg.xset pkgs.libnotify pkgs.coreutils ]}:$PATH
+    export PATH=${lib.makeBinPath [ pkgs.xset pkgs.libnotify pkgs.coreutils ]}:$PATH
     state="''${XDG_RUNTIME_DIR:-/tmp}/caffeine.on"
 
     on()  { xset s off -dpms;                    touch "$state"; notify-send -a caffeine "☕ Caffeine on"  "Auto-lock & screen blanking disabled"; }
@@ -288,6 +313,8 @@ in {
     pkgs.signal-desktop
     sable-desktop
 
+    ticktick
+
     pkgs.flameshot
     pkgs.peek
 
@@ -295,7 +322,7 @@ in {
     pkgs.libqalculate
 
     pkgs.sqlite
-    pkgs.texlive.combined.scheme-full
+    pkgs.texliveSmall
     pkgs.nitrogen
     pkgs.nix-prefetch-git
 
@@ -309,7 +336,9 @@ in {
     pkgs.vlc
     pkgs.mpv
     pkgs.ffmpeg
-    pkgs.audacity
+    # Audacity 4.0.0 currently fails to compile with Qt 6.12 (the unstable
+    # package set's Qt version); retain the compatible 24.05 build for now.
+    pkgs2405.audacity
     # video editor
     pkgs.kdePackages.kdenlive
     # pkgs.openshot-qt
@@ -763,8 +792,10 @@ in {
 
   programs.rofi = {
     enable = true;
-    terminal = "${pkgs.alacritty}/bin/alacritty";
-    cycle = true;
+    settings = {
+      terminal = "${pkgs.alacritty}/bin/alacritty";
+      cycle = true;
+    };
     theme = let inherit (config.lib.formats.rasi) mkLiteral;
     in {
       "*" = {
@@ -823,6 +854,8 @@ in {
       name = "rose-pine";
       package = pkgs.rose-pine-gtk-theme;
     };
+    # Keep GTK4 aligned with the GTK theme on this pre-26.05 profile.
+    gtk4.theme = config.gtk.theme;
     gtk3.extraConfig.gtk-application-prefer-dark-theme = true;
   };
 
@@ -845,6 +878,10 @@ in {
 
   services.udiskie = {
     enable = true;
+    # Its keyring-cache test is incompatible with the current keyutils/Python
+    # combination; this affects only the package's test fixture, not udiskie's
+    # installed mount daemon.
+    package = pkgs.udiskie.overrideAttrs (_: { doCheck = false; });
     tray = "always";
   };
 
@@ -880,7 +917,9 @@ in {
 
   services.megasync = {
     enable = true;
-    package = pkgs2405.megasync;
+    package = pkgs2405.megasync.overrideAttrs (old: {
+      meta = (old.meta or { }) // { mainProgram = "megasync"; };
+    });
   };
 
   programs.nix-index = {
@@ -896,6 +935,9 @@ in {
     ];
     "x-scheme-handler/io.element.desktop" = pkgs.element-desktop.desktopItem.name;
   };
+
+  systemd.user.services.studio-merges = lib.mkIf hasStudioMerges studioMerges.service;
+  systemd.user.timers.studio-merges = lib.mkIf hasStudioMerges studioMerges.timer;
 
   systemd.user.services.polkit-agent = {
     Unit = {
@@ -922,11 +964,9 @@ in {
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
-    matchBlocks."*" = {
-      extraOptions = {
-        ServerAliveInterval = "60";
-        ServerAliveCountMax = "30";
-      };
+    settings."*" = {
+      ServerAliveInterval = 60;
+      ServerAliveCountMax = 30;
     };
   };
 

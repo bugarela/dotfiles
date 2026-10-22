@@ -23,7 +23,7 @@
       # so take the prebuilt package from the last release that still had it. This
       # drags in that release's GTK2 closure, but it comes straight from the cache.
       gtk2Overlay = final: prev: {
-        nitrogen = nixpkgs-gtk2.legacyPackages.${final.system}.nitrogen;
+        nitrogen = nixpkgs-gtk2.legacyPackages.${final.stdenv.hostPlatform.system}.nitrogen;
       };
 
       # openldap test017-syncreplication-refresh is flaky (timing-dependent); skip tests

@@ -60,6 +60,9 @@
   :recipe (:host github :repo "havarddj/typst-preview.el"))
 
 (package! majutsu :recipe (:host github :repo "0WD0/majutsu"))
+;; Doom pins transient 0.12.0, whose macros lack Emacs 31's `autoload-macro'
+;; declaration, so autoloads of packages using `transient-define-prefix' break.
+(package! transient :pin "0cacc84ff0c7df126e194666ff8b8a1e6082e796") ; v0.13.8
 (package! lilypond-mode
   :recipe (:host github :repo "emacsmirror/lilypond" :files ("elisp/*.el")))
 

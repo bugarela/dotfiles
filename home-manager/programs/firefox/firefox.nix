@@ -1,13 +1,18 @@
 { config, pkgs, lib, ... }:
 
 let
+  # NUR's Rycee Firefox-addons repository still uses the removed pkgs alias.
+  # Supply its lib equivalent locally until NUR migrates to lib.recurseIntoAttrs.
+  pkgsForNur = pkgs // { recurseIntoAttrs = lib.recurseIntoAttrs; };
   nur = import (builtins.fetchTarball
     "https://github.com/nix-community/NUR/archive/master.tar.gz") {
-      inherit pkgs;
+      pkgs = pkgsForNur;
     };
 in {
   programs.firefox = {
     enable = true;
+    # Preserve the existing profile location until it is deliberately migrated.
+    configPath = ".mozilla/firefox";
     profiles = {
       bugarela = {
         id = 0;

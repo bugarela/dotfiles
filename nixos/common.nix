@@ -263,7 +263,7 @@
 
   nix.settings = {
     # Enable flakes and new 'nix' command
-    experimental-features = "nix-command flakes";
+    experimental-features = [ "nix-command" "flakes" ];
     # Deduplicate and optimize nix store
     auto-optimise-store = true;
     # Allow me to specify additional substituters
@@ -318,7 +318,16 @@
   # itself as a /dev/video* device that other apps (Zoom, browsers, ...) can use.
   # exclusive_caps=1 makes the loopback advertise itself only as a capture
   # device, which is what apps expect; card_label names it in device pickers.
-  boot.extraModulePackages = [ config.boot.kernelPackages.v4l2loopback ];
+  # v4l2loopback 0.15.4 installs its own depmod indexes. They collide with the
+  # kernel's indexes when NixOS combines module trees; the aggregator regenerates
+  # them after merging, so retain only the module itself here.
+  boot.extraModulePackages = [
+    (config.boot.kernelPackages.v4l2loopback.overrideAttrs (old: {
+      postInstall = (old.postInstall or "") + ''
+        find "$out/lib/modules" -maxdepth 2 -type f -name 'modules.*' -delete
+      '';
+    }))
+  ];
   boot.kernelModules = [ "v4l2loopback" ];
   boot.extraModprobeConfig = ''
     options v4l2loopback devices=1 video_nr=9 card_label="OBS Virtual Camera" exclusive_caps=1
