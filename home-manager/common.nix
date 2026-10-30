@@ -50,6 +50,7 @@ let
   };
 
   wiremix = import ./programs/wiremix/default.nix {};
+  herdr = import ./programs/herdr/default.nix { inherit pkgs; };
   voice-record = import ./programs/voice-record/default.nix {};
   mic-stream = import ./programs/mic-stream/default.nix {};
   note-taker = import ./programs/note-taker/default.nix {};
@@ -94,20 +95,31 @@ let
     browserFlags = [ chromiumClipboardWorkaround ];
   };
 
-  # TickTick's UI is 20% bigger than the host's normal scale. The factor is worked
+  # Todoist's UI is 20% bigger than the host's normal scale. The factor is worked
   # out at launch because --force-device-scale-factor replaces the scale Electron
   # would pick, and the laptop sets GDK_SCALE=1.5 while the desktop leaves it unset.
-  ticktick = pkgs.ticktick.overrideAttrs (old: {
-    postFixup = (old.postFixup or "") + ''
-      mv $out/bin/ticktick $out/bin/.ticktick-scaled
-      cat > $out/bin/ticktick <<EOF
+  # Unset means the desktop's 4K screens at dpi = 160, i.e. 160/96 ≈ 1.67.
+  # Wrapping the built package rather than overriding postFixup, because
+  # todoist-electron is an AppImage wrapper that never runs postFixup.
+  scaleElectronApp = pkg: bin: pkgs.symlinkJoin {
+    inherit (pkg) name meta;
+    paths = [ pkg ];
+    postBuild = ''
+      rm $out/bin/${bin}
+      cat > $out/bin/${bin} <<EOF
       #!${pkgs.runtimeShell}
-      scale=\$(${pkgs.gawk}/bin/awk -v s="\''${GDK_SCALE:-1}" 'BEGIN { print s * 1.2 }')
-      exec $out/bin/.ticktick-scaled --force-device-scale-factor="\$scale" "\$@"
+      scale=\$(${pkgs.gawk}/bin/awk -v s="\''${GDK_SCALE:-1.67}" 'BEGIN { print s * 1.2 }')
+      exec ${pkg}/bin/${bin} --force-device-scale-factor="\$scale" "\$@"
       EOF
-      chmod +x $out/bin/ticktick
+      chmod +x $out/bin/${bin}
+      # Point any .desktop file that execs the unwrapped binary by absolute path at the wrapper.
+      for f in $out/share/applications/*.desktop; do
+        sed "s|${pkg}/bin/${bin}|$out/bin/${bin}|g" "$(readlink -f "$f")" > "$f.tmp"
+        mv "$f.tmp" "$f"
+      done
     '';
-  });
+  };
+  todoist = scaleElectronApp pkgs.todoist-electron "todoist-electron";
 
   # Saver used by xsecurelock: paint the wallpaper into the window xsecurelock
   # hands us ($XSCREENSAVER_WINDOW). mpv renders a still image cleanly into a
@@ -312,8 +324,9 @@ in {
     pkgs.zulip
     pkgs.signal-desktop
     sable-desktop
+    herdr
 
-    ticktick
+    todoist
 
     pkgs.flameshot
     pkgs.peek
