@@ -1,0 +1,28 @@
+# Herdr writes almost everything in this folder itself: its shipped layouts,
+# mods and themes (replaced on every start), type files, sockets and state.
+# Track only what is ours: settings, keys, and anything named my-*. Herdr's
+# own layouts and mods can't be edited in place, so clone them under that
+# name first: herdr-app do layout.clone '{"name":"main","as":"my-main"}'
+/*
+!/.gitignore
+!/settings.json
+!/keys.json
+
+# Pane sizes, theme picks and other clicks stay per machine in layouts/.state.
+!/layouts/
+/layouts/*
+!/layouts/my-*.json
+!/layouts/my-*.svg
+!/layouts/my-*.png
+
+!/mods/
+/mods/*
+!/mods/my-*/
+# Herdr writes these into every mod folder on start.
+/mods/*/*.d.ts
+/mods/*/jsconfig.json
+/mods/*/node_modules/
+
+!/themes/
+/themes/*
+!/themes/my-*.json

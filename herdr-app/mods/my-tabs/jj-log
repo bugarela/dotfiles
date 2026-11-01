@@ -1,0 +1,13 @@
+#!/bin/sh
+# What the pinned jj tab runs: the log, redrawn every 2s and at once when the
+# pane resizes. Not `watch`: its curses screen comes out garbled in Herdr.
+# --ignore-working-copy: never snapshot under the agents working in this repo.
+esc=$(printf '\033')
+printf '%s' "$esc[?7l$esc[?25l" # cut long lines instead of wrapping; no cursor
+trap : WINCH
+while :; do
+  rows=$(stty size 2>/dev/null | cut -d' ' -f1)
+  log=$(jj log --color=always --ignore-working-copy 2>&1 | head -n "${rows:-50}" | sed "s/\$/$esc[K/")
+  printf '%s' "$esc[H$log$esc[J"
+  sleep 2 & wait $!
+done

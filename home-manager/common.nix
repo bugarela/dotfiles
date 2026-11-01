@@ -258,6 +258,20 @@ in {
     }
   '';
 
+  # Herdr redraws itself from ~/.config/herdr-app as its files change, so the
+  # whole folder is an out-of-store link to the working tree, like DOOMDIR:
+  # edits apply live, and a new layout or mod needs no rebuild. Herdr writes
+  # most of that folder itself; herdr-app/.gitignore keeps only what is mine.
+  #
+  # force: a plain symlink in the way is otherwise a collision, and so was the
+  # hand-made one from moving the folder into the repo. A real folder (from
+  # running Herdr before this link existed) is still moved to *.backup10.
+  xdg.configFile."herdr-app" = {
+    source = config.lib.file.mkOutOfStoreSymlink
+      "${config.home.homeDirectory}/dotfiles/herdr-app";
+    force = true;
+  };
+
   # home.activation = {
   #   installDoomEmacs = ''
   #     if [ ! -d "$HOME/emacs" ]; then
@@ -553,10 +567,15 @@ in {
     functions = {
       # open files in the running emacs daemon without blocking the shell
       e = ''emacsclient -n -a "" $argv'';
-      # Quint Studio from the dev channel's latest AppImage, built on demand
+      # Quint Studio from the dev channel's latest AppImage, built on demand.
+      # Run through a GC-rooted link, not `nix shell`: Studio writes the path it
+      # was started as into agents' MCP configs, and a bare store path there
+      # breaks at the next GC.
       quint-studio-dev = ''
-        nix shell -f ~/private-dotfiles/home-manager/programs/quint-studio \
-          --argstr channel dev "" -c quint-studio $argv
+        set -l link ~/.local/state/quint-studio-dev/result
+        nix build -f ~/private-dotfiles/home-manager/programs/quint-studio \
+          --argstr channel dev --out-link $link ""
+        and $link/bin/quint-studio $argv
       '';
     };
     plugins = [
