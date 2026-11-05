@@ -156,6 +156,14 @@ pkgs.writeShellApplication {
   # Without exec, SIGINT only kills the bash wrapper and python orphans to init,
   # left running Whisper VAD + ffmpeg at high CPU forever.
   text = ''
+    if [[ "''${1:-}" == "--dictation-control" ]]; then
+      shift
+      exec python3 ${./dictation_control.py} --backend ${./dictation.py} "$@"
+    fi
+    if [[ "''${1:-}" == "--dictate" ]]; then
+      shift
+      exec python3 ${./dictation.py} "$@"
+    fi
     exec python3 ${script}
   '';
 }

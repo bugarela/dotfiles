@@ -1,0 +1,42 @@
+#+title: <The problem or design, in plain language>
+# Write as the author proposing this design to the team; remove template comments.
+#+options: toc:nil num:nil ^:nil
+
+* Problem
+<Who is affected, what fails today, and what should become possible? Two or three
+sentences. Explain without local paths, prototype history, or arbitrary exclusions.>
+
+* Decisions & alternatives
+** <State the proposed approach directly, without a status prefix>
+<What we do and why this choice best addresses the problem.>
+- Alternatives considered:
+  - <Alternative>: <how it works; benefit; why not preferred>.
+  - <Alternative>: <how it works; benefit; why not preferred>.
+- Tradeoff accepted: <the cost or risk we take on with this choice>.
+
+# Optional: a compact comparison table for a meaningful cross-cutting choice.
+# Remove placeholders, unused sections, and instructional comments when drafting.
+| Approach    | Main benefit | Main tradeoff |
+|-------------+--------------+---------------|
+| Preferred   | <Benefit>    | <Cost>        |
+| Alternative | <Benefit>    | <Why not>     |
+
+* How it works
+<Brief explanation of the experience or flow, not endpoint/parameter inventory.>
+
+# Optional: keep a diagram only if it clarifies something prose does not.
+#+name: request-flow
+#+caption: <What this flow explains>
+#+begin_src mermaid :eval never-export :exports code :file request-flow.png :results file graphics :scale 2
+flowchart TD
+  A["User request"] --> B["Check request"]
+  B -->|accepted| C["Complete action"]
+  B -->|refused| D["Explain what happens next"]
+#+end_src
+
+* Remaining risks & open questions
+- <Cross-cutting concern not already explained under a decision. Explain its
+  consequence and mitigation, or the actual unresolved design question and tradeoffs.>
+
+# Review example; remove this unused example when creating a real design doc.
+# ? <Ask a question or request an edit beside the relevant passage.>

@@ -4,10 +4,6 @@
     "name": "main",
     "version": "0.1.9"
   },
-  "theme": {
-    "light": "paper",
-    "dark": "ink"
-  },
   "type": "row",
   "children": [
     {
@@ -174,7 +170,19 @@
       "resizable": false
     }
   ],
+  "floating": [
+    {
+      "id": "voice-dictation",
+      "content": { "mod": "my-dictation" },
+      "edge": "bottom",
+      "align": "center"
+    }
+  ],
   "background": "canvas",
+  "theme": {
+    "light": "paper",
+    "dark": "ink"
+  },
   "terminal_padding": [
     14,
     12

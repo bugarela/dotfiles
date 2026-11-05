@@ -424,6 +424,10 @@ Meant for `org-agenda-finalize-hook'."
   (scroll-on-jump-advice-add goto-last-change)
   (scroll-on-jump-advice-add goto-last-change-reverse))
 
+(load! "org-dictation")
+(global-set-key (kbd "<f8>") #'my/dictation-toggle)
+(global-set-key (kbd "S-<f8>") #'my/org-dictation-cancel)
+
 (global-set-key (kbd "<269025093>") "λ")
 (map! :leader
       (:prefix-map ("a" . "custom")
@@ -431,6 +435,8 @@ Meant for `org-agenda-finalize-hook'."
        :desc "Scheduled (next month)" "a" #'my/org-agenda-scheduled
        :desc "Find definition" "d" #'xref-find-definitions-other-window
        :desc "Open spec" "s" #'projectile-find-implementation-or-test-other-window
+       :desc "Voice comment: start/stop" "v" #'my/org-dictation-toggle
+       :desc "Voice comment: cancel" "V" #'my/org-dictation-cancel
        :desc "Yank relative path" "y" #'(lambda () (interactive) (kill-new (file-relative-name buffer-file-name (projectile-project-root))))
        :desc "Delete JSON value" "k" #'json-delete-value
        :desc "Cite with org-ref" "c" #'org-ref-insert-link
@@ -931,6 +937,15 @@ with overruling parameters for `org-list-to-generic'."
 (setq org-latex-listings-options '(("numbers" "left")))
 (setq org-latex-src-block-backend 'listings)
 (setq ob-mermaid-cli-path "/etc/profiles/per-user/gabriela/bin/mmdc")
+(after! org
+  (require 'ob-mermaid)
+  (add-to-list 'org-babel-load-languages '(mermaid . t))
+  (defun my/org-babel-show-mermaid-result ()
+    "Display a Mermaid diagram after explicitly rendering its source block."
+    (when (equal (car (org-babel-get-src-block-info 'light)) "mermaid")
+      (org-remove-inline-images)
+      (org-display-inline-images)))
+  (add-hook 'org-babel-after-execute-hook #'my/org-babel-show-mermaid-result))
 (setq standard-indent 2)
 
 (setq mouse-wheel-tilt-scroll t)

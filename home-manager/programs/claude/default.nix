@@ -30,9 +30,11 @@ let
 
   # Directories we own outright.
   #
-  # Owning these whole means every skill, agent and command must live in
-  # private-dotfiles. Nix cannot also drop a store-backed bundle into a directory
-  # that is itself a symlink — you get one or the other.
+  # These private-owned directories compose the installation, not ownership of
+  # every implementation: Quint-specific skills/agents/commands live there;
+  # reusable tools are working-tree links to ~/dotfiles (e.g. skills/org-spec).
+  # Do not also assign Home Manager child files under these whole-directory
+  # symlinks; add installation links inside the writable composition instead.
   #
   # .claude/skills also holds quint-studio-operator, which Quint Studio copies in
   # and re-syncs itself. That still works — Studio writes through the symlink —
@@ -42,8 +44,8 @@ let
   # and from quint-studio. All five had already been garbage-collected, and
   # nothing in this config could rebuild them, which is exactly the failure mode
   # this module exists to end. If you want such a bundle back, link it from a
-  # working tree inside private-dotfiles rather than from /nix/store — a working
-  # tree is never collected. See private-dotfiles/README.md.
+  # working tree in dotfiles or private-dotfiles rather than from /nix/store —
+  # a working tree is never collected. Ownership rules: both repos' README.md.
   dirs = [
     ".claude/skills"
     ".claude/agents"
