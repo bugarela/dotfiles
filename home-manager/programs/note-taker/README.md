@@ -51,20 +51,24 @@ and `--timeout 300`.
 ## Herdr usage
 
 The personal `my-main` layout has a compact **microphone icon beside the +** at
-the top right. Click it or press F8 to start/stop; Shift+F8 cancels or discards a
-finished draft. The floating status/draft panel appears only while active. Wait for
-the Recording indicator. Transcription appears in an editable draft; only the
-**Send to original agent** button submits it (including Enter). Nothing is sent
-automatically. The original agent is remembered even if you change tabs. It
-never falls back to another terminal or sends dictated text to a shell. A busy,
-blocked, or missing agent leaves the draft intact rather than forcing input.
-If no agent was focused at the start, you can still dictate and copy the draft,
-but there is no Send button. A failed/uncertain send is not automatically retried.
+the top right. Click it or press F8 to start/stop; Shift+F8 cancels. Wait for the
+Recording indicator, speak, and press F8 again. Transcription is pasted into the
+original terminal's input using Herdr's ordinary native paste. Edit it there,
+then press Enter yourself. There is no separate draft editor/Send button, custom
+Enter binding, agent-status guard, or automatic submission. Shells and editors
+work too; transcript control characters/newlines are flattened before paste.
 
-Herdr drafts are saved locally in its shared state until sent/discarded. The
-bridge keeps private runtime session files (directory 0700/files 0600), removed
-on send/discard; abandoned sessions are pruned after a day on the next start.
-No cloud transcription. A session ID is internal bookkeeping, never shown in UI.
+Pasting uses and replaces the system clipboard. If you change terminals while
+transcribing, nothing is typed elsewhere: return to the original terminal and
+press F8 to paste the retained text. Old drafts from the previous UI and
+interrupted delivery attempts are never automatically replayed. F8 or Copy
+transcript can recover them; Shift+F8 discards them.
+
+Pending text is saved in local Herdr state until pasted/discarded. The bridge
+keeps private runtime session files (directory 0700/files 0600), removed on
+paste/discard; abandoned sessions are pruned after a day on the next start.
+Pasted text remains in the clipboard. No cloud transcription. A session ID is
+internal bookkeeping, never shown in UI.
 
 The mod invokes the standard-library bridge at
 `~/dotfiles/home-manager/programs/note-taker/dictation_control.py`, which starts
@@ -81,8 +85,8 @@ starts merely by opening the app or loading the mod. F8/Shift+F8 apply while
 `my-main` is shown; other layouts need the mod added before binding its commands.
 
 Herdr intercepts its F8 before terminal programs; GUI Emacs has its own binding.
-An Emacs running *inside a Herdr terminal* should use `SPC a v` for Org comments
-or `M-x my/dictation-toggle` for plain dictation instead.
+Emacs inside a Herdr terminal receives the same native paste as other programs;
+use `SPC a v` there if you specifically want an Org review comment.
 
 ## Backend protocol
 

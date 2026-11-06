@@ -563,7 +563,15 @@ in {
 
   programs.fish = {
     enable = true;
-    interactiveShellInit = builtins.readFile ./programs/fish/config.fish;
+    interactiveShellInit = builtins.readFile ./programs/fish/config.fish
+      + builtins.replaceStrings
+        [ "@zellij@" "@autoAttach@" "@autoExit@" ]
+        [
+          (lib.getExe config.programs.zellij.finalPackage)
+          (if config.programs.zellij.attachExistingSession then "true" else "false")
+          (if config.programs.zellij.exitShellOnExit then "true" else "false")
+        ]
+        (builtins.readFile ./programs/fish/zellij-auto-start.fish);
     functions = {
       # open files in the running emacs daemon without blocking the shell
       e = ''emacsclient -n -a "" $argv'';
@@ -706,7 +714,9 @@ in {
     enable = true;
     # 0.45.1 for `scroll_mode_sync` below; pinned nixpkgs is still on 0.45.0.
     package = pkgsLatest.zellij;
-    enableFishIntegration = true;
+    # Use the guarded Fish startup above instead of unconditional integration:
+    # Zellij stays automatic in other terminals, but never nests inside Herdr.
+    enableFishIntegration = false;
     settings = {
       # Since 0.45.0, scrolling up with the mouse enters Scroll mode, and
       # compact-bar pops its tooltip on any mode change -- so every wheel scroll
