@@ -1,0 +1,28 @@
+--- a/src/gallium/drivers/iris/iris_batch.c	2026-11-01 09:53:29.008512023 -0300
++++ b/src/gallium/drivers/iris/iris_batch.c	2026-11-01 09:53:29.048930804 -0300
+@@ -987,11 +987,20 @@
+    }
+ 
+    if (ret < 0) {
+-#if MESA_DEBUG
+-      const bool color = INTEL_DEBUG(DEBUG_COLOR);
+-      fprintf(stderr, "%siris: Failed to submit batchbuffer: %-80s%s\n",
+-              color ? "\e[1;41m" : "", strerror(-ret), color ? "\e[0m" : "");
+-#endif
++      fprintf(stderr, "iris: Failed to submit batchbuffer: %s\n", strerror(-ret));
++
++      /* On Xe the exec queue can come back from suspend unusable with an
++       * error other than -ECANCELED. Replace it, as for a banned queue,
++       * rather than taking down the process (e.g. Xorg via glamor).
++       */
++      if (iris_bufmgr_get_device_info(bufmgr)->kmd_type == INTEL_KMD_TYPE_XE &&
++          replace_kernel_ctx(batch)) {
++         fprintf(stderr, "iris: replaced the exec queue, carrying on\n");
++         if (batch->reset->reset)
++            batch->reset->reset(batch->reset->data, PIPE_UNKNOWN_CONTEXT_RESET);
++         return;
++      }
++
+       abort();
+    }
+ }

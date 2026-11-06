@@ -135,6 +135,10 @@ rustPlatform.buildRustPackage (finalAttrs: {
     "--skip=a_box_without_hc_gets_this_one_when_you_say_yes"
     "--skip=a_machine_reached_through_any_command_works_like_one_over_ssh"
     "--skip=a_process_older_than_its_token_is_never_read"
+    # Types ctrl+\ without waiting for the inner shell's `stty raw -echo`; on
+    # a loaded builder the key arrives in cooked mode, echoes as ^\ and
+    # SIGQUITs the reader instead of reaching it.
+    "--skip=the_detach_key_comes_from_the_config_file"
   ];
 
   # Upstream CI's settings for slow runners: a test binary aborts after 30 s

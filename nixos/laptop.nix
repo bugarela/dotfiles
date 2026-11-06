@@ -15,12 +15,17 @@
   # Xserver basic
   services.xserver = {
     dpi = 144;
-    # Diagnostic workaround for Xorg's glamor/iris abort after resume.
-    # CPU-based Xorg drawing may be slower; applications can still use the GPU.
-    deviceSection = ''
-      Option "AccelMethod" "none"
-    '';
   };
+
+  # After some resumes, iris's submit to the xe kernel driver fails with an
+  # error it doesn't treat as recoverable, and it aborts; inside glamor that
+  # takes Xorg and the whole session down. The patch replaces the exec queue
+  # instead and logs the error to /var/log/X.0.log. Turning glamor off
+  # (AccelMethod "none") avoided the crash but also disabled DRI3, which left
+  # every GL/Vulkan app rendering on the CPU.
+  hardware.graphics.package = pkgs.mesa.overrideAttrs (old: {
+    patches = (old.patches or [ ]) ++ [ ./patches/mesa-iris-xe-recover-failed-submit.patch ];
+  });
 
   # Backlight control
   hardware.acpilight.enable = true;
