@@ -258,6 +258,11 @@ in {
     }
   '';
 
+  # pipewire-pulse only reads drop-ins from config dirs, not from the profile.
+  # Takes effect on the next pipewire-pulse start.
+  xdg.configFile."pipewire/pipewire-pulse.conf.d/50-sable-desktop.conf".source =
+    "${sable-desktop}/share/pipewire/pipewire-pulse.conf.d/50-sable-desktop.conf";
+
   # Herdr redraws itself from ~/.config/herdr-app as its files change, so the
   # whole folder is an out-of-store link to the working tree, like DOOMDIR:
   # edits apply live, and a new layout or mod needs no rebuild. Herdr writes

@@ -10,6 +10,9 @@
 { pkgs
 , sable ? pkgs.sable
 , browser ? pkgs.chromium
+  # What PulseAudio reports as application.process.binary for `browser`: the
+  # real executable's name, not the wrapper's on PATH.
+, browserBinary ? "chromium"
   # Extra flags for the host browser, e.g. the Chromium clipboard workaround.
 , browserFlags ? [ ]
   # Must stay fixed: the origin (scheme+host+port) keys localStorage and
@@ -61,6 +64,10 @@ let
         done
       fi
 
+      # Mark the audio client; pulseRules below turns the mark into Sable's
+      # own mixer entry.
+      export PULSE_PROP="sable.desktop=1"
+
       # Its own --user-data-dir, so the Matrix session and encryption keys live
       # apart from the daily browser and survive across launches.
       # --class makes xmonad see this as "Sable" rather than another Chromium.
@@ -85,6 +92,32 @@ let
     startupWMClass = "Sable";
   };
 
+  # As a plain Chromium, Sable's mic shares the "Chromium input" mixer entry
+  # with every other Chromium-based app, so its volume can't be set apart.
+  # This pipewire-pulse rule gives it its own name and WirePlumber restore key,
+  # so a gain set on Sable's mic stream sticks to Sable only.
+  #
+  # The match pins the binary as well as the mark: whatever Sable spawns, such
+  # as xdg-open starting Chrome for a link, inherits PULSE_PROP too.
+  #
+  # block-source-volume: WebRTC auto-gain sets the device volume, which every
+  # other app shares. Sable's own stream volume stays adjustable.
+  pulseRules = pkgs.writeText "50-sable-desktop.conf" ''
+    pulse.rules = [
+        {
+            matches = [ { application.process.binary = "${browserBinary}" sable.desktop = "1" } ]
+            actions = {
+                update-props = {
+                    application.name = "Sable"
+                    application.id = "sable"
+                    application.icon-name = "sable"
+                }
+                quirks = [ block-source-volume ]
+            }
+        }
+    ]
+  '';
+
 in
 pkgs.stdenvNoCC.mkDerivation {
   pname = "sable-desktop";
@@ -98,6 +131,9 @@ pkgs.stdenvNoCC.mkDerivation {
     mkdir -p $out/bin $out/share
     ln -s ${launcher}/bin/sable-desktop $out/bin/sable-desktop
     ln -s ${desktopItem}/share/applications $out/share/applications
+
+    mkdir -p $out/share/pipewire/pipewire-pulse.conf.d
+    ln -s ${pulseRules} $out/share/pipewire/pipewire-pulse.conf.d/50-sable-desktop.conf
 
     for size in 48 72 96 144 192 256 384 512; do
       dir=$out/share/icons/hicolor/''${size}x''${size}/apps
