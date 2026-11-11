@@ -39,7 +39,14 @@
                           :size (string-to-number (or (getenv "DOOM_FONT_SIZE") "16"))))
 (setq doom-big-font (font-spec :family "Iosevka"
                               :size (string-to-number (or (getenv "DOOM_BIG_FONT_SIZE") "24"))))
-(setq doom-variable-pitch-font (font-spec :family "Iosevka" :size 20))
+;; Lora is the prose font in org (via `mixed-pitch-mode'). It must be set here,
+;; not with `set-face-attribute': Doom reapplies these fonts on every theme
+;; switch and font resize, which wiped a `set-face-attribute' Lora.
+(setq doom-variable-pitch-font (font-spec :family "Lora" :size (font-get doom-font :size)))
+;; Lora reads small next to Iosevka, so enlarge the font itself.
+;; `mixed-pitch-set-height' would do it too, but it pins tables and code to an
+;; absolute height that zen's text scaling then skips.
+(add-to-list 'face-font-rescale-alist '("-Lora-" . 1.1))
 
 ;; ivy-posframe misbehaves in three ways, all from posframe caching its child
 ;; frame and copying state from the buffer it was opened over:
@@ -246,10 +253,6 @@ Meant for `org-agenda-finalize-hook'."
   (setq org-html-stable-ids t))
 
 (setq shell-file-name (executable-find "bash"))
-
-(after! mixed-pitch
-  (setq mixed-pitch-set-height t)
-  (set-face-attribute 'variable-pitch nil :family "Lora" :height 1.1))
 
 (add-hook 'org-mode-hook #'mixed-pitch-mode)
 (add-hook 'org-mode-hook (lambda ()
