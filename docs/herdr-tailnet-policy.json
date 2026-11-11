@@ -1,0 +1,44 @@
+{
+  "tagOwners": {
+    "tag:herdr-laptop": [
+      "autogroup:admin"
+    ],
+    "tag:herdr-desktop": [
+      "autogroup:admin"
+    ]
+  },
+  "grants": [
+    {
+      "src": [
+        "tag:herdr-laptop"
+      ],
+      "dst": [
+        "tag:herdr-desktop"
+      ],
+      "ip": [
+        "tcp:22"
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "src": "tag:herdr-laptop",
+      "accept": [
+        "tag:herdr-desktop:22"
+      ],
+      "deny": [
+        "tag:herdr-desktop:80",
+        "tag:herdr-desktop:443",
+        "tag:herdr-desktop:7000",
+        "tag:herdr-desktop:38637"
+      ]
+    },
+    {
+      "src": "tag:herdr-desktop",
+      "deny": [
+        "tag:herdr-laptop:22",
+        "tag:herdr-laptop:443"
+      ]
+    }
+  ]
+}

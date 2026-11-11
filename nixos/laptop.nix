@@ -4,6 +4,9 @@
 
   networking.hostName = "bugarela"; # Define your hostname.
 
+  # This machine initiates connections only; no tailnet service is needed here.
+  services.tailscale.extraSetFlags = [ "--shields-up=true" ];
+
   services.libinput.touchpad = {
     naturalScrolling = true;
     accelSpeed = "+0.5";

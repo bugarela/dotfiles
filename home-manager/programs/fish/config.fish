@@ -11,7 +11,11 @@ set PATH "$PATH:$HOME/.dotnet/tools"
 set PATH "$PATH:$HOME/.npm/bin"
 set PATH "$PATH:$HOME/projects/apalache/bin"
 set PATH "$PATH:/nix/store/633qlvqjryvq0h43nwvzkd5vqxh2rh3c-go-1.19.6/bin"
-set SSH_AUTH_SOCK "$HOME/.1password/agent.sock"
+# Keep an agent forwarded by SSH; otherwise use local 1Password, not the
+# gpg-agent socket NixOS exports to every session.
+if not set -q SSH_CONNECTION; or not test -S "$SSH_AUTH_SOCK"
+    set -gx SSH_AUTH_SOCK "$HOME/.1password/agent.sock"
+end
 set -x GPG_TTY (tty)
 
 function fish_user_key_bindings

@@ -4,6 +4,15 @@
 
   networking.hostName = "gabriela-nixos"; # Define your hostname.
 
+  # The laptop's dedicated agent tunnel reuses this socket after reconnecting.
+  services.openssh.settings.StreamLocalBindUnlink = true;
+
+  # The public key already used for Git signing in 1Password. No private key
+  # is copied here; verify that the laptop's agent offers it before switching.
+  users.users.gabriela.openssh.authorizedKeys.keys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK9j0vEeUJi5vv++eeMOWkIYjGy8ED7s3M4FHY7YOzXH"
+  ];
+
   environment.systemPackages = with pkgs; [
     vulkan-tools
     dxvk

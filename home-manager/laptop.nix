@@ -1,5 +1,38 @@
-{ pkgs, ... }: {
+{ config, lib, pkgs, ... }: {
   imports = [ ./common.nix ];
+
+  # Only this destination gets automatic agent forwarding.
+  home.file.".ssh/config".text = lib.mkBefore ''
+    Host herdr-desktop
+        HostName gabriela-nixos
+        User gabriela
+        IdentityAgent ~/.1password/agent.sock
+        ForwardAgent yes
+        ServerAliveInterval 15
+        ServerAliveCountMax 3
+  '';
+
+  # Start explicitly while working remotely; no WantedBy means no forwarding
+  # just because the laptop is logged in. Herdr's own SSH connections remain
+  # separate, so reconnecting/adding a machine cannot contend for this socket.
+  systemd.user.services.herdr-agent-forward = {
+    Unit.Description = "Laptop 1Password agent for desktop Herdr Git operations";
+    Service = {
+      ExecStart = lib.concatStringsSep " " [
+        "${pkgs.openssh}/bin/ssh"
+        "-NT"
+        "-o BatchMode=yes"
+        "-o ForwardAgent=no"
+        "-o ControlMaster=no"
+        "-o ControlPath=none"
+        "-o ExitOnForwardFailure=yes"
+        "-R /home/gabriela/.ssh/herdr-laptop-agent.sock:${config.home.homeDirectory}/.1password/agent.sock"
+        "herdr-desktop"
+      ];
+      Restart = "on-failure";
+      RestartSec = 10;
+    };
+  };
 
   # For X-spawned applications like Doom Emacs
   xsession.profileExtra = ''

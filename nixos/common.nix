@@ -223,8 +223,30 @@
 
   # List services that you want to enable:
 
-  # Enable the OpenSSH daemon.
-  services.openssh.enable = true;
+  # Herdr uses ordinary OpenSSH over Tailscale, not Tailscale SSH.
+  # Access is restricted in the tailnet policy; never trust tailscale0 wholesale.
+  services.tailscale = {
+    enable = true;
+    openFirewall = true; # encrypted WireGuard transport, not application ports
+    disableTaildrop = true;
+    useRoutingFeatures = "none";
+    extraSetFlags = [
+      "--ssh=false"
+      "--accept-routes=false"
+      "--advertise-exit-node=false"
+      "--advertise-routes="
+    ];
+  };
+
+  services.openssh = {
+    enable = true;
+    settings = {
+      # Require SSH keys; disable PAM password challenges and direct root login.
+      PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
+      PermitRootLogin = "no";
+    };
+  };
 
   # Open ports in the firewall.
   networking.firewall = {

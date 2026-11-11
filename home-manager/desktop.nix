@@ -1,5 +1,16 @@
-{ pkgs, inputs, ... }: {
+{ pkgs, inputs, lib, ... }: {
   imports = [ ./common.nix ];
+
+  # Herdr's persistent services do not inherit SSH_AUTH_SOCK from the login.
+  # OpenSSH resolves this stable socket on every connection, including Git
+  # fetches from terminals that predate the tunnel. First IdentityAgent wins.
+  home.file.".ssh/config".text = lib.mkBefore ''
+    Match exec "test -S /home/gabriela/.ssh/herdr-laptop-agent.sock"
+        IdentityAgent /home/gabriela/.ssh/herdr-laptop-agent.sock
+  '';
+
+  # libgit2 would bypass OpenSSH's IdentityAgent selection.
+  programs.jujutsu.settings.git.subprocess = lib.mkForce true;
 
   # For X-spawned applications like Doom Emacs
   xsession.profileExtra = ''

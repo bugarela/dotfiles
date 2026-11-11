@@ -481,6 +481,10 @@ in {
   };
 
   home.file.".ssh/config".text = ''
+    # Respect an agent forwarded into an ordinary SSH login. Outside one,
+    # SSH_AUTH_SOCK is NixOS's keyless gpg-agent, so it must not win.
+    Match exec "test -n \"$SSH_CONNECTION\" && test -S \"$SSH_AUTH_SOCK\""
+        IdentityAgent SSH_AUTH_SOCK
     Host *
         IdentityAgent ~/.1password/agent.sock
   '';
