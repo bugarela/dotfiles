@@ -18,6 +18,9 @@ if not set -q SSH_CONNECTION; or not test -S "$SSH_AUTH_SOCK"
 end
 set -x GPG_TTY (tty)
 
+# Reach the viewing terminal's clipboard even in Herdr's persistent remote shells.
+set -gx PI_CLIPBOARD_OSC52 1
+
 function fish_user_key_bindings
     fish_vi_key_bindings
     bind \cw backward-kill-word
