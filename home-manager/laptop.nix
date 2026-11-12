@@ -56,6 +56,23 @@
 
   home.packages = [
     pkgs.powertop
+    (pkgs.writeShellApplication {
+      name = "working-from-laptop";
+      runtimeInputs = [ pkgs.systemd ];
+      text = ''
+        systemctl --user restart herdr-agent-forward.service
+        echo "Agent tunnel starting; approve any 1Password request on this laptop."
+        echo "Check connection: systemctl --user status herdr-agent-forward"
+      '';
+    })
+    (pkgs.writeShellApplication {
+      name = "working-from-desktop";
+      runtimeInputs = [ pkgs.systemd ];
+      text = ''
+        systemctl --user stop herdr-agent-forward.service
+        echo "Agent tunnel stopped; desktop Git will use desktop 1Password."
+      '';
+    })
   ];
 
   programs.alacritty = {

@@ -1,11 +1,27 @@
-{ pkgs, inputs, lib, ... }: {
+{ pkgs, inputs, lib, ... }:
+let
+  # A disconnected SSH tunnel can leave a socket inode behind. Check that it
+  # accepts connections, not just that it exists. No signing request is made.
+  laptopAgentAvailable = pkgs.writeScript "herdr-laptop-agent-available" ''
+    #!${pkgs.python3}/bin/python3
+    import socket
+    import sys
+
+    with socket.socket(socket.AF_UNIX) as agent:
+        agent.settimeout(0.25)
+        try:
+            agent.connect("/home/gabriela/.ssh/herdr-laptop-agent.sock")
+        except OSError:
+            sys.exit(1)
+  '';
+in {
   imports = [ ./common.nix ];
 
   # Herdr's persistent services do not inherit SSH_AUTH_SOCK from the login.
   # OpenSSH resolves this stable socket on every connection, including Git
   # fetches from terminals that predate the tunnel. First IdentityAgent wins.
   home.file.".ssh/config".text = lib.mkBefore ''
-    Match exec "test -S /home/gabriela/.ssh/herdr-laptop-agent.sock"
+    Match exec "${laptopAgentAvailable}"
         IdentityAgent /home/gabriela/.ssh/herdr-laptop-agent.sock
   '';
 

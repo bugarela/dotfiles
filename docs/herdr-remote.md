@@ -64,7 +64,7 @@ firewall openings are unchanged.
 On the **laptop**, with 1Password running and its SSH agent enabled:
 
 ```sh
-systemctl --user start herdr-agent-forward
+working-from-laptop
 systemctl --user status herdr-agent-forward
 
 # Once: register the SSH alias in the laptop's Herdr.
@@ -91,8 +91,7 @@ uses the configured `IdentityAgent` instead.
 When done, on the laptop:
 
 ```sh
-systemctl --user stop herdr-agent-forward
-ssh herdr-desktop 'rm -f /home/gabriela/.ssh/herdr-laptop-agent.sock'
+working-from-desktop
 ```
 
 The service is intentionally **not enabled at login**. It retries if the network
@@ -110,14 +109,15 @@ therefore not fix Git inside existing Herdr terminals.
 
 The dedicated tunnel forwards the laptop's 1Password socket to
 `/home/gabriela/.ssh/herdr-laptop-agent.sock` on the desktop. Desktop OpenSSH
-prefers that socket when present, otherwise the ordinary forwarded agent or
+prefers that socket when it accepts connections, otherwise the ordinary forwarded agent or
 local 1Password. Jujutsu on the desktop uses Git's subprocess backend so it also
 honors this SSH configuration.
 
-A stale socket can remain after a disconnect. Reconnecting the service replaces
-it; removing it with the command above restores local 1Password selection.
-Until then, fetch may fail rather than silently fall back. No Herdr restart
-or desktop unlock is required.
+A stale socket can remain after a disconnect. The desktop checks whether it
+accepts connections, so a stale inode does not prevent fallback to local
+1Password. Reconnecting replaces it. No socket cleanup or Herdr restart is
+required. Local authentication still requires desktop 1Password to be unlocked.
+The shortcuts run on the laptop; desktop agent selection follows automatically.
 
 **Trust:** while the tunnel is running, processes with your desktop UID (and
 desktop root) can request signatures from the laptop agent, including outside
