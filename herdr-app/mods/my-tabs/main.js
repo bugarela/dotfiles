@@ -103,6 +103,8 @@ export default class Tabs extends View {
       .child(button("voice-toggle", svg("mods/my-dictation/microphone.svg").size(14), () => run("my-dictation.toggle"))
         .text_color(shared("dictation.session") ? t.accent : t.dim)
         .tooltip("Dictate · F8 (Shift+F8 to cancel)"))
+      .child(button("emacs-open", svg("mods/workspace-chrome/file-text.svg").size(14), () => run("mod.open", { name: "my-emacs" }))
+        .tooltip("Open a file in Emacs · Ctrl+Shift+F"))
       .when(enabled.includes("files"), el => el.child(panelButton("files", "Files", "mods/files/file.svg")))
       .when(enabled.includes("changes"), el => el.child(panelButton("changes", "Changes", "mods/changes/changes.svg")))
       .when(window()?.buttons, el => el.child(button("minimize", "−", () => run("window.minimize")))

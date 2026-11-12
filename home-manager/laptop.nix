@@ -1,6 +1,8 @@
 { config, lib, pkgs, ... }: {
   imports = [ ./common.nix ];
 
+  herdr.zoom = 0.8;
+
   # Only this destination gets automatic agent forwarding.
   home.file.".ssh/config".text = lib.mkBefore ''
     Host herdr-desktop

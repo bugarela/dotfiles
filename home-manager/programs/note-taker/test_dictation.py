@@ -40,6 +40,22 @@ class DictationTests(unittest.TestCase):
         self.assertEqual(events[-1][1]["text"], "Review this.")
         self.assertEqual(order, ["stop", "transcribe", "stop"])
 
+    def test_timeout_transcribes_what_was_recorded(self):
+        recorder = Mock()
+        recorder.poll.return_value = None
+        events, order = [], []
+        clock = iter([0, 1801])
+        with (patch.object(dictation.subprocess, "Popen", return_value=recorder),
+              patch.object(dictation.time, "sleep"),
+              patch.object(dictation.time, "monotonic", side_effect=lambda: next(clock)),
+              patch.object(dictation, "emit", side_effect=lambda event, **fields: events.append((event, fields))),
+              patch.object(dictation, "stop_recorder", side_effect=lambda proc: order.append("stop")),
+              patch.object(dictation, "transcribe", side_effect=lambda *args: order.append("transcribe") or "Long note.")):
+            dictation.dictate(Mock(), "en", "default", 1800)
+        self.assertEqual([event for event, _ in events], ["recording", "transcribing", "text"])
+        self.assertEqual(events[-1][1]["text"], "Long note.")
+        self.assertEqual(order, ["stop", "transcribe", "stop"])
+
     def test_closed_stdin_discards_and_cleans_up(self):
         _, events, order = self.capture(command="")
         self.assertEqual([event for event, _ in events], ["recording"])

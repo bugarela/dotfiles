@@ -40,6 +40,8 @@ in {
   home.sessionVariables.POLYBAR_DPI = "192";
   home.sessionVariables.POLYBAR_PADDING_RIGHT = "40";
 
+  herdr.zoom = 1.3;
+
   programs.mangohud.enable = true;
 
   home.packages = [

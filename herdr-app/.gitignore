@@ -5,7 +5,8 @@
 # name first: herdr-app do layout.clone '{"name":"main","as":"my-main"}'
 /*
 !/.gitignore
-!/settings.json
+!/settings.base.json
+# Written on every switch from settings.base.json; see programs/herdr/settings.nix.
 !/keys.json
 
 # Pane sizes, theme picks and other clicks stay per machine in layouts/.state.

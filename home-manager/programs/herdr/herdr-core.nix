@@ -128,9 +128,13 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   # These install hc on a machine like this one, which now downloads a
   # release, and the sandbox has no network.
+  # The third stamps a token at twice the monotonic clock and expects every
+  # process start (on the boot clock) to be older, which fails on a builder
+  # that has spent longer suspended than awake since boot.
   checkFlags = [
     "--skip=a_box_without_hc_gets_this_one_when_you_say_yes"
     "--skip=a_machine_reached_through_any_command_works_like_one_over_ssh"
+    "--skip=a_process_older_than_its_token_is_never_read"
   ];
 
   # Upstream CI's settings for slow runners: a test binary aborts after 30 s

@@ -57,8 +57,9 @@ def dictate(model, language, source, timeout):
                         log.seek(0)
                         raise RuntimeError("Microphone capture ended: " + log.read()[-2000:])
                     remaining = deadline - time.monotonic()
+                    # At the limit, keep what was said: stop and transcribe as on `stop`.
                     if remaining <= 0:
-                        raise RuntimeError("Recording timed out; comment was not inserted")
+                        break
                     if select.select([sys.stdin], [], [], min(0.25, remaining))[0]:
                         command = sys.stdin.readline().strip()
                         if command != "stop":
@@ -77,7 +78,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--language", default="en")
     parser.add_argument("--source", default="default", help="PulseAudio microphone source")
-    parser.add_argument("--timeout", type=float, default=300, help="Maximum recording seconds")
+    parser.add_argument("--timeout", type=float, default=1800, help="Maximum recording seconds; then it stops and transcribes")
     args = parser.parse_args()
     if args.timeout <= 0:
         parser.error("--timeout must be positive")

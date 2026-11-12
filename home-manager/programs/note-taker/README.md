@@ -38,15 +38,15 @@ then ask org-spec to address comments. Dictation does not invoke an agent.
 The mode line shows loading, recording, transcribing, or cancelling. No speech
 means no inserted comment. Errors appear in `*Org dictation errors*`; results
 whose destination became uneditable go to `*Voice dictation recovery*`.
-Closing the destination buffer or Emacs cancels capture. Recording times out
-after five minutes. Temporary WAV files are removed on normal completion/error/
+Closing the destination buffer or Emacs cancels capture. Recording stops after
+30 minutes and transcribes what was captured, as if stopped by hand. Temporary WAV files are removed on normal completion/error/
 cancellation; no meeting transcript files are created. A force-kill or system
 crash may leave a temporary directory in the system temp location.
 
 The standalone Emacs module is `doom.d/org-dictation.el`. Its customizable
 `my/org-dictation-command` defaults to `("note-taker" "--dictate")`. Backend
 options include `--language en`, `--source default` (PulseAudio source name),
-and `--timeout 300`.
+and `--timeout 1800` (seconds; then it stops and transcribes).
 
 ## Herdr usage
 

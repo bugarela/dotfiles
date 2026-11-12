@@ -118,7 +118,8 @@ def worker(path, backend):
                     state = {"state": "transcribing"}
                 if cancelled and time.monotonic() - cancel_started > 8:
                     break
-                if time.monotonic() - started > 1800:
+                # Above dictation.py's 30-minute recording limit plus loading and transcription.
+                if time.monotonic() - started > 3600:
                     raise RuntimeError("Dictation exceeded its maximum lifetime")
                 if select.select([process.stdout], [], [], 0.1)[0]:
                     chunk = os.read(process.stdout.fileno(), 65536)

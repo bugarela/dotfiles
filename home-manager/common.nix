@@ -214,6 +214,7 @@ in {
     ./programs/vscode/vscode.nix
     ./programs/firefox/firefox.nix
     ./programs/claude/default.nix
+    ./programs/herdr/settings.nix
     # ./programs/vim/vim.nix
   ];
 
