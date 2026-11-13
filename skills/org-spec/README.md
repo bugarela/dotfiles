@@ -6,7 +6,8 @@ No provider-specific APIs, plugins, or model assumptions.
 ## Two documents, two audiences
 
 - **`<topic>-spec.org`**: the short human design document. Problem, decisions
-  first, alternatives nested under each choice, accepted tradeoffs, a useful
+  first, alternatives and the accepted tradeoff in a folded `:ALTERNATIVES:`
+  drawer under each choice (TAB on the drawer line opens it), a useful
   comparison table/diagram, and remaining risks/questions. One page ideally;
   four exported pages maximum. No acceptance criteria, opaque IDs, arbitrary
   scope exclusions, or machine-local paths.
@@ -72,8 +73,8 @@ Natural-language requests can also trigger the skill.
 
 "upload org-spec to <issue link>" attaches the Org document to that issue as a
 Linear document titled `WIP: <title>`; uploading again updates it in place. Mermaid
-diagrams go up as source and Linear renders them; comments and the Markdown
-companion stay local. Both hosts need the Linear MCP server, named `linear`:
+diagrams go up as source and Linear renders them, `:ALTERNATIVES:` drawers become
+collapsed sections, and comments and the Markdown companion stay local. Both hosts need the Linear MCP server, named `linear`:
 
 - Claude Code: `claude mcp add --transport http linear https://mcp.linear.app/mcp`,
   then sign in through `/mcp`.

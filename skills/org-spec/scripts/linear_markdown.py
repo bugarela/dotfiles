@@ -11,6 +11,8 @@ REMOTE = re.compile(r"^(https?|mailto):", re.IGNORECASE)
 BLOCKS = {"Plain", "Para", "LineBlock", "CodeBlock", "RawBlock", "BlockQuote",
           "OrderedList", "BulletList", "DefinitionList", "Header", "HorizontalRule",
           "Table", "Figure", "Div"}
+# Org drawers start folded in Emacs; each becomes a Linear collapsible section.
+DRAWER_TITLES = {"ALTERNATIVES": "Alternatives and tradeoffs"}
 
 
 def run(args, **kwargs):
@@ -65,17 +67,29 @@ def convert(source, output):
 
     collect(ast["blocks"])
     diagrams = 0
+    collapsibles = 0
     local = []
+
+    def raw(source):
+        return {"t": "RawBlock", "c": ["markdown", source]}
 
     def mermaid(code):
         nonlocal diagrams
         diagrams += 1
         # Linear turns exactly "```mermaid" into a diagram.
-        return {"t": "RawBlock", "c": ["markdown", f"```mermaid\n{code.rstrip()}\n```"]}
+        return raw(f"```mermaid\n{code.rstrip()}\n```")
 
     def blocks(items):
+        nonlocal collapsibles
         result = []
         for block in items:
+            if block.get("t") == "Div" and "drawer" in block["c"][0][1]:
+                # Linear folds "+++ Heading" ... "+++" into a collapsible section.
+                name = next(c for c in block["c"][0][1] if c != "drawer")
+                heading = DRAWER_TITLES.get(name.upper(), name.replace("_", " ").capitalize())
+                collapsibles += 1
+                result += [raw(f"+++ {heading}"), *blocks(block["c"][1]), raw("+++")]
+                continue
             if block.get("t") == "Div" and "captioned-content" in block["c"][0][1]:
                 caption, body = [], []
                 for inner in block["c"][1]:
@@ -118,6 +132,7 @@ def convert(source, output):
                    input=json.dumps(ast).encode()).stdout.decode()
     output.write_text(markdown, encoding="utf-8")
     print(json.dumps({"title": title, "markdown": str(output), "diagrams": diagrams,
+                      "collapsibles": collapsibles,
                       "local_references": sorted(set(local))}, indent=2))
 
 

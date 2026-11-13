@@ -32,10 +32,12 @@ available, stop and give the one-time setup:
    python3 scripts/linear_markdown.py /path/feature-spec.org /scratch/feature-spec.linear.md
    ```
 
-   It prints the Org `#+title`, the diagram count and `local_references`. Org
-   comments and COMMENT subtrees are dropped, each Mermaid block becomes a
-   ```` ```mermaid ```` fence that Linear renders as a diagram, a diagram's
-   caption follows it in italics, and its cached preview PNG is dropped.
+   It prints the Org `#+title`, the diagram and collapsible counts and
+   `local_references`. Org comments and COMMENT subtrees are dropped, each Mermaid
+   block becomes a ```` ```mermaid ```` fence that Linear renders as a diagram, a
+   diagram's caption follows it in italics, and its cached preview PNG is dropped.
+   Each `:ALTERNATIVES:` drawer becomes a collapsed `+++ Alternatives and
+   tradeoffs` … `+++` section.
 4. Resolve every `local_references` entry before uploading: upload a needed image
    with Linear's file upload tool and substitute the returned Markdown; replace a
    link to a local file with the shared location or plain text. Never publish a
@@ -48,8 +50,9 @@ available, stop and give the one-time setup:
    Drop the `WIP:` prefix only when the user says the proposal is agreed or final.
 6. Pass the converted file's content verbatim as `content`, with real newlines
    and no escaping. Don't hand-edit it beyond step 4.
-7. Read it back with `get_document`: the ```` ```mermaid ```` fences, tables and
-   prices (`$5`) must survive unescaped. The API returns Markdown only, so ask
-   the user to glance at the rendered diagram the first time.
+7. Read it back with `get_document`: the ```` ```mermaid ```` fences, `+++`
+   lines, tables and prices (`$5`) must survive unescaped. The API returns
+   Markdown only, so ask the user to glance at the rendered diagrams and
+   collapsible sections the first time.
 8. Report the document link. The Linear copy does not follow later Org edits;
    uploading again updates it in place.

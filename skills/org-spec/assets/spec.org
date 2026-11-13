@@ -9,10 +9,14 @@ sentences. Explain without local paths, prototype history, or arbitrary exclusio
 * Decisions & alternatives
 ** <State the proposed approach directly, without a status prefix>
 <What we do and why this choice best addresses the problem.>
+:ALTERNATIVES:
 - Alternatives considered:
-  - <Alternative>: <how it works; benefit; why not preferred>.
-  - <Alternative>: <how it works; benefit; why not preferred>.
-- Tradeoff accepted: <the cost or risk we take on with this choice>.
+  - <What the alternative does, as a full sentence. What it would gain, and why
+    it was not chosen.>
+  - <Another alternative, written the same way.>
+- Tradeoff accepted: <the cost or risk that is accepted with this choice, as a
+  full sentence.>
+:END:
 
 # Optional: a compact comparison table for a meaningful cross-cutting choice.
 # Remove placeholders, unused sections, and instructional comments when drafting.

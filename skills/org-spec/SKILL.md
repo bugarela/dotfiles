@@ -31,7 +31,8 @@ team names, issue prefixes, private paths, or project-specific workflows here.
    with unsaved edits, preserve those via Emacs rather than overwriting disk.
    Do not implement the proposed feature unless asked.
 3. On every revision, scan the WHOLE file for review comments, including folded
-   subtrees and the end of the file. Process review before polishing prose.
+   subtrees, `:ALTERNATIVES:` drawers, and the end of the file. Process review
+   before polishing prose.
 4. Make small, targeted changes. Preserve unrelated user edits, existing
    anchors, comments, and unresolved alternatives. Reread before editing if the
    user may have changed the file. Align changed Org tables.
@@ -78,12 +79,16 @@ team names, issue prefixes, private paths, or project-specific workflows here.
   Stable shared references may support the explanation, never replace it.
 - Use short paragraphs and specific bullets. Compact comparison tables are
   encouraged when they make the alternatives and their tradeoffs easier to scan.
+- Follow a passage that describes data, states, or a rule in the abstract with a
+  small concrete example, such as a table of example rows or a short scenario.
+  Introduce it as an example, use invented but realistic values, and say what
+  happens to them next when that is the point of the rule.
 - Cut duplication, shrink diagram complexity, and simplify wide tables before
   reducing typography. Keep body text at least 10.5 pt and margins at least
   0.65 inches. Never force fit with tiny fonts, clipped content, or hidden text.
-- Meet the page budget through editorial compression and moving agent-only
-  mechanics into Markdown, NOT by dropping part of the problem or its meaningful
-  alternatives. The companion Markdown spec has no four-page limit. If the
+- Meet the page budget by cutting duplication and moving agent-only mechanics
+  into Markdown, NOT by compressing sentences (see "Sentences" below) or by
+  dropping part of the problem or its meaningful alternatives. The companion Markdown spec has no four-page limit. If the
   human-facing decisions still cannot fit four pages, explain the conflict and
   propose a document structure; don't silently narrow scope or deliver an
   over-limit document as final.
@@ -92,9 +97,9 @@ team names, issue prefixes, private paths, or project-specific workflows here.
 
 The WHOLE document is a proposal, not an agent advising the author or asking for
 approval. Write in the author's voice for teammates who have not seen the agent
-conversation. Use direct, collaborative language ("We use emailed codes ..." or
-"Use emailed codes ..."), not "I recommend you ...", "The author should decide ...",
-or references to the agent, the prompt, or the drafting process in exported prose.
+conversation. State the design plainly ("Sign-in codes are sent by email ..."),
+not "I recommend you ...", "The author should decide ...", or references to the
+agent, the prompt, or the drafting process in exported prose.
 Review comments/replies remain a separate, non-exported conversation.
 
 Do not prefix headings or choices with "Recommendation:", "Proposed decision:",
@@ -103,6 +108,37 @@ in the heading and explain it. Proposal status applies to the document as a
 whole; it does not need to be restated for each choice. Do not claim team approval,
 consensus, or a finalized decision record unless established. Retain real unknowns
 as concrete design questions, not approval chores for the author.
+
+## Sentences: easy to read, not compressed
+
+A sentence that is understood on the first reading beats a shorter one that has
+to be decoded. Brevity comes from cutting content, never from squeezing grammar.
+
+- Prefer the passive voice. Never put a clause directly after a noun without
+  "that" or "which"; rewrite it with "that" and the passive. Write "files that
+  are not claimed by any component", NOT "the files no component claims", and
+  "a reason that is shown to the agent", NOT "a reason the agent sees".
+- Keep the words that hold a sentence together: articles, "that"/"which" before
+  a relative clause, and a subject and verb in every clause. Write "each code is
+  checked as soon as it is entered", not "checks each code once entered".
+  Put the receiver after "to" or "for": "gives one owner to each file", not
+  "gives each file one owner".
+  Never refer back with "such": repeat the words ("at most one "left out"
+  record", not "at most one such record"). Repeat the noun instead of "one" or
+  "it" when the nearest noun is a different thing: "a file has at most one
+  declined row", not "a declined row has no component, and a file has at most
+  one".
+- State what happens first and give the reason after it, with "since" or
+  "because". Don't join two short clauses with ", so": write "Nothing starts
+  without that confirmation since it would cost time and money", NOT "It costs
+  time and money, so nothing starts it without that confirmation".
+- Write each alternative and tradeoff as full sentences, not a "label: fragment"
+  pair or clauses chained with semicolons.
+- Say what every number measures: "the code arrived after 2 seconds with one
+  provider and after 6 with another", not "after 2 and 6 seconds". Use a small
+  table when there are several.
+- Before finishing, reread every sentence. Expand any sentence that has to be
+  read twice, even if the document gets longer.
 
 ## Decisions and alternatives: required writing pattern
 
@@ -123,15 +159,27 @@ For each important decision:
    us revisit it. Keep these attached to the decision, not scattered through a
    miscellaneous risks list.
 
+Put the alternatives and the accepted tradeoff in an `:ALTERNATIVES:` drawer
+right after the choice. Emacs folds drawers when the file opens and keeps them
+folded while headings expand; the Linear upload turns each one into a
+collapsible "Alternatives and tradeoffs" section. DOCX prints them in full, so
+they still count toward the page budget. The text above the drawer must stand on
+its own: a reader who never opens it still learns what we chose and why.
+
 Example shape (content here is illustrative, not a universal recommendation):
 
 ```org
 ** Enter an emailed code in the app
-The user stays in the app, and mail scanners cannot spend a sign-in link.
+The user stays in the app, and the sign-in cannot be used up by a mail scanner
+that opens links in the email.
+:ALTERNATIVES:
 - Alternatives considered:
-  - Email a sign-in link: fewer steps, but scanners can follow it before the user.
-  - Require Google: less authentication work for us, but excludes people without it.
-- Tradeoff accepted: the user has to copy a code from their inbox.
+  - A sign-in link is emailed instead. Fewer steps are needed, but the link can
+    be opened by a mail scanner before the user sees it.
+  - Sign-in with Google is required. Less authentication work is needed, but
+    people without a Google account are excluded.
+- Tradeoff accepted: a code has to be copied from the inbox into the app.
+:END:
 ```
 
 Recover alternatives and rationale from the conversation, research, and existing
@@ -168,6 +216,10 @@ choices there. Important choices, tradeoffs, and uncertainties belong in Org.
 - Use native Org: `*` headings (normally at most two levels), `-` bullets,
   `*bold*`, `=literal=`, `~code~`, `[[target][description]]`, and Org pipe tables.
   Do not use Markdown fences/headings inside an `.org` file.
+- Close each `:ALTERNATIVES:` drawer with `:END:` on its own line. A drawer holds
+  lists, tables, and paragraphs, but not headings or another drawer. Every other
+  exported drawer also becomes a Linear collapsible titled after its name, so
+  don't add drawers for other purposes.
 - Keep prose source lines around 80–100 columns without breaking links/code.
 - Use small, genuinely column-aligned tables (normally 2–4 columns). Prefer
   bullets for long prose cells. In Emacs use `org-table-align` when available;
