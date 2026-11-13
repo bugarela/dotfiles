@@ -12,7 +12,6 @@
   boot.initrd.kernelModules = [ "dm-snapshot" ];
   boot.initrd.luks.devices.nixos = {
     device = "/dev/disk/by-uuid/8c2c9b15-9af6-443d-93fe-5b0159ab23ca";
-    preLVM = true;
     allowDiscards = true;
   };
 

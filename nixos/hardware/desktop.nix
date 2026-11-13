@@ -13,7 +13,6 @@
   boot.initrd.kernelModules = [ "dm-snapshot" "amdgpu" ];
   boot.initrd.luks.devices.nixos = {
     device = "/dev/disk/by-uuid/e7c29403-f073-4259-91f7-1032a5027c2b";
-    preLVM = true;
     allowDiscards = true;
   };
   boot.kernelModules = [ "kvm-intel" "iwlmvm" "iwlwifi" ];
