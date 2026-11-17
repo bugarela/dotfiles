@@ -177,6 +177,12 @@
       "content": { "mod": "my-dictation" },
       "edge": "bottom",
       "align": "center"
+    },
+    {
+      "id": "appearance-sync",
+      "content": { "mod": "my-appearance-sync" },
+      "edge": "bottom",
+      "align": "start"
     }
   ],
   "background": "canvas",
