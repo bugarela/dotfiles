@@ -171,20 +171,11 @@
           },
           "size": {
             "px": 28
-          }
+          },
+          "hidden": true
         }
       ],
       "resizable": false
-    },
-    {
-      "id": "bc3d6a8350a0bdb84ad65eb0ff2151abb",
-      "type": "block",
-      "content": {
-        "mod": "my-review"
-      },
-      "size": {
-        "px": 320
-      }
     }
   ],
   "background": "canvas",

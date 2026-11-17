@@ -7,8 +7,9 @@ Herdr already uses SSH and can execute arbitrary commands as Gabriela. Forcing
 OpenSSH, not Tailscale SSH. No Herdr TCP listener, router port forwarding,
 Funnel, subnet router, or exit node is needed.
 
-The **tailnet policy** is what restricts access: only the tagged laptop may
-reach the tagged desktop, only on TCP 22. Reply traffic is allowed automatically.
+The **tailnet policy** is what restricts access: only the tagged laptop and
+phone may reach the tagged desktop, only on TCP 22 (SSH) and TCP 7000–7009
+(Studio servers). Reply traffic is allowed automatically.
 Do not add `tailscale0` to NixOS's trusted interfaces. Existing LAN services and
 firewall openings are unchanged.
 
@@ -101,6 +102,41 @@ drops while started. Inspect failures with:
 journalctl --user -u herdr-agent-forward -n 50
 ```
 
+## From the phone
+
+The official Herdr app, linked from https://herdr.dev/mobile, reaches
+herdr-core on the desktop through the same OpenSSH port as the laptop. Other
+Android apps named "Herdr Mobile" target the Herdr TUI and its own bridge, and
+they do not find herdr-core. The phone is tagged `tag:herdr-phone`, and the
+policy gives that tag the same ports as the laptop. Tailscale SSH is kept
+disabled, because it would take over port 22 on the desktop's Tailscale address
+and the laptop would no longer reach OpenSSH.
+
+1. The updated policy is uploaded to the admin console before the phone joins.
+2. Tailscale is installed on the phone and signed in to this tailnet, and the
+   phone is assigned `tag:herdr-phone` in the admin console.
+3. The app's public key is added to
+   `users.users.gabriela.openssh.authorizedKeys.keys` in `nixos/desktop.nix`,
+   and the desktop is rebuilt. Password logins are refused by the desktop.
+4. The desktop is added in the app as `gabriela@gabriela-nixos.taild5f8a0.ts.net`
+   on port 22. The host key fingerprint shown on first connect is compared with
+   the output of `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub` on the
+   desktop.
+5. If the app offers to install herdr-core, the offer is declined, since Nix
+   already provides it.
+
+Git operations started from the phone use the desktop's 1Password, or the laptop
+agent while its tunnel runs. If the phone is lost, its line is removed from
+`authorizedKeys.keys` and the device is removed from the tailnet.
+
+## Studio servers
+
+Ports 7000–7009 on the desktop are opened to the tailnet for Studio servers, in
+the tailnet policy and on `tailscale0` in the desktop's firewall. A server is
+reached from the laptop or the phone at
+`http://gabriela-nixos.taild5f8a0.ts.net:7000`. It must listen on all addresses
+or on the desktop's Tailscale address, not only on `127.0.0.1`.
+
 ## Why a separate agent tunnel?
 
 On Linux, Herdr intentionally does not inherit an SSH login's `SSH_AUTH_SOCK`
@@ -127,8 +163,9 @@ not the existing Git/Jujutsu `op-ssh-sign` commit-signing configuration.
 
 ## Validate the restriction
 
-From the laptop, `ssh herdr-desktop true` should work while direct connections
-to desktop ports 443 and 7000 over its Tailscale IP should fail. Another tailnet
+From the laptop, `ssh herdr-desktop true` and a running Studio server on ports
+7000–7009 should be reachable, while direct connections to desktop ports 443
+and 7010 over its Tailscale IP should fail. Another tailnet
 device must not reach desktop port 22. Desktop-initiated connections to the
 laptop are denied. Use the admin console's policy tests as well; a failed
 connection alone might only mean no service was listening.

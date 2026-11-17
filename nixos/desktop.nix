@@ -11,6 +11,14 @@
   # is copied here; verify that the laptop's agent offers it before switching.
   users.users.gabriela.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIK9j0vEeUJi5vv++eeMOWkIYjGy8ED7s3M4FHY7YOzXH"
+    # The Herdr app on the phone; its private key never leaves the phone.
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE1oRkibGKTOTWwOVomHhwOCKnjYvkIpE5zIrjjwkOHF herdr-mobile"
+  ];
+
+  # Studio servers. The tailnet policy decides which devices reach them, so
+  # only these ports are opened on tailscale0 rather than trusting it.
+  networking.firewall.interfaces.tailscale0.allowedTCPPortRanges = [
+    { from = 7000; to = 7009; }
   ];
 
   environment.systemPackages = with pkgs; [

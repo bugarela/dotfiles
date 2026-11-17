@@ -5,18 +5,23 @@
     ],
     "tag:herdr-desktop": [
       "autogroup:admin"
+    ],
+    "tag:herdr-phone": [
+      "autogroup:admin"
     ]
   },
   "grants": [
     {
       "src": [
-        "tag:herdr-laptop"
+        "tag:herdr-laptop",
+        "tag:herdr-phone"
       ],
       "dst": [
         "tag:herdr-desktop"
       ],
       "ip": [
-        "tcp:22"
+        "tcp:22",
+        "tcp:7000-7009"
       ]
     }
   ],
@@ -24,20 +29,36 @@
     {
       "src": "tag:herdr-laptop",
       "accept": [
-        "tag:herdr-desktop:22"
+        "tag:herdr-desktop:22",
+        "tag:herdr-desktop:7000",
+        "tag:herdr-desktop:7009"
       ],
       "deny": [
         "tag:herdr-desktop:80",
         "tag:herdr-desktop:443",
-        "tag:herdr-desktop:7000",
+        "tag:herdr-desktop:7010",
         "tag:herdr-desktop:38637"
+      ]
+    },
+    {
+      "src": "tag:herdr-phone",
+      "accept": [
+        "tag:herdr-desktop:22",
+        "tag:herdr-desktop:7000",
+        "tag:herdr-desktop:7009"
+      ],
+      "deny": [
+        "tag:herdr-desktop:443",
+        "tag:herdr-desktop:7010",
+        "tag:herdr-laptop:22"
       ]
     },
     {
       "src": "tag:herdr-desktop",
       "deny": [
         "tag:herdr-laptop:22",
-        "tag:herdr-laptop:443"
+        "tag:herdr-laptop:443",
+        "tag:herdr-phone:22"
       ]
     }
   ]
