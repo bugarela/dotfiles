@@ -1,6 +1,5 @@
 {
   "id": "root",
-  "terminal_menu": "my-menu",
   "cloned_from": {
     "name": "main",
     "version": "0.1.9"
@@ -141,6 +140,13 @@
                       "content": {
                         "mod": "my-changes"
                       }
+                    },
+                    {
+                      "id": "review",
+                      "type": "block",
+                      "content": {
+                        "mod": "my-review"
+                      }
                     }
                   ],
                   "active": "files"
@@ -169,20 +175,16 @@
         }
       ],
       "resizable": false
-    }
-  ],
-  "floating": [
-    {
-      "id": "voice-dictation",
-      "content": { "mod": "my-dictation" },
-      "edge": "bottom",
-      "align": "center"
     },
     {
-      "id": "appearance-sync",
-      "content": { "mod": "my-appearance-sync" },
-      "edge": "bottom",
-      "align": "start"
+      "id": "bc3d6a8350a0bdb84ad65eb0ff2151abb",
+      "type": "block",
+      "content": {
+        "mod": "my-review"
+      },
+      "size": {
+        "px": 320
+      }
     }
   ],
   "background": "canvas",
@@ -198,9 +200,28 @@
     "width": 1,
     "color": "border"
   },
+  "floating": [
+    {
+      "id": "voice-dictation",
+      "content": {
+        "mod": "my-dictation"
+      },
+      "edge": "bottom",
+      "align": "center"
+    },
+    {
+      "id": "appearance-sync",
+      "content": {
+        "mod": "my-appearance-sync"
+      },
+      "edge": "bottom",
+      "align": "start"
+    }
+  ],
   "titlebar": "none",
   "traffic_lights": [
     12,
     16
-  ]
+  ],
+  "terminal_menu": "my-menu"
 }

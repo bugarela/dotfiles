@@ -51,6 +51,9 @@ let
     ".claude/agents"
     ".claude/commands"
     "kitchen"
+    # herdr-core's agent templates (`hc run <template> <task>`). Only this
+    # folder: config.toml beside it stays per machine.
+    ".config/herdr-core/templates"
   ];
 
   # Individual private files beside Claude's runtime-owned state.
