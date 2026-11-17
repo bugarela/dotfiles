@@ -1,6 +1,6 @@
 import { View, div, svg, image } from "gpui-kit";
 import { h_flex } from "gpui-base";
-import { spaces, panes, run, openOverlay, theme, window, shared, layout, settings } from "herdr";
+import { spaces, panes, run, openOverlay, theme, window, shared, layout, settings, exec, home, notify, nextCommand, watchFolder } from "herdr";
 import { PinnedJj, PINNED_PROGRAM, isPinned } from "./jj.js";
 
 function find(node, id) {
@@ -18,6 +18,44 @@ export default class Tabs extends View {
     this.panels = JSON.parse(localStorage.getItem("panels") ?? "{}");
     this.jj = new PinnedJj();
     cx.timer.every(1000, (cx) => this.jj.tick(cx));
+    this.bell = null;
+    this.watchBell(cx);
+    cx.spawn(async (cx) => {
+      for (;;) if (await nextCommand() === "bell") this.showPanel("bell");
+    });
+  }
+
+  showPanel(id) {
+    run("layout.select", { stack: "panel-body", child: id });
+    run("layout.show", { id: "panel" });
+  }
+
+  // The Bell button counts the waiting items in ~/org/bell.org, and a new one
+  // posts a toast that opens the Bell panel. ~/org links to a MEGA folder, which
+  // is watched under its real path; a watch that fails falls back to polling.
+  watchBell(cx) {
+    const file = `${home()}/org/bell.org`;
+    const count = (cx) => cx.spawn(async (cx) => {
+      const r = await exec("grep", ["^\\* TODO ", file]).catch(() => null);
+      if (!r || r.code > 1) return;
+      const heads = r.stdout.split("\n").filter(Boolean);
+      if (this.bell !== null && heads.length > this.bell) {
+        const title = heads[heads.length - 1].replace(/^\* TODO\s+/, "").replace(/\s+:[\w@#%:]+:\s*$/, "");
+        notify({ title: "Bell", body: title, icon: "mods/my-bell/bell.svg", action: { name: "my-tabs.bell" } });
+      }
+      this.bell = heads.length;
+      cx.notify();
+    });
+    count(cx);
+    cx.spawn(async (cx) => {
+      try {
+        const dir = (await exec("realpath", [`${home()}/org`])).stdout.trim();
+        for (;;) {
+          const paths = await watchFolder(dir);
+          if (paths.some(p => p === dir || p.endsWith("/bell.org"))) count(cx);
+        }
+      } catch { cx.timer.every(15000, (cx) => count(cx)); }
+    });
   }
 
   // The side panel is remembered per space: switching shows that space's choice
@@ -83,10 +121,10 @@ export default class Tabs extends View {
       ? Math.max(10, (root.traffic_lights[0] + 64) / settings().zoom - (sidebar?.hidden ? 0 : sidebar?.size?.px ?? 0))
       : 10;
     const panel = find(root, "panel"), body = find(root, "panel-body");
-    // Review is always offered; the welcome's choice covers only Files and Changes.
-    const enabled = [...(shared("workspace.panels") ?? ["files", "changes"]), "review"];
+    // Review and Bell are always offered; the welcome's choice covers only Files and Changes.
+    const enabled = [...(shared("workspace.panels") ?? ["files", "changes"]), "review", "bell"];
     this.syncPanel(space, panel, body, enabled);
-    const panelButton = (id, label, icon) => {
+    const panelButton = (id, label, icon, badge = null) => {
       const on = panel && !panel.hidden && body?.active === id;
       return h_flex().id(`panel-${id}`).h(26).px(8).gap(5).flex_none().items_center().rounded(4)
         .text_size(12).bg(on ? t.selected : t.chrome).text_color(on ? t.foreground : t.muted)
@@ -94,7 +132,8 @@ export default class Tabs extends View {
         .on_click(() => {
           if (on) run("layout.hide", { id: "panel" });
           else { run("layout.select", { stack: "panel-body", child: id }); run("layout.show", { id: "panel" }); }
-        }).child(svg(icon).size(14)).child(label);
+        }).child(svg(icon).size(14)).child(label)
+        .when(Boolean(badge), el => el.child(div().text_color(t.dim).child(String(badge))));
     };
     return h_flex().size_full().min_w(0).px(10).pl(lightsPadding).gap(3).items_center().bg(t.chrome).border_b(1).border_color(t.border)
       .on_mouse_up("left", () => { this.pressed = null; })
@@ -109,6 +148,7 @@ export default class Tabs extends View {
       .when(enabled.includes("files"), el => el.child(panelButton("files", "Files", "mods/files/file.svg")))
       .when(enabled.includes("changes"), el => el.child(panelButton("changes", "Changes", "mods/changes/changes.svg")))
       .child(panelButton("review", "Review", "mods/my-review/review.svg"))
+      .child(panelButton("bell", "Bell", "mods/my-bell/bell.svg", this.bell))
       .when(window()?.buttons, el => el.child(button("minimize", "−", () => run("window.minimize")))
         .child(button("maximize", "□", () => run("window.maximize")))
         .child(button("close-window", svg("mods/pane/close.svg").size(13), () => run("window.close"))));

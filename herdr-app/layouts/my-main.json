@@ -147,6 +147,13 @@
                       "content": {
                         "mod": "my-review"
                       }
+                    },
+                    {
+                      "id": "bell",
+                      "type": "block",
+                      "content": {
+                        "mod": "my-bell"
+                      }
                     }
                   ],
                   "active": "files"
