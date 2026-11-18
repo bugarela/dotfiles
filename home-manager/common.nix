@@ -382,6 +382,8 @@ in {
 
     pkgs.pandoc
     pkgs.nixpkgs-fmt
+    # Prose linter for the prose-style skill
+    pkgs.vale
 
     pkgs.libsecret
 

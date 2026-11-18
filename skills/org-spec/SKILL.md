@@ -79,16 +79,13 @@ team names, issue prefixes, private paths, or project-specific workflows here.
   Stable shared references may support the explanation, never replace it.
 - Use short paragraphs and specific bullets. Compact comparison tables are
   encouraged when they make the alternatives and their tradeoffs easier to scan.
-- Follow a passage that describes data, states, or a rule in the abstract with a
-  small concrete example, such as a table of example rows or a short scenario.
-  Introduce it as an example, use invented but realistic values, and say what
-  happens to them next when that is the point of the rule.
 - Cut duplication, shrink diagram complexity, and simplify wide tables before
   reducing typography. Keep body text at least 10.5 pt and margins at least
   0.65 inches. Never force fit with tiny fonts, clipped content, or hidden text.
 - Meet the page budget by cutting duplication and moving agent-only mechanics
   into Markdown, NOT by compressing sentences (see "Sentences" below) or by
-  dropping part of the problem or its meaningful alternatives. The companion Markdown spec has no four-page limit. If the
+  dropping part of the problem or its meaningful alternatives. The companion
+  Markdown spec has no four-page limit. If the
   human-facing decisions still cannot fit four pages, explain the conflict and
   propose a document structure; don't silently narrow scope or deliver an
   over-limit document as final.
@@ -109,36 +106,12 @@ whole; it does not need to be restated for each choice. Do not claim team approv
 consensus, or a finalized decision record unless established. Retain real unknowns
 as concrete design questions, not approval chores for the author.
 
-## Sentences: easy to read, not compressed
+## Sentences
 
-A sentence that is understood on the first reading beats a shorter one that has
-to be decoded. Brevity comes from cutting content, never from squeezing grammar.
-
-- Prefer the passive voice. Never put a clause directly after a noun without
-  "that" or "which"; rewrite it with "that" and the passive. Write "files that
-  are not claimed by any component", NOT "the files no component claims", and
-  "a reason that is shown to the agent", NOT "a reason the agent sees".
-- Keep the words that hold a sentence together: articles, "that"/"which" before
-  a relative clause, and a subject and verb in every clause. Write "each code is
-  checked as soon as it is entered", not "checks each code once entered".
-  Put the receiver after "to" or "for": "gives one owner to each file", not
-  "gives each file one owner".
-  Never refer back with "such": repeat the words ("at most one "left out"
-  record", not "at most one such record"). Repeat the noun instead of "one" or
-  "it" when the nearest noun is a different thing: "a file has at most one
-  declined row", not "a declined row has no component, and a file has at most
-  one".
-- State what happens first and give the reason after it, with "since" or
-  "because". Don't join two short clauses with ", so": write "Nothing starts
-  without that confirmation since it would cost time and money", NOT "It costs
-  time and money, so nothing starts it without that confirmation".
-- Write each alternative and tradeoff as full sentences, not a "label: fragment"
-  pair or clauses chained with semicolons.
-- Say what every number measures: "the code arrived after 2 seconds with one
-  provider and after 6 with another", not "after 2 and 6 seconds". Use a small
-  table when there are several.
-- Before finishing, reread every sentence. Expand any sentence that has to be
-  read twice, even if the document gets longer.
+Apply the author's prose style to every sentence of the Org document, review
+replies included: load the `prose-style` skill before writing, and lint the Org
+document as it says. The companion Markdown spec is written for agents and is
+not linted.
 
 ## Decisions and alternatives: required writing pattern
 
