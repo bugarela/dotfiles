@@ -17,12 +17,15 @@
   # Start explicitly while working remotely; no WantedBy means no forwarding
   # just because the laptop is logged in. Herdr's own SSH connections remain
   # separate, so reconnecting/adding a machine cannot contend for this socket.
+  # The desktop's `laptop-tunnel` holds the session open and exits 0 when
+  # `working-from-desktop` runs there, so this service stops instead of
+  # reconnecting. It needs the terminal from -tt to block on.
   systemd.user.services.herdr-agent-forward = {
     Unit.Description = "Laptop 1Password agent for desktop Herdr Git operations";
     Service = {
       ExecStart = lib.concatStringsSep " " [
         "${pkgs.openssh}/bin/ssh"
-        "-NT"
+        "-tt"
         "-o BatchMode=yes"
         "-o ForwardAgent=no"
         "-o ControlMaster=no"
@@ -30,6 +33,7 @@
         "-o ExitOnForwardFailure=yes"
         "-R /home/gabriela/.ssh/herdr-laptop-agent.sock:${config.home.homeDirectory}/.1password/agent.sock"
         "herdr-desktop"
+        "laptop-tunnel"
       ];
       Restart = "on-failure";
       RestartSec = 10;

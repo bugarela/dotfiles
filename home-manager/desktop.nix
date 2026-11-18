@@ -52,6 +52,29 @@ in {
     # pkgs.tuxguitar
 
     inputs.nixpkgs-latest.legacyPackages.${pkgs.stdenv.hostPlatform.system}.opencode
+
+    # The laptop's agent tunnel runs this under `ssh -tt`. Exiting 0 on TERM
+    # ends the laptop service without its on-failure reconnect; a dropped
+    # connection hangs up the terminal, which ends the read. The name must stay
+    # within the 15 characters that `pkill -x` matches.
+    (pkgs.writeShellApplication {
+      name = "laptop-tunnel";
+      text = ''
+        trap 'exit 0' TERM
+        read -r
+      '';
+    })
+    (pkgs.writeShellApplication {
+      name = "working-from-desktop";
+      runtimeInputs = [ pkgs.procps ];
+      text = ''
+        if pkill -x laptop-tunnel; then
+          echo "Agent tunnel stopped; desktop Git will use desktop 1Password."
+        else
+          echo "No laptop agent tunnel is running."
+        fi
+      '';
+    })
   ];
 
   services.ollama = {

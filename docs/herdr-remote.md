@@ -89,14 +89,20 @@ GitHub's successful authentication greeting still exits with status 1.
 environment can still point to the desktop agent. Git's OpenSSH client
 uses the configured `IdentityAgent` instead.
 
-When done, on the laptop:
+When done, on either machine:
 
 ```sh
 working-from-desktop
 ```
 
+On the laptop, the service is stopped directly. On the desktop, the tunnel's
+`laptop-tunnel` command is terminated, so the laptop's SSH session ends cleanly
+and the service stops without reconnecting. The desktop's command is the one to
+use when the laptop was left behind with the tunnel running.
+
 The service is intentionally **not enabled at login**. It retries if the network
-drops while started. Inspect failures with:
+drops while started. The desktop must be rebuilt before the laptop, since the
+tunnel fails without `laptop-tunnel` on the desktop. Inspect failures with:
 
 ```sh
 journalctl --user -u herdr-agent-forward -n 50
@@ -153,7 +159,15 @@ A stale socket can remain after a disconnect. The desktop checks whether it
 accepts connections, so a stale inode does not prevent fallback to local
 1Password. Reconnecting replaces it. No socket cleanup or Herdr restart is
 required. Local authentication still requires desktop 1Password to be unlocked.
-The shortcuts run on the laptop; desktop agent selection follows automatically.
+`working-from-laptop` runs on the laptop, and `working-from-desktop` runs on
+either machine; desktop agent selection follows automatically.
+
+The tunnel runs `laptop-tunnel` on the desktop instead of `ssh -N`, because a
+clean exit of the remote command is the only signal the desktop can send back.
+It blocks reading the terminal that `ssh -tt` allocates, so a dropped connection
+hangs the terminal up and ends it, and SIGTERM makes it exit 0. Any other exit
+status, including that of a dropped connection, keeps the laptop's on-failure
+reconnect.
 
 **Trust:** while the tunnel is running, processes with your desktop UID (and
 desktop root) can request signatures from the laptop agent, including outside
