@@ -1,7 +1,7 @@
 // A lazy file browser for the focused pane's folder, with bounded read-only previews.
 import { View, div, svg } from "gpui-kit";
 import { v_flex, h_flex, Editor, EditorState } from "gpui-base";
-import { spaces, panes, focused, exec, readTextFile, watchFolder, theme, settings, window, openOverlay } from "herdr";
+import { spaces, panes, focused, exec, readTextFile, watchFolder, theme, settings, window, openOverlay, run } from "herdr";
 
 function location() {
   const space = spaces().find(s => s.active), f = focused();
@@ -154,6 +154,8 @@ export default class Files extends View {
         .child(div().font_semibold().child("Files"))
         .when(Boolean(this.file), el => el.child(div().id("files-emacs").px(8).py(4).rounded(4).cursor_pointer().text_size(12).text_color(t.accent).hover(s => s.bg(t.hover))
           .on_click(() => this.openEmacs()).child("Open in Emacs")))
+        .when(Boolean(this.file), el => el.child(div().id("files-herdr").px(8).py(4).rounded(4).cursor_pointer().text_size(12).text_color(t.accent).hover(s => s.bg(t.hover))
+          .on_click(() => run("pane.split", { direction: "right", mod: "my-viewer", props: { file: { path: `${this.root}/${this.file}`, machine: this.on ?? null } } })).child("Open in Herdr")))
         .child(div().flex_1().min_w(0).truncate().text_right().text_size(12).text_color(t.dim).child(this.file ?? this.root?.split(/[\\/]/).pop() ?? "")))
       .when(!this.file, el => el.child(v_flex().id("files-tree").flex_1().min_h(0).overflow_y_scrollbar().p(6).children(this.rows("", 0, [], t))
         .when(Boolean(this.error) || !this.entries.get("")?.length, el => el.child(div().p(8).text_size(12).text_color(t.dim).child(this.error || (this.loading ? "Loading files…" : this.root ? "No files" : "No folder"))))

@@ -1,11 +1,11 @@
-// Paste a file path, pick where it lives, Enter opens it in this computer's Emacs.
-// props.selection { pane, terminal } (the terminal menu) or props.file { path, machine }
-// (the Files panel): open it right away, staying open only to fix it. Otherwise the
-// clipboard prefills.
+// Paste a file path, pick where it lives, Enter opens it in this computer's Emacs
+// (Open in Herdr: a pane beside the focused one). props.selection { pane, terminal }
+// (the terminal menu) or props.file { path, machine } (the Files panel): open it in
+// Emacs right away, staying open only to fix it. Otherwise the clipboard prefills.
 import { View, div } from "gpui-kit";
 import { v_flex, h_flex, InputState, Input } from "gpui-base";
 import { props, closeOverlay, theme, spaces, focused, panes, run } from "herdr";
-import { sameMachine, onDesktop, clipboard, looksLikePath, openInEmacs, spaceOfPane, machineForText } from "./open.js";
+import { sameMachine, onDesktop, clipboard, looksLikePath, openInEmacs, openInHerdr, spaceOfPane, machineForText } from "./open.js";
 
 export default class OpenInEmacs extends View {
   init(_props, cx) {
@@ -60,10 +60,10 @@ export default class OpenInEmacs extends View {
     await this.open(cwd);
   }
 
-  async open(cwd) {
+  async open(cwd, herdr = false) {
     this.busy = true;
     try {
-      await openInEmacs(this.text, this.machine, cwd);
+      await (herdr ? openInHerdr : openInEmacs)(this.text, this.machine, cwd);
       closeOverlay(props().overlay);
     } catch (error) {
       this.error = String(error.message ?? error);
@@ -71,12 +71,12 @@ export default class OpenInEmacs extends View {
     this.busy = false;
   }
 
-  submit(cx) {
+  submit(cx, herdr = false) {
     if (this.busy || !this.text.trim()) return;
     // Relative paths follow the focused terminal, when it is on the chosen machine.
     const space = spaces().find(s => s.active);
     const cwd = sameMachine(space?.machine ?? null, this.machine) ? focused()?.cwd ?? null : null;
-    cx.spawn(async cx => { await this.open(cwd); cx.notify(); });
+    cx.spawn(async cx => { await this.open(cwd, herdr); cx.notify(); });
   }
 
   render(cx) {
@@ -99,13 +99,14 @@ export default class OpenInEmacs extends View {
     return v_flex().id("my-emacs").track_focus(this.handle)
       .on_key_down((e, cx) => { if (e.key === "escape") { closeOverlay(props().overlay); cx.stop_propagation(); } })
       .w_full().min_h(0).p(18).gap(10).bg(t.popover).text_color(t.foreground)
-      .child(h_flex().items_center().child(div().flex_1().text_size(15).font_semibold().child("Open in Emacs"))
+      .child(h_flex().items_center().child(div().flex_1().text_size(15).font_semibold().child("Open file"))
         .child(div().text_size(11).text_color(t.dim).child("Esc")))
       .child(Input.new(this.input).h(36).px(10).rounded(9).border_1().border_color(t.accent).bg(t.background).text_size(12.8).text_color(t.foreground))
       .child(h_flex().gap(6).items_center().child(div().text_size(11.5).text_color(t.dim).mr(4).child("File is on")).children(choices.map(chip)))
       .when(Boolean(this.error), el => el.child(div().text_size(11.5).text_color(t.blocked).truncate().child(this.error)))
       .child(h_flex().gap(8).justify_end()
         .child(button("emacs-cancel", "Cancel", false, () => closeOverlay(props().overlay)))
-        .child(button("emacs-open", this.busy ? "Opening…" : "Open", true, (_e, cx) => this.submit(cx))));
+        .child(button("emacs-herdr", "Open in Herdr", false, (_e, cx) => this.submit(cx, true)))
+        .child(button("emacs-open", this.busy ? "Opening…" : "Open in Emacs", true, (_e, cx) => this.submit(cx))));
   }
 }

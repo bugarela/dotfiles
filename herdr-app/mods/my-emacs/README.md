@@ -13,6 +13,13 @@ Three ways in, all opening the file in **this** computer's Emacs:
   Left-clicking a selection can't be hooked: terminals keep their presses.
 - **Files panel → Open in Emacs** above a preview.
 
+The dialog and the Files panel also offer **Open in Herdr**. With that button,
+the file is opened in a `my-viewer` pane, which is placed to the right of the
+focused pane. Markdown is rendered in the pane, and any other file is shown as
+read-only code. The file is read again every 3 seconds, and edits that are made
+elsewhere are therefore shown. Enter in the dialog still opens the file in
+Emacs.
+
 The GUI runs on the computer displaying Herdr, even in a remote space. Local
 files open directly; remote files open through SSH/TRAMP. Saving writes back
 to the original machine. `emacsclient -n -c -a ""` reuses the local server or
@@ -41,7 +48,7 @@ laptop rebuild. Arbitrary terminal file links are not intercepted.
 
 ```
 node --test herdr-app/mods/my-emacs/tests/emacs.test.mjs
-for m in my-emacs my-menu my-tabs my-files; do herdr-app check ~/dotfiles/herdr-app/mods/$m; done
+for m in my-emacs my-menu my-tabs my-files my-viewer; do herdr-app check ~/dotfiles/herdr-app/mods/$m; done
 ```
 
 A real laptop-to-desktop click/save test is still required after SSH/Tailscale
