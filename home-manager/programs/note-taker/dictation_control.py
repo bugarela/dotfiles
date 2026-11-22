@@ -130,6 +130,9 @@ def worker(path, backend):
                         if not cancelled:
                             if event["event"] == "text":
                                 transcript = event["text"]
+                            elif event["event"] == "level":
+                                if state["state"] == "recording":
+                                    state = {**state, "level": event["level"]}
                             else:
                                 state = {"state": event["event"]}
                             write_json(path / "state.json", state)

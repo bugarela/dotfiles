@@ -27,6 +27,14 @@
      (message (if (process-get process 'dictation-receiver)
                   "Voice rewrite: speak your instruction; F8 to stop, Shift+F8 to cancel"
                 "Dictation: speak now; F8 to stop, Shift+F8 to cancel")))
+    ("level"
+     (when (eq (process-get process 'dictation-state) 'recording)
+       (let* ((level (max 0 (min 1 (or (alist-get 'level event) 0))))
+              (bars (round (* level 8))))
+         (my/org-dictation--status
+          process 'recording
+          (format " [Voice: %s%s]" (make-string bars ?▮)
+                  (make-string (- 8 bars) ?·))))))
     ("transcribing"
      (my/org-dictation--status process 'transcribing " [Voice: transcribing]"))
     ("text" (process-put process 'dictation-text (alist-get 'text event)))))
@@ -165,7 +173,7 @@ inserting text. Wait for RECORDING before speaking; toggle again to stop."
             (process-put process 'dictation-receiver receiver)
             (add-hook 'kill-buffer-hook #'my/org-dictation--cancel-for-buffer nil t)
             (my/org-dictation--status process 'loading " [Voice: loading]")
-            (message "Loading Whisper; wait for the RECORDING indicator"))
+            (message "Opening microphone; wait for the RECORDING indicator"))
         (error (set-marker marker nil)
                (signal (car err) (cdr err)))))))
 

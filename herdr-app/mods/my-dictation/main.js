@@ -19,7 +19,8 @@ export default class Dictation extends View {
     this.error = "";
     this.busy = false;
     this.polling = false;
-    cx.timer.every(1000, cx => this.poll(cx));
+    this.level = 0;
+    cx.timer.every(100, cx => this.poll(cx));
     if (this.session) this.poll(cx);
     cx.spawn(async cx => {
       for (;;) {
@@ -32,14 +33,18 @@ export default class Dictation extends View {
   }
 
   poll(cx) {
-    if (!this.session || this.polling || this.state === "ready" || this.state === "error") return;
+    if (!this.session || this.polling || this.busy || !ACTIVE.includes(this.state)) return;
     const id = this.session.id;
     this.polling = true;
     cx.spawn(async cx => {
       try {
         const state = await control("status", id);
-        if (this.session?.id !== id) return;
+        if (this.session?.id !== id || this.busy || !ACTIVE.includes(this.state)) return;
+        // A status request started before stop/cancel must not rewind the UI.
+        if (["transcribing", "cancelling"].includes(this.state)
+            && ["loading", "recording"].includes(state.state)) return;
         this.state = state.state;
+        this.level = Math.max(0, Math.min(1, Number(state.level) || 0));
         if (state.state === "ready") {
           // Preserve edits to a draft left by the old UI, but never auto-paste
           // an old draft or replay a delivery interrupted by a mod reload.
@@ -51,6 +56,8 @@ export default class Dictation extends View {
         } else if (state.state === "error") this.error = state.error;
         else if (state.state === "cancelled") await this.clear();
       } catch (error) {
+        // Delivery/discard can finish while this status request is in flight.
+        if (this.session?.id !== id || this.busy || !ACTIVE.includes(this.state)) return;
         this.state = "error";
         this.error = String(error);
       } finally {
@@ -136,14 +143,16 @@ export default class Dictation extends View {
   }
 
   async clear() {
-    if (this.session) {
-      try { await control("discard", this.session.id); } catch (_) { /* Already expired. */ }
-    }
+    const session = this.session;
+    // Detach before deleting backend state: no timer may poll this session again.
     this.session = null;
     this.state = "idle";
     this.error = "";
     setShared("dictation.session", null);
     setShared("dictation.draft", null);
+    if (session) {
+      try { await control("discard", session.id); } catch (_) { /* Already expired. */ }
+    }
   }
 
   cancel(cx) {
@@ -179,8 +188,8 @@ export default class Dictation extends View {
       .on_mouse_down("left", (_event, cx) => cx.stop_propagation())
       .on_click((_event, cx) => action(cx)).child(text);
     const label = {
-      loading: "Loading Whisper… wait before speaking",
-      recording: "● Recording · F8 to stop",
+      loading: "Opening microphone… wait before speaking",
+      recording: `${"▮".repeat(Math.round(this.level * 8)).padEnd(8, "·")} Recording · F8 to stop`,
       transcribing: "Transcribing… text will be pasted, not submitted",
       cancelling: "Cancelling…",
       pasting: "Pasting into terminal…",

@@ -20,6 +20,7 @@ class ControlTests(unittest.TestCase):
         self.backend.write_text(
             "import json, sys\n"
             "print(json.dumps({'event':'recording'}), flush=True)\n"
+            "print(json.dumps({'event':'level','level':0.5}), flush=True)\n"
             "if sys.stdin.readline().strip() == 'stop':\n"
             "    print(json.dumps({'event':'transcribing'}), flush=True)\n"
             "    print(json.dumps({'event':'text','text':'Please explain this.'}), flush=True)\n"
@@ -66,6 +67,7 @@ class ControlTests(unittest.TestCase):
 
     def test_start_stop_review_and_discard(self):
         self.start()
+        self.assertEqual(self.call("status", self.session)["level"], 0.5)
         self.assertEqual(self.path.stat().st_mode & 0o777, 0o700)
         self.assertEqual((self.path / "state.json").stat().st_mode & 0o777, 0o600)
         self.call("stop", self.session)

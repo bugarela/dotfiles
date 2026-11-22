@@ -2,8 +2,21 @@
 
 The existing `note-taker` meeting recorder is unchanged. `note-taker --dictate`
 adds microphone-only dictation, using the same Nix Python environment and
-`faster-whisper` `base` model on CPU/int8. Each invocation loads the model; its
-existing downloaded model cache is reused. There is no hosted transcription API.
+`faster-whisper` `base` model on CPU/int8. Microphone capture is started before Whisper is loaded.
+The model is loaded in the background while you speak, and the downloaded model cache is reused.
+There is no hosted transcription API.
+
+Audio is streamed from FFmpeg through a pipe into memory queues.
+No audio file is created, including a temporary WAV.
+Speech chunks are transcribed during pauses while microphone capture continues.
+For example, a sentence followed by a pause can be transcribed before you finish the next sentence.
+F8 stops capture, drains the final samples and waits for pending chunks before inserting the combined text.
+Cancellation discards the session without inserting partial results.
+
+An audio-level meter is shown during recording in both applications.
+The bars respond to microphone volume rather than a fixed animation.
+For example, the bars shrink during silence and grow as you speak.
+After a short recording, transcription may still wait for model loading to finish.
 
 ## Emacs usage
 
@@ -46,14 +59,17 @@ The mode line shows loading, recording, transcribing, or cancelling. No speech
 means no inserted comment. Errors appear in `*Org dictation errors*`; results
 whose destination became uneditable go to `*Voice dictation recovery*`.
 Closing the destination buffer or Emacs cancels capture. Recording stops after
-30 minutes and transcribes what was captured, as if stopped by hand. Temporary WAV files are removed on normal completion/error/
-cancellation; no meeting transcript files are created. A force-kill or system
-crash may leave a temporary directory in the system temp location.
+30 minutes, and pending speech is transcribed as though F8 had been pressed.
+Audio stays in process memory, and no audio or meeting transcript files are created.
+Ordinary process memory remains subject to the operating system's swap policy.
 
 The standalone Emacs module is `doom.d/org-dictation.el`. Its customizable
 `my/org-dictation-command` defaults to `("note-taker" "--dictate")`. Backend
 options include `--language en`, `--source default` (PulseAudio source name),
-and `--timeout 1800` (seconds; then it stops and transcribes).
+`--timeout 1800` (seconds; then it stops and transcribes) and `--decoding fast` or `--decoding thorough`.
+Fast decoding is the default and uses a single greedy pass without temperature retries.
+Thorough decoding restores Whisper's previous beam search and temperature fallback policy.
+The model remains `base` on CPU/int8, but recognition accuracy can differ between decoding modes.
 
 ## Herdr usage
 
@@ -79,13 +95,13 @@ internal bookkeeping, never shown in UI.
 
 The mod invokes the standard-library bridge at
 `~/dotfiles/home-manager/programs/note-taker/dictation_control.py`, which starts
-installed `note-taker --dictate`. It works with the existing dictation-enabled
-package: no rebuild is needed just for this Herdr integration. New package
-builds also expose `note-taker --dictation-control <action>`.
+installed `note-taker --dictate`. Memory-only streaming, faster capture and the audio meter require a rebuilt `note-taker` package.
+Older dictation-enabled packages still work with this integration, but no audio levels are received.
+New package builds also expose `note-taker --dictation-control <action>`.
 
 The bridge's commands are `start`, `status`, `stop`, `cancel`, and `discard`, with
 `--session` after start. They return quickly as JSON; a detached worker owns the
-interactive backend. Herdr polls once a second only while active. Polls renew a
+interactive backend. Herdr polls every 100 milliseconds only while active. Polls renew a
 lease: loss of the controller cancels capture after 20 seconds. Closing the mod,
 changing layouts, or quitting Herdr also requests cancellation. No recording
 starts merely by opening the app or loading the mod. F8/Shift+F8 apply while
@@ -97,12 +113,13 @@ use `SPC a v` there if you specifically want an Org review comment.
 
 ## Backend protocol
 
-Stdout contains JSON lines with events `loading`, `recording`, `transcribing`,
-and finally `text` with a `text` string. Diagnostics go to stderr. Write
+Stdout contains JSON lines with events `loading`, `recording`, `level`, `transcribing`
+and finally `text` with a `text` string. A normalized microphone volume between 0 and 1 is included in each `level` event. Diagnostics go to stderr. Write
 `stop\n` to stdin after `recording` to finish. Closing stdin discards capture;
-SIGTERM cancels and cleans up ffmpeg. The mic is not opened until model loading
-finishes. `ffmpeg` captures the default PulseAudio input only, never the system
-output mix used by meeting recording.
+SIGTERM cancels and cleans up ffmpeg. The `recording` event is emitted only after microphone samples have been received.
+Whisper is then loaded in a background thread.
+`ffmpeg` streams mono 16 kHz PCM through stdout and captures only the default PulseAudio input.
+The system output mix that is used for meetings is not captured.
 
 ## Tests / build
 
@@ -117,5 +134,36 @@ nix-build home-manager/programs/note-taker/default.nix --no-out-link
 herdr-app check ~/dotfiles/herdr-app/mods/my-dictation
 ```
 
-Tests mock microphone/inference; they do not record audio or download a model.
+Tests use synthetic PCM, mocked inference and a synthetic FFmpeg source without opening the microphone or downloading a model.
+The NumPy-array test requires the Python environment that is provided by the `note-taker` package.
 An actual microphone/Whisper round trip needs an interactive test.
+
+## Latency and memory
+
+Speech is split after approximately 600 milliseconds of silence that is detected by WebRTC VAD.
+Pre-roll audio and trailing silence are retained for each chunk.
+A final partial frame is padded in memory rather than discarded.
+Continuous speech is not forcibly split, since a word could be cut in half.
+Without a pause, the full utterance still needs transcription after F8.
+
+Late status responses are ignored after paste or session deletion, since a completed session must not be shown as a capture failure.
+
+Single-run synthetic benchmarks on this desktop compared the previous settings with fast decoding and eight CPU threads.
+The timings below exclude model loading, and actual microphone results will vary.
+
+| Synthetic input | Audio duration | Previous decoding | Fast decoding |
+|---|---:|---:|---:|
+| Ordinary prose | 7.9 seconds | 0.87 seconds | 0.60 seconds |
+| Repeated syllables | 6.9 seconds | 16.08 seconds | 2.10 seconds |
+
+The ordinary-prose transcript was identical in this comparison.
+The repeated-syllable transcript was inaccurate in both modes, and these measurements do not demonstrate equivalent recognition quality.
+
+Duration-only diagnostics are written to stderr for capture startup, model loading, chunk inference and the wait after stopping.
+No audio samples or transcript text are included in these timing messages.
+Herdr's existing backend log holds these messages until the session is discarded.
+
+The model is loaded for each invocation and is not kept warm between sessions.
+Short recordings may therefore still wait for model startup.
+If inference falls behind, audio is queued in memory rather than dropped or written to storage.
+The default 30-minute capture limit corresponds to approximately 58 MB of raw PCM, excluding inference memory and queue overhead.

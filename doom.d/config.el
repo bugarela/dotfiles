@@ -461,10 +461,17 @@ Meant for `org-agenda-finalize-hook'."
                    (write-on-add . "Add your own wording")
                    (write-on-stash . "Move text to overflow")
                    (write-on-flatten . "Keep only this wording")
-                   (write-on-cancel . "Stop generating")))
+                   (write-on-cancel . "Stop generating")
+                   (write-on-edit-finish . "Finish draft and suggest")
+                   (write-on-edit-cancel . "Cancel alternative draft")))
     (add-to-list 'which-key-replacement-alist
                  (cons (cons nil (concat "\\`" (regexp-quote (symbol-name (car entry))) "\\'"))
                        (cons nil (cdr entry))))))
+(map! :map write-on-edit-mode-map
+      :localleader
+      (:prefix ("w" . "writing alternatives")
+       :desc "Finish draft and suggest" "c" #'write-on-edit-finish
+       :desc "Cancel alternative draft" "k" #'write-on-edit-cancel))
 (global-set-key (kbd "<f8>") #'write-on-dictation-toggle)
 (global-set-key (kbd "S-<f8>") #'my/org-dictation-cancel)
 

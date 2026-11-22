@@ -84,6 +84,22 @@
           (should (equal (process-get process 'dictation-text) "Why?")))
       (delete-process process))))
 
+(ert-deftest dictation-meter-follows-audio-and-ignores-late-levels ()
+  (let ((process (make-pipe-process :name "voice-level-test" :noquery t))
+        (my/org-dictation-status ""))
+    (unwind-protect
+        (progn
+          (my/org-dictation--event process '((event . "recording")))
+          (my/org-dictation--event process '((event . "level") (level . 0.5)))
+          (should (equal my/org-dictation-status " [Voice: ▮▮▮▮····]"))
+          (should (eq (process-get process 'dictation-state) 'recording))
+          (my/org-dictation--event process '((event . "level") (level . 0)))
+          (should (equal my/org-dictation-status " [Voice: ········]"))
+          (my/org-dictation--event process '((event . "transcribing")))
+          (my/org-dictation--event process '((event . "level") (level . 1)))
+          (should (equal my/org-dictation-status " [Voice: transcribing]")))
+      (delete-process process))))
+
 (ert-deftest org-dictation-rejects-non-org-and-source-blocks ()
   (let ((my/org-dictation-process nil))
     (with-temp-buffer

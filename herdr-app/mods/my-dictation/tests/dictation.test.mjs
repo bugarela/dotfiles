@@ -26,12 +26,14 @@ let selection;
 let commands;
 let clipboard;
 let tasks;
+let backendState;
+let controlHook;
 const store = new Map();
 const element = new Proxy({}, { get() { return () => element; } });
 globalThis.__voiceTestHost = {
   View: class {}, div: () => element, h_flex: () => element, v_flex: () => element,
-  exec: async (_program, args) => ({ code: 0, stdout: JSON.stringify(
-    args.includes("status") ? { state: "ready", text: "Testing, testing." } : { state: "ready" }), stderr: "" }),
+  exec: async (_program, args) => controlHook ? controlHook(args) : ({ code: 0, stdout: JSON.stringify(
+    args.includes("status") ? backendState : { state: "ready" }), stderr: "" }),
   home: () => "/example", focused: () => selection, panes: () => [originalPane],
   theme: () => ({}), shared: key => store.get(key), setShared: (key, value) => store.set(key, value),
   nextCommand: () => new Promise(() => {}), run: command => commands.push(command),
@@ -51,6 +53,8 @@ const context = {
 
 function setup(autoPaste = true) {
   store.clear(); commands = []; clipboard = []; tasks = [];
+  backendState = { state: "ready", text: "Testing, testing." };
+  controlHook = null;
   selection = { terminal: "term-a", pane: "pane-a" };
   const view = new Dictation();
   view.init({}, context);
@@ -96,6 +100,72 @@ test("a completed new recording is pasted automatically, without a draft editor"
   await tasks.shift()(context); // Discard private backend data after paste.
   assert.equal(view.state, "idle");
   assert.equal(store.get("dictation.draft"), null);
+});
+
+test("a late missing-session error after successful paste is ignored", async () => {
+  const view = setup();
+  let rejectStatus;
+  controlHook = args => args.includes("status")
+    ? new Promise((_resolve, reject) => { rejectStatus = reject; })
+    : { code: 0, stdout: '{"state":"ready"}', stderr: "" };
+  view.state = "transcribing";
+  view.poll(context);
+  const poll = tasks.shift()(context);
+  view.state = "ready";
+  view.paste(context);
+  view.poll(context); // No new request while pasting.
+  assert.equal(tasks.length, 1);
+  await tasks.shift()(context);
+  rejectStatus(new Error("Dictation session no longer exists"));
+  await poll;
+  assert.equal(view.state, "idle");
+  assert.equal(view.error, "");
+  assert.deepEqual(commands, ["terminal.paste"]);
+  assert.equal(store.get("dictation.draft"), null);
+});
+
+test("clear detaches the session before asynchronous deletion", async () => {
+  const view = setup();
+  let finishDiscard;
+  controlHook = () => new Promise(resolve => { finishDiscard = resolve; });
+  const clear = view.clear();
+  assert.equal(view.session, null);
+  assert.equal(view.state, "idle");
+  assert.equal(store.get("dictation.session"), null);
+  view.poll(context);
+  assert.equal(tasks.length, 0);
+  finishDiscard({ code: 0, stdout: '{"state":"ready"}', stderr: "" });
+  await clear;
+});
+
+test("a recording response started before stop cannot rewind transcription", async () => {
+  const view = setup();
+  let finishStatus;
+  controlHook = args => args.includes("status")
+    ? new Promise(resolve => { finishStatus = resolve; })
+    : { code: 0, stdout: '{"state":"recording"}', stderr: "" };
+  view.state = "recording";
+  view.poll(context);
+  const poll = tasks.shift()(context);
+  view.toggle(context);
+  await tasks.shift()(context);
+  assert.equal(view.state, "transcribing");
+  finishStatus({ code: 0, stdout: '{"state":"recording","level":0.5}', stderr: "" });
+  await poll;
+  assert.equal(view.state, "transcribing");
+});
+
+test("audio levels update without changing the recording state or pasting", async () => {
+  const view = setup();
+  view.state = "recording";
+  for (const level of [0, 0.75, 0]) {
+    backendState = { state: "recording", level };
+    view.poll(context);
+    await tasks.shift()(context);
+    assert.equal(view.state, "recording");
+    assert.equal(view.level, level);
+    assert.deepEqual(commands, []);
+  }
 });
 
 test("old drafts and interrupted deliveries are not automatically replayed", async () => {

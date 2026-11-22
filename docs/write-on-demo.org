@@ -14,7 +14,8 @@ The alternatives should be kept beside the prose. The document should remain rea
 3. Return to the changed word and press =SPC m w c=. The saved versions are shown again.
 4. Select a sentence and press =SPC m w g=. Alternatives are generated for the selection instead of a word.
 5. Press =SPC m w G= to give a direction, such as “Make the wording more concrete”.
-6. Press =a= in the panel to add your own alternative. Your wording is labelled “Mine”, while generated wording is labelled “AI”.
+6. Press =a= in the panel to edit the highlighted option in an Org draft. Finish with Escape and then =SPC m w c=.
+   Your draft is labelled “Mine”, and further AI alternatives are requested automatically. Cancel the draft with Escape and then =SPC m w k=.
 7. Select unwanted prose and press =SPC m w s=. The prose is moved to a COMMENT Overflow subtree.
 8. Press =SPC m w f= on an alternative to keep only the visible wording.
 
