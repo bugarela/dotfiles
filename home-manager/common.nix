@@ -984,11 +984,61 @@ in {
 
   programs.direnv.nix-direnv.enable = true;
 
-  xdg.mimeApps.defaultApplications = {
-    "application/pdf" = [
-      "zathura.desktop"
-    ];
-    "x-scheme-handler/io.element.desktop" = pkgs.element-desktop.desktopItem.name;
+  # Ctrl+click on a file link in a Herdr terminal goes through xdg-open. Most
+  # source types inherit the text/plain default; the others listed for Emacs
+  # are also claimed by Helix, which would otherwise win.
+  #
+  # mimeapps.list becomes a read-only link, so an app can no longer make itself
+  # a default at run time: every default that matters is listed here. A handler
+  # that is alone for its type (Slack, Telegram, Element, claude-cli) needs no
+  # entry.
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = lib.genAttrs [
+      "text/plain"
+      "text/english"
+      "text/x-makefile"
+      "text/x-c"
+      "text/x-c++"
+      "text/x-c++hdr"
+      "text/x-c++src"
+      "text/x-chdr"
+      "text/x-csrc"
+      "text/x-java"
+      "text/x-moc"
+      "text/x-pascal"
+      "text/x-tcl"
+      "text/x-tex"
+      "application/x-shellscript"
+      "application/json"
+      "application/xml"
+    ] (_: "emacsclient.desktop") // {
+      "text/markdown" = "herdr-view.desktop";
+      "application/pdf" = [
+        "zathura.desktop"
+      ];
+      "message/rfc822" = "emacsclient-mail.desktop";
+      "x-scheme-handler/http" = "xfce4-web-browser.desktop";
+      "x-scheme-handler/https" = "xfce4-web-browser.desktop";
+      "text/html" = "firefox.desktop";
+      "application/xhtml+xml" = "firefox.desktop";
+    };
+  };
+
+  # The pane opens beside the focused one, which is the terminal that was
+  # Ctrl+clicked. Herdr must be running.
+  xdg.desktopEntries.herdr-view = {
+    name = "Herdr viewer";
+    exec = "${lib.getExe (pkgs.writeShellApplication {
+      name = "herdr-view";
+      runtimeInputs = [ herdr pkgs.jq ];
+      text = ''
+        herdr-app "do" pane.split "$(jq -nc --arg path "$1" \
+          '{direction: "right", mod: "my-viewer", props: {file: {path: $path, machine: null}}}')"
+      '';
+    })} %f";
+    mimeType = [ "text/markdown" ];
+    noDisplay = true;
   };
 
   systemd.user.services.studio-merges = lib.mkIf hasStudioMerges studioMerges.service;
