@@ -12,17 +12,24 @@ restart Doom Emacs or reload its configuration. No `doom sync` is needed.
 For a Git-backed flake rebuild, ensure `dictation.py` and `dictation_control.py`
 are tracked (or staged) so Nix includes them in the flake source.
 
-In **any editable buffer**, regardless of file type:
+For ordinary dictation in any editable buffer, leave Org prose unselected.
 
 - **F8**: start recording; wait for `Voice: RECORDING`, then speak.
 - **F8** again: stop and insert plain transcription at the saved cursor location.
 - **Shift+F8**: cancel without insertion.
 
-Selected text is not replaced; the region end is the insertion point. Moving
-elsewhere while transcribing doesn't redirect the result or move your new point.
+Outside Org buffers, selected text is not replaced, and the region end is used as the insertion point.
+Moving elsewhere while transcribing does not redirect the result or move your new point.
 If point stays at the insertion location, it advances past the inserted words.
 Capture runs locally even when editing through TRAMP. Read-only buffers are
 protected. No automatic save or source-code execution.
+
+With **selected Org prose**, F8 records a rewrite instruction instead of inserting the transcription.
+One AI alternative is generated through Pi and previewed in the document.
+Press RET to keep the alternative or q to restore the starting wording.
+Transcription remains local, but the instruction and selected passage are sent to the configured model provider.
+The surrounding paragraph is also sent.
+See [the writing guide](../../../docs/write-on-emacs.md) for details.
 
 For an explicit **Org review comment**, place point after a passage (or select
 it) and use the existing additional bindings:
@@ -33,7 +40,7 @@ it) and use the existing additional bindings:
 
 The transcription is inserted after the saved line/selection as `# ? …`, even
 if point moves. It is one undoable edit and is not auto-saved. Read/edit it, save,
-then ask org-spec to address comments. Dictation does not invoke an agent.
+then ask org-spec to address comments. This review comment command does not invoke an agent.
 
 The mode line shows loading, recording, transcribing, or cancelling. No speech
 means no inserted comment. Errors appear in `*Org dictation errors*`; results

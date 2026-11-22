@@ -34,6 +34,18 @@
 (push (expand-file-name "themes" doom-user-dir) custom-theme-load-path)
 (push (expand-file-name "themes" doom-user-dir) load-path)
 (setq doom-theme 'doom-bugarela)
+
+;; The default Symbols Nerd Font Mono is not installed; use our Nix font.
+(setq nerd-icons-font-family "DroidSansM Nerd Font Mono")
+(defun my/nerd-icons-font (&optional frame)
+  "Use the installed Nerd Font for icon glyphs in FRAME."
+  (with-selected-frame (or frame (selected-frame))
+    (when (and (display-graphic-p)
+               (find-font (font-spec :family nerd-icons-font-family)))
+      (nerd-icons-set-font nerd-icons-font-family))))
+(after! nerd-icons
+  (add-hook 'after-make-frame-functions #'my/nerd-icons-font)
+  (dolist (frame (frame-list)) (my/nerd-icons-font frame)))
  
 (setq doom-font (font-spec :family "Iosevka"
                           :size (string-to-number (or (getenv "DOOM_FONT_SIZE") "16"))))
@@ -428,7 +440,32 @@ Meant for `org-agenda-finalize-hook'."
   (scroll-on-jump-advice-add goto-last-change-reverse))
 
 (load! "org-dictation")
-(global-set-key (kbd "<f8>") #'my/dictation-toggle)
+(load! "write-on")
+(add-hook 'org-mode-hook (lambda () (write-on-mode 1)))
+(map! :map write-on-mode-map
+      :localleader
+      (:prefix ("w" . "writing alternatives")
+       :desc "Suggest alternatives" "g" #'write-on-generate
+       :desc "Suggest with instructions" "G" #'write-on-generate-directed
+       :desc "Browse alternatives" "c" #'write-on-choose
+       :desc "Add your own wording" "a" #'write-on-add
+       :desc "Move text to overflow" "s" #'write-on-stash
+       :desc "Keep only this wording" "f" #'write-on-flatten
+       :desc "Stop generating" "x" #'write-on-cancel))
+
+;; Doom scopes :desc to a major mode, so minor-mode maps need command labels.
+(after! which-key
+  (dolist (entry '((write-on-generate . "Suggest alternatives")
+                   (write-on-generate-directed . "Suggest with instructions")
+                   (write-on-choose . "Browse alternatives")
+                   (write-on-add . "Add your own wording")
+                   (write-on-stash . "Move text to overflow")
+                   (write-on-flatten . "Keep only this wording")
+                   (write-on-cancel . "Stop generating")))
+    (add-to-list 'which-key-replacement-alist
+                 (cons (cons nil (concat "\\`" (regexp-quote (symbol-name (car entry))) "\\'"))
+                       (cons nil (cdr entry))))))
+(global-set-key (kbd "<f8>") #'write-on-dictation-toggle)
 (global-set-key (kbd "S-<f8>") #'my/org-dictation-cancel)
 
 (global-set-key (kbd "<269025093>") "λ")
@@ -959,4 +996,11 @@ with overruling parameters for `org-list-to-generic'."
 (setq org-modern-star "replace")
 
 (after! writegood-mode
-  (remove-hook 'text-mode-hook #'writegood-mode))
+  (remove-hook 'text-mode-hook #'writegood-mode)
+  ;; Passive voice is intentional; keep the other writing checks.
+  (advice-add #'writegood-passive-voice-turn-on :override #'ignore)
+  (dolist (buffer (buffer-list))
+    (with-current-buffer buffer
+      (when (bound-and-true-p writegood-mode)
+        (writegood-passive-voice-turn-off)
+        (font-lock-flush)))))

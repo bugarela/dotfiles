@@ -1,0 +1,25 @@
+#+title: Write On in Emacs
+#+startup: showall
+
+* Try the writing flow
+
+The API has too many limitations. A smoother writing flow is needed on both computers.
+
+The alternatives should be kept beside the prose. The document should remain readable when the editor is changed.
+
+* Try the commands
+
+1. Place point on “limitations” and press =SPC m w g=. Five alternatives are generated.
+2. Press =j= or =k= in the panel to preview each version in the document. Press =RET= to keep the wording.
+3. Return to the changed word and press =SPC m w c=. The saved versions are shown again.
+4. Select a sentence and press =SPC m w g=. Alternatives are generated for the selection instead of a word.
+5. Press =SPC m w G= to give a direction, such as “Make the wording more concrete”.
+6. Press =a= in the panel to add your own alternative. Your wording is labelled “Mine”, while generated wording is labelled “AI”.
+7. Select unwanted prose and press =SPC m w s=. The prose is moved to a COMMENT Overflow subtree.
+8. Press =SPC m w f= on an alternative to keep only the visible wording.
+
+Press =q= or Escape in the panel to restore the starting wording. Saving is refused until the preview is kept or cancelled.
+
+Normal editing and undo remain available. The chosen wording is included in Org exports. The saved alternatives and COMMENT subtrees are omitted.
+
+This demo is opened as an unsaved buffer by =M-x write-on-demo=. Save the buffer with =C-x C-w= if the experiment should be kept.

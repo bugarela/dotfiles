@@ -24,7 +24,9 @@
      (my/org-dictation--status process 'loading " [Voice: loading]"))
     ("recording"
      (my/org-dictation--status process 'recording " [Voice: RECORDING]")
-     (message "Dictation: speak now; F8 to stop, Shift+F8 to cancel"))
+     (message (if (process-get process 'dictation-receiver)
+                  "Voice rewrite: speak your instruction; F8 to stop, Shift+F8 to cancel"
+                "Dictation: speak now; F8 to stop, Shift+F8 to cancel")))
     ("transcribing"
      (my/org-dictation--status process 'transcribing " [Voice: transcribing]"))
     ("text" (process-put process 'dictation-text (alist-get 'text event)))))
@@ -78,6 +80,17 @@
             (message "Dictation inserted in %s (not auto-saved)" (buffer-name)))
         (error (my/org-dictation--recover comment))))))
 
+(defun my/org-dictation--deliver (process text)
+  "Deliver TEXT to a custom receiver, or insert ordinary dictation."
+  (if-let* ((receiver (process-get process 'dictation-receiver)))
+      (condition-case err
+          (funcall receiver process text)
+        (error
+         (my/org-dictation--recover text)
+         (message "Voice instruction preserved; delivery failed: %s"
+                  (error-message-string err))))
+    (my/org-dictation--insert process text)))
+
 (defun my/org-dictation--sentinel (process _event)
   (when (memq (process-status process) '(exit signal))
     (unwind-protect
@@ -93,7 +106,7 @@
           (message "Dictation failed: backend returned no transcription"))
          ((string-empty-p (string-trim (process-get process 'dictation-text)))
           (message "No speech detected; nothing inserted"))
-         (t (my/org-dictation--insert process (process-get process 'dictation-text))))
+         (t (my/org-dictation--deliver process (process-get process 'dictation-text))))
       (when-let* ((marker (process-get process 'dictation-marker)))
         (set-marker marker nil))
       (when (eq process my/org-dictation-process)
@@ -110,11 +123,12 @@
     (my/org-dictation-cancel)))
 
 ;;;###autoload
-(defun my/dictation-toggle (&optional org-comment)
+(defun my/dictation-toggle (&optional org-comment receiver)
   "Start/stop plain dictation in any editable buffer.
 Insert at the saved point (or region end), without replacing selected text.
 With ORG-COMMENT non-nil, insert an Org review comment after the saved line.
-Wait for RECORDING before speaking; toggle again to stop and transcribe."
+With RECEIVER non-nil, call it with the process and transcription instead of
+inserting text. Wait for RECORDING before speaking; toggle again to stop."
   (interactive)
   (if (process-live-p my/org-dictation-process)
       (pcase (process-get my/org-dictation-process 'dictation-state)
@@ -148,6 +162,7 @@ Wait for RECORDING before speaking; toggle again to stop and transcribe."
             (setq my/org-dictation-process process)
             (process-put process 'dictation-marker marker)
             (process-put process 'dictation-plain-text (not org-comment))
+            (process-put process 'dictation-receiver receiver)
             (add-hook 'kill-buffer-hook #'my/org-dictation--cancel-for-buffer nil t)
             (my/org-dictation--status process 'loading " [Voice: loading]")
             (message "Loading Whisper; wait for the RECORDING indicator"))
