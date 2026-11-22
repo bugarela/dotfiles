@@ -347,7 +347,20 @@ export default class Agents extends View {
           .when(full && Boolean(more), el => el.child(div().flex_1().min_w(0).truncate().text_color(t.dim).child(`\u00b7 ${more}`))))
         .when(Boolean(machine), el => el.child(div().text_size(10).text_color(t.dim).child(machine)))
         .when(subs.length > 0, el => el.child(fold(a, subs)))
-        .when(this.hovered === a.address, el => el.child(pin))
+        .when(this.hovered === a.address, el => el.child(pin)
+          .child(div().id(`agent-terminal-${a.address}`).size(20).flex_none().flex().items_center().justify_center()
+            .rounded(4).text_color(t.dim).hover(s => s.bg(t.hover).text_color(t.foreground))
+            .tooltip("New terminal in this agent's folder")
+            .on_click((_e, cx) => {
+              cx.stop_propagation();
+              const folder = panes().find(p => p.pane === a.pane)?.cwd;
+              run("tab.new", { space: a.space, ...(folder ? { folder } : {}) });
+            }).child(svg("mods/workspace-chrome/plus.svg").size(12)))
+          .child(div().id(`agent-close-${a.address}`).size(20).flex_none().flex().items_center().justify_center()
+            .rounded(4).text_color(t.dim).hover(s => s.bg(t.hover).text_color(t.foreground))
+            .tooltip("Close agent and kill its terminal")
+            .on_click((_e, cx) => { cx.stop_propagation(); run("terminal.kill", { terminal: a.address }); })
+            .child(svg("mods/pane/close.svg").size(12))))
         .when(this.hovered !== a.address && Boolean(when), el => el.child(div().flex_none().text_size(11).text_color(t.dim).child(duration(now - when))))
         .child(this.status(t, a, byPriority && !isPinned));
     };

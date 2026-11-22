@@ -47,6 +47,7 @@ export function tone(t, status) {
 
 export default class Spaces extends View {
   init(_props, cx) {
+    run("layout.resize", { id: "spaces", px: shared("spaces.folded") === false ? 240 : 32 });
     this.git = {}; // where() -> { name, branch, ahead, behind, repo, linked }, null: not a repo
     this.checked = {}; // where() -> when it was last looked at
     this.unsure = new Set(); // where()s git couldn't answer for (a machine away)
@@ -340,6 +341,7 @@ export default class Spaces extends View {
   render() {
     const t = theme();
     const collapsed = narrow();
+    const folded = shared("spaces.folded") !== false;
     const palette = ["ansi6", "ansi3", "ansi4", "ansi5", "ansi2", "ansi1"];
     const sp = spaces();
     const ids = new Set(sp.map(p => p.id));
@@ -353,11 +355,18 @@ export default class Spaces extends View {
     }
     if (changed) setShared("space.colors", kept);
     return v_flex().size_full().min_h(0).bg(t.chrome).text_size(13)
-      .child(h_flex().h(31).pl(16).pr(10).items_center().justify_between().text_size(11.5).text_color(t.dim)
+      .child(h_flex().id("spaces-fold").h(31).flex_none().pl(collapsed ? 8 : 16).pr(10).gap(6).items_center().text_size(11.5).text_color(t.dim)
+        .cursor_pointer().hover(s => s.bg(t.hover).text_color(t.foreground))
+        .on_click(() => {
+          setShared("spaces.folded", !folded);
+          run("layout.resize", { id: "spaces", px: folded ? 240 : 32 });
+        })
+        .child(svg(`mods/workspace-chrome/chevron-${folded ? "right" : "down"}.svg`).size(11))
         .when(!collapsed, el => el.child("Spaces"))
-        .child(div().id("space-new").p(4).rounded(4).hover(s => s.bg(t.hover).text_color(t.foreground)).on_click(() => run("space.new")).child("+")))
-      .child(v_flex().flex_1().min_h(0).px(8).pb(14).overflow_y_scrollbar().mode("always")
+        .child(div().flex_1())
+        .child(div().id("space-new").p(4).rounded(4).hover(s => s.bg(t.hover).text_color(t.foreground)).on_click((_e, cx) => { cx.stop_propagation(); run("space.new"); }).child("+")))
+      .when(!folded, el => el.child(v_flex().flex_1().min_h(0).px(8).pb(14).overflow_y_scrollbar().mode("always")
         .on_mouse_up("left", (_e, cx) => { this.pressed = null; cx.notify(); })
-        .children(this.grouped(t, collapsed)));
+        .children(this.grouped(t, collapsed))));
   }
 }

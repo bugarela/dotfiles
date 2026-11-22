@@ -26,14 +26,10 @@
           "type": "column",
           "children": [
             {
-              "id": "spaces",
+              "id": "terminals",
               "type": "block",
-              "content": {
-                "mod": "my-spaces"
-              },
-              "size": {
-                "weight": 1
-              },
+              "content": { "mod": "my-terminals" },
+              "size": { "weight": 1 },
               "min": 90
             },
             {
@@ -46,8 +42,16 @@
                 "weight": 1
               },
               "min": 90
+            },
+            {
+              "id": "spaces",
+              "type": "block",
+              "content": { "mod": "my-spaces" },
+              "size": { "px": 32 },
+              "min": 32
             }
-          ]
+          ],
+          "resizable": false
         },
         {
           "id": "sidebar-footer",
