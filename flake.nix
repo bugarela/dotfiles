@@ -26,11 +26,6 @@
         nitrogen = nixpkgs-gtk2.legacyPackages.${final.stdenv.hostPlatform.system}.nitrogen;
       };
 
-      # openldap test017-syncreplication-refresh is flaky (timing-dependent); skip tests
-      openldapOverlay = final: prev: {
-        openldap = prev.openldap.overrideAttrs (_: { doCheck = false; });
-      };
-
       # rose-pine-gtk-theme was dropped from nixpkgs when the GTK2 engines
       # (gtk-engine-murrine, gtk_engines, gnome-themes-extra) were removed. Those
       # were only ever declared for the theme's GTK2 assets, which the derivation
@@ -86,7 +81,7 @@
           home-manager.users.gabriela = import ./home-manager/${name}.nix;
         }
         # Apply overlays
-        { nixpkgs.overlays = [ openldapOverlay rosePineOverlay gtk2Overlay ]; }
+        { nixpkgs.overlays = [ rosePineOverlay gtk2Overlay ]; }
       ];
       mkSystem = name: cfg:
         nixpkgs.lib.nixosSystem {
