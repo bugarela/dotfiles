@@ -28,8 +28,13 @@ are tracked (or staged) so Nix includes them in the flake source.
 For ordinary dictation in any editable buffer, leave Org prose unselected.
 
 - **F8**: start recording; wait for `Voice: RECORDING`, then speak.
-- **F8** again: stop and insert plain transcription at the saved cursor location.
+- **F8** again: stop and insert the transcription at the saved cursor location.
 - **Shift+F8**: cancel without insertion.
+
+In an Org buffer, the transcription is inserted as an Org comment line (`# …`), because dictated text that is not yet polished is kept apart from written text in that way.
+The comment is put on the line that holds the cursor when that line is empty, and on a new line below it otherwise.
+Repeated dictation is kept in order, because a cursor that was left at the end of its line is moved to the end of each new comment.
+Inside source blocks and in the draft editor for alternatives, plain text is inserted at the cursor.
 
 Outside Org buffers, selected text is not replaced, and the region end is used as the insertion point.
 Moving elsewhere while transcribing does not redirect the result or move your new point.

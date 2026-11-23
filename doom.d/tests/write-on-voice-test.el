@@ -64,7 +64,7 @@
       (should (member '(:text "The system completes each job in two seconds." :origin "ai")
                       (write-on--entries (plist-get (write-on--target) :id)))))))
 
-(ert-deftest write-on-voice-without-selection-is-plain-dictation ()
+(ert-deftest write-on-voice-without-selection-is-org-comment ()
   (write-on-voice-test-buffer
     (deactivate-mark)
     (write-on-dictation-toggle)
@@ -72,7 +72,8 @@
      (lambda () (eq (process-get my/org-dictation-process 'dictation-state) 'recording)))
     (write-on-dictation-toggle)
     (write-on-voice-test--wait (lambda () (null my/org-dictation-process)))
-    (should (string-prefix-p "Make it more concrete.The system" (buffer-string)))
+    (should (equal (buffer-string)
+                   "The system is good. Other text stays.\n# Make it more concrete.\n"))
     (should-not write-on--process)))
 
 (ert-deftest write-on-voice-cancel-does-not-send-an-instruction ()

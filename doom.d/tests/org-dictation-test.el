@@ -12,10 +12,11 @@
       (unwind-protect
           (progn
             (process-put process 'dictation-marker (copy-marker (line-end-position)))
+            (process-put process 'dictation-comment "# ? ")
             (goto-char (point-max))
             (my/org-dictation--insert process "Why this?\nPlease simplify.")
             (should (equal (buffer-string)
-                           "First passage.\n# ? Why this? Please simplify.\n\nSecond passage.\n")))
+                           "First passage.\n# ? Why this? Please simplify.\nSecond passage.\n")))
         (delete-process process)))))
 
 (ert-deftest dictation-plain-text-inserts-at-exact-point-in-any-mode ()
@@ -28,7 +29,6 @@
         (unwind-protect
             (progn
               (process-put process 'dictation-marker (copy-marker (point)))
-              (process-put process 'dictation-plain-text t)
               (my/org-dictation--insert process "spoken words")
               (should (equal (buffer-string) "Before spoken words after"))
               (should (= (point) (+ 8 (length "spoken words")))))
@@ -43,12 +43,28 @@
       (unwind-protect
           (progn
             (process-put process 'dictation-marker (copy-marker (point)))
-            (process-put process 'dictation-plain-text t)
             (goto-char (point-max))
             (my/org-dictation--insert process "WORD")
             (should (equal (buffer-string) "fiWORDrst\nsecond"))
             (should (= (point) (point-max))))
         (delete-process process)))))
+
+(ert-deftest org-dictation-repeated-comments-stay-in-order ()
+  (with-temp-buffer
+    (org-mode)
+    (insert "Para.\n\nNext.\n")
+    (goto-char (point-min))
+    (forward-line 1)
+    (dolist (text '("first" "second"))
+      (let ((process (make-pipe-process :name "voice-order-test" :noquery t)))
+        (unwind-protect
+            (progn
+              (process-put process 'dictation-marker (copy-marker (line-end-position)))
+              (process-put process 'dictation-comment "# ")
+              (my/org-dictation--insert process text))
+          (delete-process process))))
+    (should (equal (buffer-string) "Para.\n# first\n# second\n\nNext.\n"))
+    (should (looking-at-p "\n\n"))))
 
 (ert-deftest dictation-generic-toggle-works-in-non-org-buffers ()
   (let ((my/org-dictation-process nil)
@@ -131,7 +147,7 @@
              (lambda () (eq (process-get my/org-dictation-process 'dictation-state) 'recording)))
             (my/org-dictation-toggle)
             (org-dictation-test--wait (lambda () (null my/org-dictation-process)))
-            (should (equal (buffer-string) "A decision.\n# ? Please clarify.\n")))
+            (should (equal (buffer-string) "A decision.\n# ? Please clarify.")))
         (my/org-dictation-cancel)))))
 
 (ert-deftest org-dictation-killing-target-cancels-capture ()

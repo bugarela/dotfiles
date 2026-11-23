@@ -74,7 +74,7 @@ Press `RET` to keep the alternative or `q` to restore the starting wording. Your
 
 The selection is captured before recording starts. Moving point or switching buffers does not redirect the rewrite. A changed selection is not overwritten, and your instruction is preserved in `*Voice dictation recovery*`.
 
-Without selected Org prose, `F8` remains ordinary dictation. `Shift+F8` cancels voice capture. `SPC m w x` cancels the subsequent generation request.
+Without a selection in Org prose, `F8` inserts the transcription as an Org comment line (`# …`), which marks the text as dictated and not yet polished. `Shift+F8` cancels voice capture. `SPC m w x` cancels the subsequent generation request.
 
 Transcription is performed locally through the existing Whisper backend. The instruction, selection and surrounding paragraph are then sent to the configured model provider.
 

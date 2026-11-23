@@ -67,26 +67,29 @@
 (defun my/org-dictation--insert (process text)
   (let* ((marker (process-get process 'dictation-marker))
          (buffer (and marker (marker-buffer marker)))
-         (plain (process-get process 'dictation-plain-text))
+         (prefix (process-get process 'dictation-comment))
          (normalized (string-trim (replace-regexp-in-string "[[:space:]]+" " " text)))
-         (comment (if plain normalized (concat "# ? " normalized "\n"))))
+         (inserted (concat prefix normalized)))
     (if (not (buffer-live-p buffer))
-        (my/org-dictation--recover comment)
+        (my/org-dictation--recover inserted)
       (condition-case nil
           (with-current-buffer buffer
-            (let ((follow (and plain (= (point) marker))) end)
+            (let ((follow (= (point) marker)) end)
               (save-excursion
                 (goto-char marker)
-                (unless plain (end-of-line))
+                (when prefix (end-of-line))
                 (undo-boundary)
                 (atomic-change-group
-                  (unless (or plain (bolp)) (insert "\n"))
-                  (insert comment)
+                  ;; A comment takes an empty saved line, or a new line below it.
+                  ;; Point follows to its end, so repeated dictation stays in order.
+                  (cond ((not prefix) (insert inserted))
+                        ((bolp) (insert inserted "\n") (backward-char))
+                        (t (insert "\n" inserted)))
                   (setq end (point)))
                 (undo-boundary))
               (when follow (goto-char end)))
             (message "Dictation inserted in %s (not auto-saved)" (buffer-name)))
-        (error (my/org-dictation--recover comment))))))
+        (error (my/org-dictation--recover inserted))))))
 
 (defun my/org-dictation--deliver (process text)
   "Deliver TEXT to a custom receiver, or insert ordinary dictation."
@@ -131,10 +134,11 @@
     (my/org-dictation-cancel)))
 
 ;;;###autoload
-(defun my/dictation-toggle (&optional org-comment receiver)
+(defun my/dictation-toggle (&optional comment receiver)
   "Start/stop plain dictation in any editable buffer.
 Insert at the saved point (or region end), without replacing selected text.
-With ORG-COMMENT non-nil, insert an Org review comment after the saved line.
+With COMMENT, a prefix such as \"# \", insert an Org comment line after the
+saved line instead.
 With RECEIVER non-nil, call it with the process and transcription instead of
 inserting text. Wait for RECORDING before speaking; toggle again to stop."
   (interactive)
@@ -146,7 +150,7 @@ inserting text. Wait for RECORDING before speaking; toggle again to stop."
          (process-send-string my/org-dictation-process "stop\n"))
         (_ (user-error "Voice is loading/transcribing; use the cancel command to discard")))
     (when buffer-read-only (user-error "This buffer is read-only"))
-    (when org-comment
+    (when comment
       (unless (derived-mode-p 'org-mode)
         (user-error "Start voice comments in an Org buffer"))
       (when (org-in-src-block-p)
@@ -156,7 +160,7 @@ inserting text. Wait for RECORDING before speaking; toggle again to stop."
     (let ((marker (copy-marker
                    (save-excursion
                      (when (use-region-p) (goto-char (region-end)))
-                     (if org-comment (line-end-position) (point)))))
+                     (if comment (line-end-position) (point)))))
           ;; Always capture locally, even while editing a file through TRAMP.
           (default-directory (expand-file-name "~/")))
       (condition-case err
@@ -169,7 +173,7 @@ inserting text. Wait for RECORDING before speaking; toggle again to stop."
                                :sentinel #'my/org-dictation--sentinel)))
             (setq my/org-dictation-process process)
             (process-put process 'dictation-marker marker)
-            (process-put process 'dictation-plain-text (not org-comment))
+            (process-put process 'dictation-comment comment)
             (process-put process 'dictation-receiver receiver)
             (add-hook 'kill-buffer-hook #'my/org-dictation--cancel-for-buffer nil t)
             (my/org-dictation--status process 'loading " [Voice: loading]")
@@ -181,7 +185,7 @@ inserting text. Wait for RECORDING before speaking; toggle again to stop."
 (defun my/org-dictation-toggle ()
   "Start/stop dictation of an Org review comment after the current passage."
   (interactive)
-  (my/dictation-toggle t))
+  (my/dictation-toggle "# ? "))
 
 ;;;###autoload
 (defun my/org-dictation-cancel ()

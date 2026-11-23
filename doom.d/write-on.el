@@ -7,7 +7,7 @@
 (require 'button)
 (require 'subr-x)
 (declare-function evil-set-initial-state "evil-core" (mode state))
-(declare-function my/dictation-toggle "org-dictation" (&optional org-comment receiver))
+(declare-function my/dictation-toggle "org-dictation" (&optional comment receiver))
 (declare-function my/org-dictation--recover "org-dictation" (comment))
 (defvar my/org-dictation-process)
 
@@ -670,7 +670,8 @@ and previews it immediately, for a spoken rewrite instruction."
 ;;;###autoload
 (defun write-on-dictation-toggle ()
   "Use F8 on selected Org prose to record an instruction for a new alternative.
-Without selected Org prose, retain ordinary dictation. The target is captured
+Without a selection, dictation in Org prose becomes a `# ' comment line, which
+marks it as unpolished; elsewhere it is inserted at point. The target is captured
 before recording, so moving point or changing buffers cannot redirect a rewrite."
   (interactive)
   (require 'org-dictation)
@@ -696,6 +697,9 @@ before recording, so moving point or changing buffers cannot redirect a rewrite.
                (save-excursion
                  (goto-char (plist-get target :begin))
                  (write-on-generate (string-trim transcript) target t)))))))
+   ((and (derived-mode-p 'org-mode) (not (derived-mode-p 'write-on-edit-mode))
+         (not (org-in-src-block-p)))
+    (my/dictation-toggle "# "))
    (t (my/dictation-toggle))))
 
 (defun write-on-stash ()
